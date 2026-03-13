@@ -1,0 +1,77 @@
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-container">
+          <img src="/logo.png" alt="Musondosi Logo">
+        </div>
+        <h1>MFA Verification</h1>
+        <p>Please enter the 6-digit code from your email.</p>
+      </div>
+
+      <form class="otp-form" [formGroup]="otpForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="field-group">
+          <label for="token">
+            Verification Code
+            <span class="required" aria-hidden="true">*</span>
+          </label>
+          <input
+            type="text"
+            id="token"
+            formControlName="token"
+            placeholder="0 0 0 0 0 0"
+            maxlength="6"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            [class.error]="otpForm.get('token')?.invalid && otpForm.get('token')?.touched"
+            aria-required="true"
+            [attr.aria-invalid]="otpForm.get('token')?.invalid && otpForm.get('token')?.touched"
+            aria-describedby="token-error"
+          >
+          @if (otpForm.get('token')?.invalid && otpForm.get('token')?.touched) {
+            <span class="error-message" id="token-error">
+              @if (otpForm.get('token')?.errors?.['required']) {
+                Verification code is required
+              } @else if (otpForm.get('token')?.errors?.['minlength'] || otpForm.get('token')?.errors?.['maxlength'] || otpForm.get('token')?.errors?.['pattern']) {
+                Code must be exactly 6 digits
+              }
+            </span>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary otp-btn"
+          [disabled]="loadingService.isLoading()"
+        >
+          @if (loadingService.isLoading()) {
+            <div class="spinner-small" style="margin-right: 8px;"></div>
+            Verifying...
+          } @else {
+            Verify Code
+          }
+        </button>
+      </form>
+
+      <div class="resend-container">
+        <p>Didn't receive the code?</p>
+        <button
+          type="button"
+          class="resend-link"
+          [disabled]="!canResend() || loadingService.isLoading()"
+          (click)="onResend()"
+        >
+          @if (!canResend()) {
+            Resend in {{ resendCountdown() }}s
+          } @else {
+            Resend Code
+          }
+        </button>
+      </div>
+
+      <div class="login-footer">
+        Back to <a routerLink="/login">Sign in</a>
+      </div>
+    </div>
+  </div>
+</div>

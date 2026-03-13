@@ -1,0 +1,274 @@
+<header class="page-header">
+  <div class="page-title">
+    <h1>Tickets</h1>
+    <span class="page-subtitle"><i class="ph ph-ticket"></i> Total: 1,245</span>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary">
+      <i class="ph ph-download-simple"></i> Export data
+    </button>
+    <button class="btn btn-primary">
+      <i class="ph ph-plus"></i> Create ticket
+    </button>
+  </div>
+</header>
+
+<div class="table-card">
+
+  <div class="table-toolbar">
+    <div class="filters-group">
+      <div class="custom-select">
+        <select>
+          <option>Category</option>
+          <option>Tech Support</option>
+          <option>Permission Request</option>
+          <option>Billing Inquiry</option>
+          <option>General Question</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <div class="custom-select">
+        <select>
+          <option>Priority</option>
+          <option>Low</option>
+          <option>Medium</option>
+          <option>High</option>
+          <option>Urgent</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <div class="custom-select active">
+        <select>
+          <option>Status</option>
+          <option>Open</option>
+          <option>In Progress</option>
+          <option>Closed</option>
+          <option>Resolved</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <button class="btn-filter">
+        <i class="ph ph-faders"></i> All filters
+      </button>
+    </div>
+
+    <div class="bulk-actions">
+      <div class="icon-tooltip" data-tooltip="Edit">
+        <button class="icon-btn active"><i class="ph ph-pencil-simple"></i></button>
+      </div>
+      <div class="icon-tooltip" data-tooltip="Reply">
+        <button class="icon-btn"><i class="ph ph-arrow-bend-up-left"></i></button>
+      </div>
+      <div class="icon-tooltip" data-tooltip="Close">
+        <button class="icon-btn"><i class="ph ph-x-circle"></i></button>
+      </div>
+      <div class="icon-tooltip" data-tooltip="Delete">
+        <button class="icon-btn"><i class="ph ph-trash"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th width="40">
+          <label class="custom-checkbox master-checkbox">
+            <input type="checkbox">
+            <span class="checkmark indeterminate"></span>
+          </label>
+        </th>
+        <th>Ticket ID <i class="ph ph-caret-up-down"></i></th>
+        <th>Client <i class="ph ph-caret-up-down"></i></th>
+        <th>Subject <i class="ph ph-caret-up-down"></i></th>
+        <th>Category <i class="ph ph-caret-up-down"></i></th>
+        <th>Priority <i class="ph ph-caret-up-down"></i></th>
+        <th>Status <i class="ph ph-caret-up-down"></i></th>
+        <th align="right">ACTIONS</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          <label class="custom-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td>#TKT-7821</td>
+        <td>
+          <div class="user-cell">
+            <img src="https://i.pravatar.cc/150?u=4" alt="Eleanor Pena">
+            <span>Eleanor Pena</span>
+          </div>
+        </td>
+        <td>Unable to access billing history</td>
+        <td>BILLING_INQUIRY</td>
+        <td><span class="priority-high">HIGH</span></td>
+        <td>
+          <div class="table-select-wrapper status-rented">
+            <select class="table-select">
+              <option value="OPEN">OPEN</option>
+              <option value="IN_PROGRESS" selected>IN_PROGRESS</option>
+              <option value="CLOSED">CLOSED</option>
+              <option value="RESOLVED">RESOLVED</option>
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <button class="action-icon"><i class="ph ph-arrow-bend-up-left"></i></button>
+          <button class="action-icon"><i class="ph ph-eye"></i></button>
+          <div class="dropdown-container" tabindex="0">
+            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+            <div class="dropdown-menu">
+              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
+              <a href="#"><i class="ph ph-check-circle"></i> Mark Resolved</a>
+              <a href="#"><i class="ph ph-user-plus"></i> Assign Agent</a>
+              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr class="selected">
+        <td>
+          <label class="custom-checkbox">
+            <input type="checkbox" checked>
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td>#TKT-9012</td>
+        <td>
+          <div class="user-cell">
+            <img src="https://i.pravatar.cc/150?u=5" alt="Guy Hawkins">
+            <span>Guy Hawkins</span>
+          </div>
+        </td>
+        <td>Reset password request</td>
+        <td>PERMISSION_REQUEST</td>
+        <td><span class="priority-urgent">URGENT</span></td>
+        <td>
+          <div class="table-select-wrapper status-available">
+            <select class="table-select">
+              <option value="OPEN" selected>OPEN</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="CLOSED">CLOSED</option>
+              <option value="RESOLVED">RESOLVED</option>
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <button class="action-icon"><i class="ph ph-arrow-bend-up-left"></i></button>
+          <button class="action-icon"><i class="ph ph-eye"></i></button>
+          <div class="dropdown-container" tabindex="0">
+            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+            <div class="dropdown-menu">
+              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
+              <a href="#"><i class="ph ph-check-circle"></i> Mark Resolved</a>
+              <a href="#"><i class="ph ph-user-plus"></i> Assign Agent</a>
+              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label class="custom-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td>#TKT-4456</td>
+        <td>
+          <div class="user-cell">
+            <img src="https://i.pravatar.cc/150?u=6" alt="Kristin Watson">
+            <span>Kristin Watson</span>
+          </div>
+        </td>
+        <td>Slow dashboard load times</td>
+        <td>TECH_SUPPORT</td>
+        <td><span class="priority-medium">MEDIUM</span></td>
+        <td>
+          <div class="table-select-wrapper status-sold">
+            <select class="table-select">
+              <option value="OPEN">OPEN</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="CLOSED">CLOSED</option>
+              <option value="RESOLVED" selected>RESOLVED</option>
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <button class="action-icon"><i class="ph ph-arrow-bend-up-left"></i></button>
+          <button class="action-icon"><i class="ph ph-eye"></i></button>
+          <div class="dropdown-container" tabindex="0">
+            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+            <div class="dropdown-menu">
+              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
+              <a href="#"><i class="ph ph-check-circle"></i> Mark Resolved</a>
+              <a href="#"><i class="ph ph-user-plus"></i> Assign Agent</a>
+              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label class="custom-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td>#TKT-3321</td>
+        <td>
+          <div class="user-cell">
+            <img src="https://i.pravatar.cc/150?u=7" alt="Albert Flores">
+            <span>Albert Flores</span>
+          </div>
+        </td>
+        <td>How to change profile name?</td>
+        <td>GENERAL_QUESTION</td>
+        <td><span class="priority-low">LOW</span></td>
+        <td>
+          <div class="table-select-wrapper status-sold">
+            <select class="table-select">
+              <option value="OPEN">OPEN</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="CLOSED" selected>CLOSED</option>
+              <option value="RESOLVED">RESOLVED</option>
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <button class="action-icon"><i class="ph ph-arrow-bend-up-left"></i></button>
+          <button class="action-icon"><i class="ph ph-eye"></i></button>
+          <div class="dropdown-container" tabindex="0">
+            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+            <div class="dropdown-menu">
+              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
+              <a href="#"><i class="ph ph-check-circle"></i> Mark Resolved</a>
+              <a href="#"><i class="ph ph-user-plus"></i> Assign Agent</a>
+              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
+            </div>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-pagination">
+    <div class="pagination-info">1 to 10 of 1245</div>
+    <div class="pagination-controls">
+      <button class="page-btn disabled"><i class="ph ph-caret-double-left"></i></button>
+      <button class="page-btn disabled"><i class="ph ph-caret-left"></i></button>
+      <span class="page-current">Page 1 of 125</span>
+      <button class="page-btn"><i class="ph ph-caret-right"></i></button>
+      <button class="page-btn"><i class="ph ph-caret-double-right"></i></button>
+    </div>
+  </div>
+
+</div>

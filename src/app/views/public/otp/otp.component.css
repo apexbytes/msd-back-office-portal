@@ -1,0 +1,65 @@
+.otp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  width: 100%;
+}
+
+.otp-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.field-group label {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+input#token {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 0.5em;
+  padding-left: 0.5em;
+}
+
+input#token::placeholder {
+  letter-spacing: normal;
+  font-size: 16px;
+  padding-left: 0;
+}
+
+.resend-container {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--a-text-muted);
+}
+
+.resend-container p {
+  margin-bottom: 4px;
+}
+
+.resend-link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.resend-link:hover:not(:disabled) {
+  background-color: rgba(var(--primary-rgb), 0.1);
+  text-decoration: underline;
+}
+
+.resend-link:disabled {
+  color: var(--a-text-muted);
+  cursor: not-allowed;
+  font-weight: 400;
+}

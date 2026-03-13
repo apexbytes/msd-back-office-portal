@@ -1,0 +1,21 @@
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>{{ data.title }}</h2>
+      <button class="modal-close" (click)="onClose()">
+        <i class="ph ph-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>{{ data.message }}</p>
+    </div>
+    <div class="modal-footer">
+      <button *ngIf="data.isConfirm" class="btn btn-secondary" (click)="onClose()">
+        {{ data.cancelText || 'Cancel' }}
+      </button>
+      <button class="btn btn-primary" (click)="onConfirm()">
+        {{ data.confirmText || 'Confirm' }}
+      </button>
+    </div>
+  </div>
+</div>

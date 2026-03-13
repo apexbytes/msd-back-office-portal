@@ -1,0 +1,17 @@
+.login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.login-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.field-group label {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}

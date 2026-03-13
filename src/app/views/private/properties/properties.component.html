@@ -1,0 +1,249 @@
+<header class="page-header">
+  <div class="page-title">
+    <h1>Properties</h1>
+    <span class="page-subtitle"><i class="ph ph-buildings"></i> Total: 450</span>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary">
+      <i class="ph ph-download-simple"></i> Export data
+    </button>
+    <button class="btn btn-primary">
+      <i class="ph ph-plus"></i> Add property
+    </button>
+  </div>
+</header>
+
+<div class="table-card">
+
+  <div class="table-toolbar">
+    <div class="filters-group">
+      <div class="custom-select">
+        <select>
+          <option>Type</option>
+          <option>House</option>
+          <option>Apartment</option>
+          <option>Commercial</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <div class="custom-select">
+        <select>
+          <option>Status</option>
+          <option>Available</option>
+          <option>Sold</option>
+          <option>Rented</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <div class="custom-select">
+        <select>
+          <option>Location</option>
+          <option>New York</option>
+          <option>Los Angeles</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <button class="btn-filter">
+        <i class="ph ph-faders"></i> All filters
+      </button>
+    </div>
+
+    <div class="bulk-actions">
+      <div class="icon-tooltip" data-tooltip="Edit">
+        <button class="icon-btn active"><i class="ph ph-pencil-simple"></i></button>
+      </div>
+      <div class="icon-tooltip" data-tooltip="Delete">
+        <button class="icon-btn"><i class="ph ph-trash"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th width="40">
+          <label class="custom-checkbox master-checkbox">
+            <input type="checkbox">
+            <span class="checkmark indeterminate"></span>
+          </label>
+        </th>
+        <th>ID <i class="ph ph-caret-up-down"></i></th>
+        <th>PROPERTY <i class="ph ph-caret-up-down"></i></th>
+        <th>TYPE <i class="ph ph-caret-up-down"></i></th>
+        <th>PRICE <i class="ph ph-caret-up-down"></i></th>
+        <th>LOCATION <i class="ph ph-caret-up-down"></i></th>
+        <th>FEATURED <i class="ph ph-caret-up-down"></i></th>
+        <th>STATUS <i class="ph ph-caret-up-down"></i></th>
+        <th align="right">ACTIONS</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          <label class="custom-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td>P-1042</td>
+        <td>
+          <div class="property-cell">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=150&h=100&fit=crop" alt="Sunset Villa">
+            <div class="property-info">
+              <span>Sunset Villa</span>
+              <small>4 Beds • 3 Baths</small>
+            </div>
+          </div>
+        </td>
+        <td>House</td>
+        <td>$1,250,000</td>
+        <td>Beverly Hills, CA</td>
+        <td>
+          <label class="table-toggle">
+            <input type="checkbox" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </td>
+        <td>
+          <div class="table-select-wrapper status-available">
+            <select class="table-select">
+              <option value="available" selected>Available</option>
+              <option value="rented">Rented</option>
+              <option value="sold">Sold</option>
+              <option value="maintenance">Maintenance</option>
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <button class="action-icon"><i class="ph ph-eye"></i></button>
+          <div class="dropdown-container" tabindex="0">
+            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+            <div class="dropdown-menu">
+              <a href="#"><i class="ph ph-pencil-simple"></i> Edit Property</a>
+              <a href="#"><i class="ph ph-image"></i> Manage Photos</a>
+              <a href="#"><i class="ph ph-currency-dollar"></i> Price History</a>
+              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <label class="custom-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td>P-1088</td>
+        <td>
+          <div class="property-cell">
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=150&h=100&fit=crop" alt="Downtown Skyline">
+            <div class="property-info">
+              <span>Downtown Skyline</span>
+              <small>2 Beds • 2 Baths</small>
+            </div>
+          </div>
+        </td>
+        <td>Apartment</td>
+        <td>$3,500/mo</td>
+        <td>Manhattan, NY</td>
+        <td>
+          <label class="table-toggle">
+            <input type="checkbox">
+            <span class="toggle-slider"></span>
+          </label>
+        </td>
+        <td>
+          <div class="table-select-wrapper status-rented">
+            <select class="table-select">
+              <option value="available">Available</option>
+              <option value="rented" selected>Rented</option>
+              <option value="sold">Sold</option>
+              <option value="maintenance">Maintenance</option>
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <button class="action-icon"><i class="ph ph-eye"></i></button>
+          <div class="dropdown-container" tabindex="0">
+            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+            <div class="dropdown-menu">
+              <a href="#"><i class="ph ph-pencil-simple"></i> Edit Property</a>
+              <a href="#"><i class="ph ph-image"></i> Manage Photos</a>
+              <a href="#"><i class="ph ph-currency-dollar"></i> Price History</a>
+              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <label class="custom-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td>P-1102</td>
+        <td>
+          <div class="property-cell">
+            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=150&h=100&fit=crop" alt="Retail Plaza">
+            <div class="property-info">
+              <span>Retail Plaza</span>
+              <small>5,000 sqft</small>
+            </div>
+          </div>
+        </td>
+        <td>Commercial</td>
+        <td>$2,100,000</td>
+        <td>Austin, TX</td>
+        <td>
+          <label class="table-toggle">
+            <input type="checkbox">
+            <span class="toggle-slider"></span>
+          </label>
+        </td>
+        <td>
+          <div class="table-select-wrapper status-maintenance">
+            <select class="table-select">
+              <option value="available">Available</option>
+              <option value="rented">Rented</option>
+              <option value="sold">Sold</option>
+              <option value="maintenance" selected>Maintenance</option>
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <button class="action-icon"><i class="ph ph-eye"></i></button>
+          <div class="dropdown-container" tabindex="0">
+            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+            <div class="dropdown-menu">
+              <a href="#"><i class="ph ph-pencil-simple"></i> Edit Property</a>
+              <a href="#"><i class="ph ph-image"></i> Manage Photos</a>
+              <a href="#"><i class="ph ph-currency-dollar"></i> Price History</a>
+              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
+            </div>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-pagination">
+    <div class="pagination-info">1 to 10 of 450</div>
+    <div class="pagination-controls">
+      <button class="page-btn disabled"><i class="ph ph-caret-double-left"></i></button>
+      <button class="page-btn disabled"><i class="ph ph-caret-left"></i></button>
+      <span class="page-current">Page 1 of 45</span>
+      <button class="page-btn"><i class="ph ph-caret-right"></i></button>
+      <button class="page-btn"><i class="ph ph-caret-double-right"></i></button>
+    </div>
+  </div>
+
+</div>

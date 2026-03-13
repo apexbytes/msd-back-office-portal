@@ -1,0 +1,85 @@
+.user-profile-container {
+  position: relative;
+}
+
+.user-options-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  right: 0;
+  background-color: var(--a-bg-card);
+  border: 1px solid var(--a-divider-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  overflow: hidden;
+  animation: slideUp 0.2s cubic-bezier(0, 0, 0.2, 1);
+  min-width: 200px;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-options-menu ul {
+  list-style: none;
+  padding: 8px;
+  margin: 0;
+}
+
+.user-options-menu li {
+  margin-bottom: 4px;
+}
+
+.user-options-menu li:last-child {
+  margin-bottom: 0;
+}
+
+.user-options-menu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: var(--a-text-main);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.user-options-menu a:hover {
+  background-color: var(--a-hover-bg);
+}
+
+.user-options-menu a i {
+  font-size: 18px;
+  color: var(--a-text-muted);
+}
+
+.user-options-menu .divider {
+  height: 1px;
+  background-color: var(--a-divider-color);
+  margin: 8px 0;
+}
+
+.user-options-menu a.danger {
+  color: var(--form-error-color);
+}
+
+.user-options-menu a.danger i {
+  color: var(--form-error-color);
+}
+
+/* Hide menu when sidebar is retracted */
+body:has(#menu-toggle:checked) .user-options-menu {
+  display: none;
+}

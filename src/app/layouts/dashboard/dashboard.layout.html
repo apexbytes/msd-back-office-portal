@@ -1,0 +1,187 @@
+<input type="checkbox" id="menu-toggle" hidden>
+<input type="checkbox" id="theme-toggle" hidden>
+
+<div class="app-container">
+
+  <aside class="sidebar">
+
+    <header class="sidebar-header">
+      <label for="menu-toggle" class="menu-btn">
+        <i class="ph ph-list"></i>
+      </label>
+      <div class="logo-container">
+        <img src="/logo.png" alt="Musondosi Logo">
+      </div>
+    </header>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <a routerLink="home">
+            <i class="ph-fill ph-house"></i>
+            <span class="nav-text">Home</span>
+          </a>
+        </li>
+        <li class="divider" routerLinkActive="active">
+          <a routerLink="logs">
+            <i class="ph ph-file-text"></i>
+            <span class="nav-text">Logs</span>
+          </a>
+        </li>
+
+        <li routerLinkActive="active">
+          <a routerLink="pricing">
+            <i class="ph ph-currency-dollar"></i>
+            <span class="nav-text">Pricing</span>
+          </a>
+        </li>
+        <li class="divider" routerLinkActive="active">
+          <a routerLink="subscriptions">
+            <i class="ph ph-monitor-play"></i>
+            <span class="nav-text">Subscriptions</span>
+          </a>
+        </li>
+
+        <li routerLinkActive="active">
+          <a routerLink="users">
+            <i class="ph ph-users"></i>
+            <span class="nav-text">Users</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a routerLink="roles">
+            <i class="ph ph-user-gear"></i>
+            <span class="nav-text">Roles</span>
+          </a>
+        </li>
+        <li class="divider" routerLinkActive="active">
+          <a routerLink="partners">
+            <i class="ph ph-handshake"></i>
+            <span class="nav-text">Partners</span>
+          </a>
+        </li>
+
+        <li routerLinkActive="active">
+          <a routerLink="properties">
+            <i class="ph ph-buildings"></i>
+            <span class="nav-text">Properties</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a routerLink="vehicles">
+            <i class="ph ph-car"></i>
+            <span class="nav-text">Vehicles</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a routerLink="models">
+            <i class="ph ph-cube"></i>
+            <span class="nav-text">Models</span>
+          </a>
+        </li>
+        <li class="divider" routerLinkActive="active">
+          <a routerLink="makes">
+            <i class="ph ph-factory"></i>
+            <span class="nav-text">Makes</span>
+          </a>
+        </li>
+
+        <li routerLinkActive="active">
+          <a routerLink="testimonials">
+            <i class="ph ph-chat-centered-text"></i>
+            <span class="nav-text">Testimonials</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a routerLink="adverts">
+            <i class="ph ph-megaphone"></i>
+            <span class="nav-text">Adverts</span>
+          </a>
+        </li>
+        <li class="divider" routerLinkActive="active">
+          <a routerLink="tickets">
+            <i class="ph ph-ticket"></i>
+            <span class="nav-text">Tickets</span>
+          </a>
+        </li>
+
+        <li routerLinkActive="active">
+          <a routerLink="settings">
+            <i class="ph ph-gear"></i>
+            <span class="nav-text">Settings</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a routerLink="reports">
+            <i class="ph ph-flag"></i>
+            <span class="nav-text">Report history</span>
+          </a>
+        </li>
+        <li routerLinkActive="active">
+          <a routerLink="help">
+            <i class="ph ph-question"></i>
+            <span class="nav-text">Help</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <footer class="sidebar-footer">
+      <label for="theme-toggle" class="theme-switch">
+        <div class="switch-track">
+          <i class="ph ph-sun"></i>
+          <i class="ph ph-moon"></i>
+          <div class="switch-thumb"></div>
+        </div>
+      </label>
+
+      <div class="user-profile-container">
+        @if (currentUser(); as user) {
+          @if (isUserMenuOpen) {
+            <div class="user-options-menu">
+              <ul>
+                <li>
+                  <a routerLink="profile" (click)="closeUserMenu()">
+                    <i class="ph ph-user"></i>
+                    <span>My Profile</span>
+                  </a>
+                </li>
+                <li>
+                  <a routerLink="settings" (click)="closeUserMenu()">
+                    <i class="ph ph-gear"></i>
+                    <span>Settings</span>
+                  </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a class="danger" (click)="logout(); closeUserMenu()">
+                    <i class="ph ph-sign-out"></i>
+                    <span>Log out</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          }
+
+          <a class="user-profile">
+            @if (user.avatar?.url) {
+              <img [src]="user.avatar?.url" [alt]="user | fullName">
+            } @else {
+              <div class="user-initials" [style.background-color]="(user | fullName) | initials:'color'">
+                {{ user | fullName | initials }}
+              </div>
+            }
+            <span class="user-name">{{ user | fullName }}</span>
+            <i class="ph ph-dots-three user-options" (click)="toggleUserMenu($event)"></i>
+          </a>
+        }
+      </div>
+    </footer>
+
+  </aside>
+
+  <main class="main-content">
+    <router-outlet/>
+  </main>
+
+</div>
