@@ -3,8 +3,8 @@ import { DatePipe, SlicePipe, CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { AdvertFormComponent } from '@app/views/private/forms/advert-form/advert-form.component';
 import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-dialog.component';
-import { DeleteDialogData } from '@app/core/models/delete.interface';
 import { AdvertService, QueryParams } from '@app/core/services/advert.service';
+import { LoadingService } from '@app/core/services/loading.service';
 import { Advert } from '@app/core/models/advert.model';
 
 @Component({
@@ -18,6 +18,7 @@ import { Advert } from '@app/core/models/advert.model';
 export class AdvertsComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly advertService = inject(AdvertService);
+  private readonly loadingService = inject(LoadingService);
 
   protected readonly adverts = signal<Advert[]>([]);
   protected readonly totalCount = signal(0);
@@ -39,7 +40,7 @@ export class AdvertsComponent implements OnInit {
         if (response.success) {
           const data = response.data;
           let advertsArray: Advert[] = [];
-          
+
           if (Array.isArray(data)) {
             advertsArray = data;
           } else if (data && typeof data === 'object') {
@@ -50,7 +51,7 @@ export class AdvertsComponent implements OnInit {
               advertsArray = (data as any).items;
             }
           }
-          
+
           this.adverts.set(advertsArray);
           this.totalCount.set(response.pagination?.totalCount || advertsArray.length);
         }
@@ -95,30 +96,50 @@ export class AdvertsComponent implements OnInit {
 
   protected onDelete(advert: Advert): void {
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: {
-        entityName: 'Advert',
-        title: 'Delete Advert?',
-        message: 'Are you sure you want to delete "' + advert.title + '"? This process is permanent.',
-        deleteFn: () => this.advertService.deleteAdvert(advert.id),
-      } as DeleteDialogData,
+      width: '540px',
+      maxWidth: '95vw',
       disableClose: true,
-      maxWidth: '500px',
-      width: '90%',
+      panelClass: 'full-screen-modal',
+      data: {
+        title: 'Delete Advert',
+        message: `Are you sure you want to delete the advert "${advert.title}"? This process is permanent and cannot be undone.`,
+        itemType: 'Advert',
+        itemName: advert.title,
+      },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.fetchAdverts();
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.loadingService.show();
+        this.advertService.deleteAdvert(advert.id).subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.fetchAdverts();
+            }
+            this.loadingService.hide();
+          },
+          error: (err) => {
+            console.error(`Error deleting advert: ${advert.title}`, err);
+            this.loadingService.hide();
+          },
+        });
+      }
     });
   }
 
   protected onTogglePublish(advert: Advert): void {
+    this.loadingService.show();
     this.advertService.togglePublish(advert.id).subscribe({
       next: (response) => {
         if (response.success) {
           this.fetchAdverts();
         }
+        this.loadingService.hide();
       },
-      error: (err) => console.error('Error toggling publish status:', err),
+      error: (err) => {
+        console.error('Error toggling publish status:', err);
+        this.loadingService.hide();
+      },
     });
   }
 }

@@ -1,16 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
 import { UserService } from '@app/core/services/user.service';
+import { RoleService } from '@app/core/services/role.service';
 import { UploadService } from '@app/core/services/upload.service';
 import { LoadingService } from '@app/core/services/loading.service';
-import { User } from '@app/core/models/user.model';
+import { User, Role } from '@app/core/models/user.model';
 import { FileUploadResult } from '@app/core/models/common.model';
 
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule], // Removed Material Imports
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,6 +20,7 @@ import { FileUploadResult } from '@app/core/models/common.model';
 export class UserFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly userService = inject(UserService);
+  private readonly roleService = inject(RoleService);
   private readonly uploadService = inject(UploadService);
   private readonly loadingService = inject(LoadingService);
   private readonly dialogRef = inject(MatDialogRef<UserFormComponent>);
@@ -28,13 +31,27 @@ export class UserFormComponent implements OnInit {
   protected readonly isUploading = signal(false);
   protected readonly globalLoading = this.loadingService.isLoading;
 
+  protected readonly availableRoles = signal<Role[]>([]);
+
   protected form!: FormGroup;
 
   ngOnInit(): void {
+    this.fetchRoles();
     this.initForm();
     if (this.isEditMode() && this.data?.user) {
       this.patchForm(this.data.user);
     }
+  }
+
+  private fetchRoles(): void {
+    this.roleService.getAllRoles().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.availableRoles.set(res.data);
+        }
+      },
+      error: (err) => console.error('Failed to load roles', err),
+    });
   }
 
   private initForm(): void {
@@ -45,6 +62,7 @@ export class UserFormComponent implements OnInit {
       companyName: [''],
       email: ['', [Validators.required, Validators.email]],
       mobileNumber: [''],
+      roleId: [''], // Changed from roleIds array to a single roleId string
       bio: [''],
       city: [''],
       country: [''],
@@ -54,12 +72,15 @@ export class UserFormComponent implements OnInit {
         facebook: [''],
         x: [''],
         linkedIn: [''],
-        instagram: ['']
-      })
+        instagram: [''],
+      }),
     });
   }
 
   private patchForm(user: User): void {
+    // Grab the first role the user has (if any) to set as the default selected option
+    const userRoleId = user.roles && user.roles.length > 0 ? user.roles[0].id : '';
+
     this.form.patchValue({
       username: user.username,
       firstName: user.firstName || '',
@@ -67,6 +88,7 @@ export class UserFormComponent implements OnInit {
       companyName: user.companyName || '',
       email: user.email,
       mobileNumber: user.mobileNumber || '',
+      roleId: userRoleId, // Patch the single ID
       bio: user.bio || '',
       city: user.city || '',
       country: user.country || '',
@@ -76,8 +98,8 @@ export class UserFormComponent implements OnInit {
         facebook: user.socialLinks?.facebook || '',
         x: user.socialLinks?.x || '',
         linkedIn: user.socialLinks?.linkedIn || '',
-        instagram: user.socialLinks?.instagram || ''
-      }
+        instagram: user.socialLinks?.instagram || '',
+      },
     });
 
     if (user.avatar?.url) {
@@ -105,9 +127,9 @@ export class UserFormComponent implements OnInit {
             const avatarResult: FileUploadResult = {
               public_id: uploadedFile.public_id,
               url: uploadedFile.url,
-              width: uploadedFile.width,
-              height: uploadedFile.height,
-              storageType: uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL'
+              width: uploadedFile.width || 0,
+              height: uploadedFile.height || 0,
+              storageType: (uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL') || 'CLOUDINARY',
             };
             this.form.patchValue({ avatar: avatarResult });
             this.form.get('avatar')?.markAsDirty();
@@ -119,7 +141,7 @@ export class UserFormComponent implements OnInit {
           console.error('Upload failed', err);
           this.isUploading.set(false);
           this.loadingService.hide();
-        }
+        },
       });
     }
   }
@@ -141,7 +163,8 @@ export class UserFormComponent implements OnInit {
     }
 
     const formValue = this.form.value;
-    const userData: Partial<User> = {
+
+    const userData: any = {
       username: formValue.username,
       firstName: formValue.firstName || undefined,
       lastName: formValue.lastName || undefined,
@@ -151,20 +174,38 @@ export class UserFormComponent implements OnInit {
       bio: formValue.bio || undefined,
       city: formValue.city || undefined,
       country: formValue.country || undefined,
-      avatar: formValue.avatar,
       socialLinks: {
         website: formValue.socialLinks.website || undefined,
         facebook: formValue.socialLinks.facebook || undefined,
         x: formValue.socialLinks.x || undefined,
         linkedIn: formValue.socialLinks.linkedIn || undefined,
-        instagram: formValue.socialLinks.instagram || undefined
-      }
+        instagram: formValue.socialLinks.instagram || undefined,
+      },
     };
 
+    // The backend API requires `roleIds` as an array of numbers.
+    // We take our single select ID and wrap it.
+    if (formValue.roleId) {
+      userData.roleIds = [Number(formValue.roleId)];
+    }
+
+    if (this.form.get('avatar')?.dirty) {
+      if (formValue.avatar) {
+        userData.avatar = formValue.avatar.public_id;
+      } else {
+        userData.removeAvatar = true;
+      }
+    }
+
+    if (!this.isEditMode()) {
+      userData.password = 'ChangeMe123!';
+    }
+
     this.loadingService.show();
-    const request = (this.isEditMode() && this.data?.user)
-      ? this.userService.updateUser(this.data.user.id, userData)
-      : this.userService.createUser(userData);
+    const request =
+      this.isEditMode() && this.data?.user
+        ? this.userService.updateUser(this.data.user.id, userData)
+        : this.userService.createUser(userData);
 
     request.subscribe({
       next: (response) => {

@@ -51,15 +51,17 @@
             <td>
               <div class="permission-tags">
                 @for (perm of role.permissions; track perm.id) {
-                  <span class="tag">{{ perm.action }}</span>
+                  <span class="tag badge-outline" [title]="perm.description || 'No description available'">
+                    {{ perm.resource }}:{{ perm.action }}
+                  </span>
                 } @empty {
-                  -
+                  <span style="color: var(--a-text-light);">No permissions</span>
                 }
               </div>
             </td>
             <td class="actions-cell">
               <div class="dropdown-container" tabindex="0">
-                <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+                <button class="action-icon"><i class="ph ph-dots-three-vertical"></i></button>
                 <div class="dropdown-menu">
                   <a href="javascript:void(0)" (click)="onEdit(role)"><i class="ph ph-pencil-simple"></i> Edit</a>
                   <a href="javascript:void(0)" class="danger" (click)="onDelete(role)"><i class="ph ph-trash"></i> Delete</a>

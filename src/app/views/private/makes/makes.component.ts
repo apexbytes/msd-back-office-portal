@@ -5,6 +5,8 @@ import { VehicleService } from '@app/core/services/vehicle.service';
 import { LoadingService } from '@app/core/services/loading.service';
 import { VehicleMake } from '@app/core/models/vehicle.model';
 import { ModelDialogComponent } from '../model-dialog/model-dialog.component';
+import { MakeFormComponent } from '@app/views/private/forms/make-form/make-form.component';
+import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-dialog.component';
 
 @Component({
   selector: 'app-makes',
@@ -57,7 +59,7 @@ export class MakesComponent implements OnInit {
       error: (err) => {
         console.error('Error loading vehicle makes', err);
         this.isLoading.set(false);
-      }
+      },
     });
   }
 
@@ -65,13 +67,13 @@ export class MakesComponent implements OnInit {
 
   protected nextPage(): void {
     if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update(p => p + 1);
+      this.currentPage.update((p) => p + 1);
     }
   }
 
   protected prevPage(): void {
     if (this.currentPage() > 1) {
-      this.currentPage.update(p => p - 1);
+      this.currentPage.update((p) => p - 1);
     }
   }
 
@@ -81,20 +83,74 @@ export class MakesComponent implements OnInit {
     this.dialog.open(ModelDialogComponent, {
       width: '800px',
       maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
       disableClose: false,
-      data: { make }
+      data: { make },
     });
   }
 
   protected onCreateMake(): void {
-    console.log('Open Create Make Form');
+    const dialogRef = this.dialog.open(MakeFormComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'full-screen-modal',
+      data: {},
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadMakes();
+      }
+    });
   }
 
   protected onEditMake(make: VehicleMake): void {
-    console.log('Open Edit Make Form for', make.name);
+    const dialogRef = this.dialog.open(MakeFormComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'full-screen-modal',
+      data: { make },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadMakes();
+      }
+    });
   }
 
   protected onDeleteMake(make: VehicleMake): void {
-    console.log('Open Delete Confirmation for', make.name);
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '540px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'full-screen-modal',
+      data: {
+        title: 'Delete Vehicle Make',
+        message: `Are you sure you want to delete the make "${make.name}"? All associated models will also be deleted. This action cannot be undone.`,
+        itemType: 'Make',
+        itemName: make.name,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.loadingService.show();
+        this.vehicleService.deleteMake(make.id).subscribe({
+          next: (response: any) => {
+            if (response.success) {
+              this.loadMakes();
+            }
+            this.loadingService.hide();
+          },
+          error: (err) => {
+            console.error(`Error deleting vehicle make: ${make.name}`, err);
+            this.loadingService.hide();
+          },
+        });
+      }
+    });
   }
 }

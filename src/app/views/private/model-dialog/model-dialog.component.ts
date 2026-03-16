@@ -1,8 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { VehicleService } from '@app/core/services/vehicle.service';
 import { VehicleMake, VehicleModel } from '@app/core/models/vehicle.model';
+import { ModelFormComponent } from '../forms/model-form/model-form.component';
+import { LoadingService } from '@app/core/services/loading.service';
+import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-dialog.component';
 
 @Component({
   selector: 'app-model-dialog',
@@ -15,8 +18,9 @@ import { VehicleMake, VehicleModel } from '@app/core/models/vehicle.model';
 export class ModelDialogComponent implements OnInit {
   private readonly vehicleService = inject(VehicleService);
   protected readonly dialogRef = inject(MatDialogRef<ModelDialogComponent>);
+  private readonly dialog = inject(MatDialog);
+  private readonly loadingService = inject(LoadingService);
 
-  // Retrieve the Make data passed from the parent component
   public readonly data = inject<{ make: VehicleMake }>(MAT_DIALOG_DATA);
 
   protected readonly models = signal<VehicleModel[]>([]);
@@ -28,7 +32,6 @@ export class ModelDialogComponent implements OnInit {
 
   loadModels(): void {
     this.isLoading.set(true);
-    // Fetch only the models belonging to the selected make
     this.vehicleService.getModelsByMake(this.data.make.id).subscribe({
       next: (res: any) => {
         const data = res.data?.models || res.data || [];
@@ -46,16 +49,75 @@ export class ModelDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  // --- Placeholders for future CRUD ---
   protected onCreateModel(): void {
-    console.log(`Open Create Model Form for ${this.data.make.name}`);
+    const dialogRef = this.dialog.open(ModelFormComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
+      disableClose: true,
+      data: {
+        makeId: this.data.make.id,
+        makeName: this.data.make.name,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadModels();
+      }
+    });
   }
 
   protected onEditModel(model: VehicleModel): void {
-    console.log('Open Edit Model Form for', model.name);
+    const dialogRef = this.dialog.open(ModelFormComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
+      disableClose: true,
+      data: {
+        makeId: this.data.make.id,
+        makeName: this.data.make.name,
+        model: model,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadModels();
+      }
+    });
   }
 
   protected onDeleteModel(model: VehicleModel): void {
-    console.log('Open Delete Confirmation for', model.name);
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '540px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'full-screen-modal',
+      data: {
+        title: 'Delete Vehicle Model',
+        message: `Are you sure you want to delete the model "${model.name}"? This action cannot be undone.`,
+        itemType: 'Model',
+        itemName: model.name,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.loadingService.show();
+        this.vehicleService.deleteModel(model.id).subscribe({
+          next: (response: any) => {
+            if (response.success) {
+              this.loadModels();
+            }
+            this.loadingService.hide();
+          },
+          error: (err) => {
+            console.error(`Error deleting vehicle model: ${model.name}`, err);
+            this.loadingService.hide();
+          },
+        });
+      }
+    });
   }
 }

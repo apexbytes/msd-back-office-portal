@@ -748,6 +748,10 @@ body:has(#theme-toggle:checked):has(#menu-toggle:checked) .switch-thumb {
   font-size: 13px;
 }
 
+.data-table td {
+  border: none !important;
+}
+
 .data-table th {
   color: var(--a-text-light);
   font-weight: 600;
@@ -767,7 +771,7 @@ body:has(#theme-toggle:checked):has(#menu-toggle:checked) .switch-thumb {
 }
 
 .data-table tbody tr:hover {
-  background-color: var(--a-row-hover);
+  background-color: var(--a-active-bg);
 }
 
 .data-table tbody tr.selected {

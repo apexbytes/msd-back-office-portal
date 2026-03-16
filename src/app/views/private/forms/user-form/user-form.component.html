@@ -93,6 +93,25 @@
           />
         </div>
 
+        <div class="field-group full-width">
+          <label for="roleId">Assigned Role</label>
+          <div class="custom-select">
+            <select
+              id="roleId"
+              formControlName="roleId"
+              [class]="getFieldClass('roleId')"
+            >
+              <option value="" disabled selected>Select a role...</option>
+              @for (role of availableRoles(); track role.id) {
+                <option [value]="role.id">
+                  {{ role.name }} ({{ role.type }})
+                </option>
+              }
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
+        </div>
+
         <!-- City -->
         <div class="field-group">
           <label for="city">City</label>

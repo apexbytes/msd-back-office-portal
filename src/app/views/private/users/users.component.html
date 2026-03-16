@@ -1,64 +1,19 @@
 <header class="page-header">
   <div class="page-title">
     <h1>Users</h1>
-    <span class="page-subtitle"><i class="ph ph-user"></i> Total: {{ totalUsers() }}</span>
+    <span class="page-subtitle"><i class="ph ph-users"></i> Total: {{ totalCount() }}</span>
   </div>
   <div class="page-actions">
     <button class="btn btn-secondary">
       <i class="ph ph-download-simple"></i> Export data
     </button>
     <button class="btn btn-primary" (click)="onCreate()">
-      <i class="ph ph-plus"></i> Add user
+      <i class="ph ph-plus"></i> Add User
     </button>
   </div>
 </header>
 
 <div class="table-card">
-
-  <div class="table-toolbar">
-    <div class="filters-group">
-      <div class="custom-select">
-        <select>
-          <option>Role</option>
-          <option>Admin</option>
-          <option>User</option>
-        </select>
-        <i class="ph ph-caret-down"></i>
-      </div>
-      <div class="custom-select active">
-        <select>
-          <option>Status</option>
-          <option>Active</option>
-        </select>
-        <i class="ph ph-caret-down"></i>
-      </div>
-      <div class="custom-select">
-        <select>
-          <option>Location</option>
-        </select>
-        <i class="ph ph-caret-down"></i>
-      </div>
-      <button class="btn-filter">
-        <i class="ph ph-faders"></i> All filters
-      </button>
-    </div>
-
-    <div class="bulk-actions">
-      <div class="icon-tooltip" data-tooltip="Edit">
-        <button class="icon-btn active"><i class="ph ph-pencil-simple"></i></button>
-      </div>
-      <div class="icon-tooltip" data-tooltip="Enroll">
-        <button class="icon-btn"><i class="ph ph-file-text"></i></button>
-      </div>
-      <div class="icon-tooltip" data-tooltip="Add to Group">
-        <button class="icon-btn"><i class="ph ph-users-three"></i></button>
-      </div>
-      <div class="icon-tooltip" data-tooltip="Delete">
-        <button class="icon-btn"><i class="ph ph-trash"></i></button>
-      </div>
-    </div>
-  </div>
-
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -66,92 +21,132 @@
         <th width="40">
           <label class="custom-checkbox master-checkbox">
             <input type="checkbox">
-            <span class="checkmark indeterminate"></span>
+            <span class="checkmark"></span>
           </label>
         </th>
-        <th>ID <i class="ph ph-caret-up-down"></i></th>
-        <th>USER <i class="ph ph-caret-up-down"></i></th>
-        <th>EMAIL <i class="ph ph-caret-up-down"></i></th>
-        <th>PHONE <i class="ph ph-caret-up-down"></i></th>
+        <th>USER</th>
+        <th>CONTACT <i class="ph ph-caret-up-down"></i></th>
         <th>ROLE <i class="ph ph-caret-up-down"></i></th>
-        <th>LAST ACTIVE <i class="ph ph-caret-up-down"></i></th>
         <th>STATUS <i class="ph ph-caret-up-down"></i></th>
         <th align="right">ACTIONS</th>
       </tr>
       </thead>
       <tbody>
-      @if (isLoading()) {
-        <tr>
-          <td colspan="9" style="text-align: center; padding: 2rem;">
-            Loading users...
-          </td>
-        </tr>
-      } @else {
-        @for (user of users(); track user.id) {
+        @if (isLoading()) {
           <tr>
-            <td>
-              <label class="custom-checkbox">
-                <input type="checkbox">
-                <span class="checkmark"></span>
-              </label>
-            </td>
-            <td>{{ user.id | slice:0:8 }}</td>
-            <td>
-              <div class="user-cell">
-                @if (user.avatar?.url) {
-                  <img [src]="user.avatar?.url" [alt]="user | fullName">
-                } @else {
-                  <div class="user-initials" [style.background-color]="(user | fullName) | initials:'color'">
-                    {{ (user | fullName) | initials }}
+            <td colspan="6" align="center" style="padding: 3rem;">Loading users...</td>
+          </tr>
+        } @else {
+          @for (user of users(); track user.id) {
+            <tr [style.opacity]="isUpdating(user.id) ? '0.6' : '1'">
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+
+              <td>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  @if (user.avatar?.url) {
+                    <img [src]="user.avatar?.url" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--a-border-color);">
+                  } @else {
+                    <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--a-hover-bg); border-radius: 50%; color: var(--a-text-light);">
+                      <i class="ph ph-user"></i>
+                    </div>
+                  }
+                  <div>
+                    <strong>{{ user.username }}</strong><br>
+                    @if (user.firstName || user.lastName) {
+                      <small style="color: var(--a-text-light);">{{ user.firstName }} {{ user.lastName }}</small>
+                    } @else {
+                      <small style="color: var(--a-text-light);">No Name Provided</small>
+                    }
                   </div>
-                }
-                <span>{{ user | fullName }}</span>
-              </div>
-            </td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.mobileNumber || '-' }}</td>
-            <td>{{ getRoleName(user) }}</td>
-            <td>{{ (user.lastActive | date:'short') || '-' }}</td>
-            <td>
-              <span class="status-badge" [class]="user.status.toLowerCase()">
+                </div>
+              </td>
+
+              <td>
+                <div>{{ user.email }}</div>
+                <small style="color: var(--a-text-light);">{{ user.mobileNumber || 'No Phone' }}</small>
+              </td>
+
+              <td>
+                <div class="permission-tags">
+                  @for (role of user.roles; track role.id) {
+                    <span class="tag badge-outline">{{ role.name }}</span>
+                  } @empty {
+                    <span style="color: var(--a-text-light);">No Role</span>
+                  }
+                </div>
+              </td>
+
+              <td>
+              <span class="status-badge" [ngClass]="getBadgeClass(user.status)">
                 {{ user.status }}
               </span>
-            </td>
-            <td class="actions-cell">
-              <button class="action-icon"><i class="ph ph-phone"></i></button>
-              <button class="action-icon"><i class="ph ph-envelope-simple"></i></button>
-              <div class="dropdown-container" tabindex="0">
-                <button class="action-icon"><i class="ph ph-dots-three"></i></button>
-                <div class="dropdown-menu">
-                  <a href="javascript:void(0)" (click)="onEdit(user)"><i class="ph ph-pencil-simple"></i> Edit</a>
-                  <a href="#"><i class="ph ph-file-text"></i> View details</a>
-                  <a href="#"><i class="ph ph-users-three"></i> Add to group</a>
-                  <a href="javascript:void(0)" class="danger" (click)="onDelete(user)"><i class="ph ph-trash"></i> Delete</a>
-                </div>
-              </div>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="9" style="text-align: center; padding: 2rem;">
-              No users found.
-            </td>
-          </tr>
+              </td>
+
+              <td class="actions-cell">
+                @if (isUpdating(user.id)) {
+                  <div class="spinner-small" style="margin-right: 15px;"></div>
+                } @else {
+                  <div class="dropdown-container" tabindex="0">
+                    <button class="action-icon"><i class="ph ph-dots-three-vertical"></i></button>
+                    <div class="dropdown-menu">
+                      <a href="javascript:void(0)" (click)="onEdit(user)">
+                        <i class="ph ph-pencil-simple"></i> Edit Profile
+                      </a>
+
+                      @if (user.status === 'ACTIVE') {
+                        <a href="javascript:void(0)" (click)="onBanUser(user)">
+                          <i class="ph ph-prohibit"></i> Suspend User
+                        </a>
+                      } @else if (user.status === 'SUSPENDED' || user.status === 'INACTIVE') {
+                        <a href="javascript:void(0)" (click)="onUnlockUser(user)">
+                          <i class="ph ph-check-circle"></i> Activate User
+                        </a>
+                      }
+
+                      <a href="javascript:void(0)" class="danger" (click)="onDelete(user)">
+                        <i class="ph ph-trash"></i> Delete User
+                      </a>
+                    </div>
+                  </div>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" align="center" style="padding: 3rem;">No users found.</td>
+            </tr>
+          }
         }
-      }
       </tbody>
     </table>
   </div>
 
-  <div class="table-pagination">
-    <div class="pagination-info">{{ (queryParams().page! - 1) * queryParams().limit! + 1 }} to {{ queryParams().page! * queryParams().limit! }} of {{ totalUsers() }}</div>
-    <div class="pagination-controls">
-      <button class="page-btn" [disabled]="queryParams().page === 1" (click)="onPageChange(1)"><i class="ph ph-caret-double-left"></i></button>
-      <button class="page-btn" [disabled]="queryParams().page === 1" (click)="onPageChange(queryParams().page! - 1)"><i class="ph ph-caret-left"></i></button>
-      <span class="page-current">Page {{ queryParams().page }}</span>
-      <button class="page-btn" (click)="onPageChange(queryParams().page! + 1)"><i class="ph ph-caret-right"></i></button>
-      <button class="page-btn"><i class="ph ph-caret-double-right"></i></button>
-    </div>
-  </div>
+  @if (!isLoading() && totalCount() > 0) {
+    <div class="table-footer" style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--a-border-color);">
+      <div class="pagination-info" style="color: var(--a-text-light); font-size: 0.875rem;">
+        Showing {{ ((queryParams().page || 1) - 1) * (queryParams().limit || 10) + (users().length ? 1 : 0) }}
+        to {{ ((queryParams().page || 1) - 1) * (queryParams().limit || 10) + users().length }}
+        of {{ totalCount() }} entries
+      </div>
 
+      <div class="pagination-controls" style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-secondary btn-sm" [disabled]="(queryParams().page || 1) === 1" (click)="prevPage()" style="display: flex; align-items: center; gap: 4px;">
+          <i class="ph ph-caret-left"></i> Previous
+        </button>
+
+        <span style="font-size: 0.875rem; font-weight: 500; padding: 0 0.5rem;">
+          Page {{ queryParams().page || 1 }} of {{ totalPages() }}
+        </span>
+
+        <button class="btn btn-secondary btn-sm" [disabled]="(queryParams().page || 1) >= totalPages()" (click)="nextPage()" style="display: flex; align-items: center; gap: 4px;">
+          Next <i class="ph ph-caret-right"></i>
+        </button>
+      </div>
+    </div>
+  }
 </div>
