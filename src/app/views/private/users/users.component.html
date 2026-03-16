@@ -1,13 +1,13 @@
 <header class="page-header">
   <div class="page-title">
     <h1>Users</h1>
-    <span class="page-subtitle"><i class="ph ph-user"></i> Total: 2,000</span>
+    <span class="page-subtitle"><i class="ph ph-user"></i> Total: {{ totalUsers() }}</span>
   </div>
   <div class="page-actions">
     <button class="btn btn-secondary">
       <i class="ph ph-download-simple"></i> Export data
     </button>
-    <button class="btn btn-primary">
+    <button class="btn btn-primary" (click)="onCreate()">
       <i class="ph ph-plus"></i> Add user
     </button>
   </div>
@@ -71,127 +71,85 @@
         </th>
         <th>ID <i class="ph ph-caret-up-down"></i></th>
         <th>USER <i class="ph ph-caret-up-down"></i></th>
-        <th>GENDER <i class="ph ph-caret-up-down"></i></th>
-        <th>AGE <i class="ph ph-caret-up-down"></i></th>
+        <th>EMAIL <i class="ph ph-caret-up-down"></i></th>
+        <th>PHONE <i class="ph ph-caret-up-down"></i></th>
         <th>ROLE <i class="ph ph-caret-up-down"></i></th>
-        <th>LAST LOGIN <i class="ph ph-caret-up-down"></i></th>
+        <th>LAST ACTIVE <i class="ph ph-caret-up-down"></i></th>
         <th>STATUS <i class="ph ph-caret-up-down"></i></th>
         <th align="right">ACTIONS</th>
       </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>
-          <label class="custom-checkbox">
-            <input type="checkbox">
-            <span class="checkmark"></span>
-          </label>
-        </td>
-        <td>447</td>
-        <td>
-          <div class="user-cell">
-            <img src="https://i.pravatar.cc/150?u=1" alt="Robert Fox">
-            <span>Robert Fox</span>
-          </div>
-        </td>
-        <td>Male</td>
-        <td>28</td>
-        <td>Admin</td>
-        <td>Today, 09:30</td>
-        <td>0</td>
-        <td class="actions-cell">
-          <button class="action-icon"><i class="ph ph-phone"></i></button>
-          <button class="action-icon"><i class="ph ph-envelope-simple"></i></button>
-          <div class="dropdown-container" tabindex="0">
-            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
-            <div class="dropdown-menu">
-              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
-              <a href="#"><i class="ph ph-file-text"></i> View details</a>
-              <a href="#"><i class="ph ph-users-three"></i> Add to group</a>
-              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr class="selected">
-        <td>
-          <label class="custom-checkbox">
-            <input type="checkbox" checked>
-            <span class="checkmark"></span>
-          </label>
-        </td>
-        <td>877</td>
-        <td>
-          <div class="user-cell">
-            <img src="https://i.pravatar.cc/150?u=2" alt="Marvin McKinney">
-            <span>Marvin McKinney</span>
-          </div>
-        </td>
-        <td>Male</td>
-        <td>32</td>
-        <td>Editor</td>
-        <td>-</td>
-        <td>0</td>
-        <td class="actions-cell">
-          <button class="action-icon"><i class="ph ph-phone"></i></button>
-          <button class="action-icon"><i class="ph ph-envelope-simple"></i></button>
-          <div class="dropdown-container" tabindex="0">
-            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
-            <div class="dropdown-menu">
-              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
-              <a href="#"><i class="ph ph-file-text"></i> View details</a>
-              <a href="#"><i class="ph ph-users-three"></i> Add to group</a>
-              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label class="custom-checkbox">
-            <input type="checkbox">
-            <span class="checkmark"></span>
-          </label>
-        </td>
-        <td>556</td>
-        <td>
-          <div class="user-cell">
-            <div class="user-initials" [style.background-color]="'Darrell Steward' | initials:'color'">
-              {{ 'Darrell Steward' | initials }}
-            </div>
-            <span>Darrell Steward</span>
-          </div>
-        </td>
-        <td>Female</td>
-        <td>24</td>
-        <td>Viewer</td>
-        <td>Yesterday</td>
-        <td>6</td>
-        <td class="actions-cell">
-          <button class="action-icon"><i class="ph ph-phone"></i></button>
-          <button class="action-icon"><i class="ph ph-envelope-simple"></i></button>
-          <div class="dropdown-container" tabindex="0">
-            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
-            <div class="dropdown-menu">
-              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
-              <a href="#"><i class="ph ph-file-text"></i> View details</a>
-              <a href="#"><i class="ph ph-users-three"></i> Add to group</a>
-              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
-            </div>
-          </div>
-        </td>
-      </tr>
+      @if (isLoading()) {
+        <tr>
+          <td colspan="9" style="text-align: center; padding: 2rem;">
+            Loading users...
+          </td>
+        </tr>
+      } @else {
+        @for (user of users(); track user.id) {
+          <tr>
+            <td>
+              <label class="custom-checkbox">
+                <input type="checkbox">
+                <span class="checkmark"></span>
+              </label>
+            </td>
+            <td>{{ user.id | slice:0:8 }}</td>
+            <td>
+              <div class="user-cell">
+                @if (user.avatar?.url) {
+                  <img [src]="user.avatar?.url" [alt]="user | fullName">
+                } @else {
+                  <div class="user-initials" [style.background-color]="(user | fullName) | initials:'color'">
+                    {{ (user | fullName) | initials }}
+                  </div>
+                }
+                <span>{{ user | fullName }}</span>
+              </div>
+            </td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.mobileNumber || '-' }}</td>
+            <td>{{ getRoleName(user) }}</td>
+            <td>{{ (user.lastActive | date:'short') || '-' }}</td>
+            <td>
+              <span class="status-badge" [class]="user.status.toLowerCase()">
+                {{ user.status }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="action-icon"><i class="ph ph-phone"></i></button>
+              <button class="action-icon"><i class="ph ph-envelope-simple"></i></button>
+              <div class="dropdown-container" tabindex="0">
+                <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+                <div class="dropdown-menu">
+                  <a href="javascript:void(0)" (click)="onEdit(user)"><i class="ph ph-pencil-simple"></i> Edit</a>
+                  <a href="#"><i class="ph ph-file-text"></i> View details</a>
+                  <a href="#"><i class="ph ph-users-three"></i> Add to group</a>
+                  <a href="javascript:void(0)" class="danger" (click)="onDelete(user)"><i class="ph ph-trash"></i> Delete</a>
+                </div>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 2rem;">
+              No users found.
+            </td>
+          </tr>
+        }
+      }
       </tbody>
     </table>
   </div>
 
   <div class="table-pagination">
-    <div class="pagination-info">1 to 10 of 2000</div>
+    <div class="pagination-info">{{ (queryParams().page! - 1) * queryParams().limit! + 1 }} to {{ queryParams().page! * queryParams().limit! }} of {{ totalUsers() }}</div>
     <div class="pagination-controls">
-      <button class="page-btn disabled"><i class="ph ph-caret-double-left"></i></button>
-      <button class="page-btn disabled"><i class="ph ph-caret-left"></i></button>
-      <span class="page-current">Page 1 of 200</span>
-      <button class="page-btn"><i class="ph ph-caret-right"></i></button>
+      <button class="page-btn" [disabled]="queryParams().page === 1" (click)="onPageChange(1)"><i class="ph ph-caret-double-left"></i></button>
+      <button class="page-btn" [disabled]="queryParams().page === 1" (click)="onPageChange(queryParams().page! - 1)"><i class="ph ph-caret-left"></i></button>
+      <span class="page-current">Page {{ queryParams().page }}</span>
+      <button class="page-btn" (click)="onPageChange(queryParams().page! + 1)"><i class="ph ph-caret-right"></i></button>
       <button class="page-btn"><i class="ph ph-caret-double-right"></i></button>
     </div>
   </div>

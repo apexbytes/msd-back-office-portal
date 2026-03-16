@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+textarea {
+  min-height: 120px;
+}
+
+.modal-header {
+  margin-bottom: 20px;
+}

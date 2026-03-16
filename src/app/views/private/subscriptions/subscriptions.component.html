@@ -1,20 +1,19 @@
 <header class="page-header">
   <div class="page-title">
     <h1>Subscriptions</h1>
-    <span class="page-subtitle"><i class="ph ph-monitor-play"></i> Manage active and expired subscriptions</span>
+    <span class="page-subtitle"><i class="ph ph-monitor-play"></i> Total: {{ totalCount() }}</span>
   </div>
   <div class="page-actions">
     <button class="btn btn-secondary">
       <i class="ph ph-download-simple"></i> Export
     </button>
-    <button class="btn btn-primary">
+    <button class="btn btn-primary" (click)="onCreate()">
       <i class="ph ph-plus"></i> Create new subscription
     </button>
   </div>
 </header>
 
 <div class="table-card">
-
   <div class="table-toolbar">
     <div class="filters-group">
       <div class="custom-select">
@@ -25,26 +24,9 @@
         </select>
         <i class="ph ph-caret-down"></i>
       </div>
-      <div class="custom-select active">
-        <select>
-          <option>Status</option>
-          <option>ACTIVE</option>
-          <option>EXPIRED</option>
-        </select>
-        <i class="ph ph-caret-down"></i>
-      </div>
       <button class="btn-filter">
         <i class="ph ph-faders"></i> Filter
       </button>
-    </div>
-
-    <div class="bulk-actions">
-      <div class="icon-tooltip" data-tooltip="Edit">
-        <button class="icon-btn"><i class="ph ph-pencil-simple"></i></button>
-      </div>
-      <div class="icon-tooltip" data-tooltip="Delete">
-        <button class="icon-btn"><i class="ph ph-trash"></i></button>
-      </div>
     </div>
   </div>
 
@@ -55,115 +37,61 @@
         <th width="40">
           <label class="custom-checkbox master-checkbox">
             <input type="checkbox">
-            <span class="checkmark indeterminate"></span>
+            <span class="checkmark"></span>
           </label>
         </th>
-        <th>CUSTOMER <i class="ph ph-caret-up-down"></i></th>
+        <th>USER ID <i class="ph ph-caret-up-down"></i></th>
         <th>TYPE <i class="ph ph-caret-up-down"></i></th>
         <th>STATUS <i class="ph ph-caret-up-down"></i></th>
-        <th>DURATION <i class="ph ph-caret-up-down"></i></th>
         <th>UPLOAD LIMIT <i class="ph ph-caret-up-down"></i></th>
         <th>USAGE <i class="ph ph-caret-up-down"></i></th>
         <th>START DATE <i class="ph ph-caret-up-down"></i></th>
         <th>END DATE <i class="ph ph-caret-up-down"></i></th>
-        <th>GRANTED BY <i class="ph ph-caret-up-down"></i></th>
         <th align="right">ACTIONS</th>
       </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>
-          <label class="custom-checkbox">
-            <input type="checkbox">
-            <span class="checkmark"></span>
-          </label>
-        </td>
-        <td>
-          <div class="user-cell">
-            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Customer">
-            <span>Robert Fox</span>
-          </div>
-        </td>
-        <td>VEHICLE</td>
-        <td>
-          <div class="table-select-wrapper status-available">
-            <select class="table-select">
-              <option>ACTIVE</option>
-              <option>EXPIRED</option>
-            </select>
-            <i class="ph ph-caret-down"></i>
-          </div>
-        </td>
-        <td>12 Months</td>
-        <td>100</td>
-        <td>24</td>
-        <td>2025-01-15</td>
-        <td>2026-01-15</td>
-        <td>Admin Ronald</td>
-        <td class="actions-cell">
-          <div class="dropdown-container" tabindex="0">
-            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
-            <div class="dropdown-menu">
-              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
-              <a href="#"><i class="ph ph-file-text"></i> Details</a>
-              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label class="custom-checkbox">
-            <input type="checkbox">
-            <span class="checkmark"></span>
-          </label>
-        </td>
-        <td>
-          <div class="user-cell">
-            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704e" alt="Customer">
-            <span>Marvin McKinney</span>
-          </div>
-        </td>
-        <td>PROPERTY</td>
-        <td>
-          <div class="table-select-wrapper status-sold">
-            <select class="table-select">
-              <option>EXPIRED</option>
-              <option>ACTIVE</option>
-            </select>
-            <i class="ph ph-caret-down"></i>
-          </div>
-        </td>
-        <td>6 Months</td>
-        <td>50</td>
-        <td>50</td>
-        <td>2024-06-10</td>
-        <td>2024-12-10</td>
-        <td>Admin Ronald</td>
-        <td class="actions-cell">
-          <div class="dropdown-container" tabindex="0">
-            <button class="action-icon"><i class="ph ph-dots-three"></i></button>
-            <div class="dropdown-menu">
-              <a href="#"><i class="ph ph-pencil-simple"></i> Edit</a>
-              <a href="#"><i class="ph ph-file-text"></i> Details</a>
-              <a href="#" class="danger"><i class="ph ph-trash"></i> Delete</a>
-            </div>
-          </div>
-        </td>
-      </tr>
+        @if (isLoading()) {
+          <tr>
+            <td colspan="9" align="center">Loading subscriptions...</td>
+          </tr>
+        } @else {
+          @for (sub of subscriptions(); track sub.id) {
+            <tr>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>{{ sub.userId | slice:0:8 }}</td>
+              <td>{{ sub.type }}</td>
+              <td>
+              <span class="status-badge" [class.active]="sub.status === 'ACTIVE'" [class.expired]="sub.status === 'EXPIRED' || sub.status === 'CANCELLED'">
+                {{ sub.status }}
+              </span>
+              </td>
+              <td>{{ sub.uploadLimit }}</td>
+              <td>{{ sub.currentUsage }}</td>
+              <td>{{ sub.startDate | date:'shortDate' }}</td>
+              <td>{{ sub.endDate | date:'shortDate' }}</td>
+              <td class="actions-cell">
+                <div class="dropdown-container" tabindex="0">
+                  <button class="action-icon"><i class="ph ph-dots-three"></i></button>
+                  <div class="dropdown-menu">
+                    <a href="javascript:void(0)" (click)="onEdit(sub)"><i class="ph ph-pencil-simple"></i> Edit</a>
+                    <a href="javascript:void(0)" class="danger" (click)="onDelete(sub)"><i class="ph ph-trash"></i> Delete</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" align="center">No subscriptions found.</td>
+            </tr>
+          }
+        }
       </tbody>
     </table>
   </div>
-
-  <div class="table-pagination">
-    <div class="pagination-info">1 to 2 of 200</div>
-    <div class="pagination-controls">
-      <button class="page-btn disabled"><i class="ph ph-caret-double-left"></i></button>
-      <button class="page-btn disabled"><i class="ph ph-caret-left"></i></button>
-      <span class="page-current">Page 1 of 20</span>
-      <button class="page-btn"><i class="ph ph-caret-right"></i></button>
-      <button class="page-btn"><i class="ph ph-caret-double-right"></i></button>
-    </div>
-  </div>
-
 </div>

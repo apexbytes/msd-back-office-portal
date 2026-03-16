@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@/environments/environment';
-import { Partner } from '../models/partner.model';
+import { Advert } from '../models/advert.model';
 import { ApiResponse } from '../dtos/responses/base.response';
 import { PaginationParams, SortParams } from '../dtos/requests/pagination.request';
 
@@ -11,9 +11,9 @@ export type QueryParams = PaginationParams & SortParams;
 @Injectable({
   providedIn: 'root',
 })
-export class PartnerService {
+export class AdvertService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}partners`;
+  private readonly apiUrl = `${environment.apiUrl}adverts`;
 
   private buildParams(params?: QueryParams): HttpParams {
     let httpParams = new HttpParams();
@@ -27,25 +27,25 @@ export class PartnerService {
     return httpParams;
   }
 
-  getAllPartners(params?: QueryParams): Observable<ApiResponse<Partner[]>> {
-    return this.http.get<ApiResponse<Partner[]>>(`${this.apiUrl}/admin/all`, {
+  getAdminAdverts(params?: QueryParams): Observable<ApiResponse<Advert[]>> {
+    return this.http.get<ApiResponse<Advert[]>>(`${this.apiUrl}/admin`, {
       params: this.buildParams(params),
     });
   }
 
-  getActivePartners(): Observable<ApiResponse<Partner[]>> {
-    return this.http.get<ApiResponse<Partner[]>>(`${this.apiUrl}/active`);
+  createAdvert(advertData: Partial<Advert>): Observable<ApiResponse<Advert>> {
+    return this.http.post<ApiResponse<Advert>>(this.apiUrl, advertData);
   }
 
-  createPartner(partnerData: Partial<Partner>): Observable<ApiResponse<Partner>> {
-    return this.http.post<ApiResponse<Partner>>(this.apiUrl, partnerData);
+  updateAdvert(id: string, advertData: Partial<Advert>): Observable<ApiResponse<Advert>> {
+    return this.http.put<ApiResponse<Advert>>(`${this.apiUrl}/${id}`, advertData);
   }
 
-  updatePartner(id: string, partnerData: Partial<Partner>): Observable<ApiResponse<Partner>> {
-    return this.http.put<ApiResponse<Partner>>(`${this.apiUrl}/${id}`, partnerData);
-  }
-
-  deletePartner(id: string): Observable<ApiResponse<void>> {
+  deleteAdvert(id: string): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`);
+  }
+
+  togglePublish(id: string): Observable<ApiResponse<Advert>> {
+    return this.http.patch<ApiResponse<Advert>>(`${this.apiUrl}/${id}/toggle-publish`, {});
   }
 }

@@ -137,7 +137,7 @@ export class AuthService implements OnDestroy {
     return this.http
       .post<
         ApiResponse<{ accessToken: string }>
-      >(`${environment.apiUrl}auth/refresh`, { refreshToken })
+      >(`${environment.apiUrl}auth/refresh-token`, { refreshToken })
       .pipe(
         tap((res) => {
           this.setCookie('accessToken', res.data.accessToken, 1);

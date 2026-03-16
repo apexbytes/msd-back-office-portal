@@ -1,0 +1,271 @@
+<div class="profile-info-card">
+  <div class="modal-header">
+    <h2>{{ isEditMode() ? 'Update' : 'Create' }} User</h2>
+    <button type="button" class="modal-close" (click)="onCancel()">
+      <i class="ph ph-x"></i>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" id="user-form-wrapper">
+    <div class="modal-body">
+      <div class="fields-row">
+        <!-- Username -->
+        <div class="field-group">
+          <label for="username">Username <span class="required">*</span></label>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            placeholder="Enter username"
+            [class]="getFieldClass('username')"
+          />
+          @if (form.get('username')?.touched && form.get('username')?.errors?.['required']) {
+            <span class="error-message"> Username is required. </span>
+          }
+          @if (form.get('username')?.touched && form.get('username')?.errors?.['minlength']) {
+            <span class="error-message"> Username must be at least 3 characters. </span>
+          }
+        </div>
+
+        <!-- Email -->
+        <div class="field-group">
+          <label for="email">Email <span class="required">*</span></label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="Enter email address"
+            [class]="getFieldClass('email')"
+          />
+          @if (form.get('email')?.touched && form.get('email')?.errors?.['required']) {
+            <span class="error-message"> Email is required. </span>
+          }
+          @if (form.get('email')?.touched && form.get('email')?.errors?.['email']) {
+            <span class="error-message"> Please enter a valid email address. </span>
+          }
+        </div>
+
+        <!-- First Name -->
+        <div class="field-group">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            formControlName="firstName"
+            placeholder="Enter first name"
+            [class]="getFieldClass('firstName')"
+          />
+        </div>
+
+        <!-- Last Name -->
+        <div class="field-group">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            formControlName="lastName"
+            placeholder="Enter last name"
+            [class]="getFieldClass('lastName')"
+          />
+        </div>
+
+        <!-- Company Name -->
+        <div class="field-group">
+          <label for="companyName">Company Name</label>
+          <input
+            type="text"
+            id="companyName"
+            formControlName="companyName"
+            placeholder="Enter company name"
+            [class]="getFieldClass('companyName')"
+          />
+        </div>
+
+        <!-- Mobile Number -->
+        <div class="field-group">
+          <label for="mobileNumber">Mobile Number</label>
+          <input
+            type="tel"
+            id="mobileNumber"
+            formControlName="mobileNumber"
+            placeholder="Enter mobile number"
+            [class]="getFieldClass('mobileNumber')"
+          />
+        </div>
+
+        <!-- City -->
+        <div class="field-group">
+          <label for="city">City</label>
+          <input
+            type="text"
+            id="city"
+            formControlName="city"
+            placeholder="Enter city"
+            [class]="getFieldClass('city')"
+          />
+        </div>
+
+        <!-- Country -->
+        <div class="field-group">
+          <label for="country">Country</label>
+          <input
+            type="text"
+            id="country"
+            formControlName="country"
+            placeholder="Enter country"
+            [class]="getFieldClass('country')"
+          />
+        </div>
+
+        <!-- Bio -->
+        <div class="field-group full-width">
+          <label for="bio">Bio</label>
+          <textarea
+            id="bio"
+            formControlName="bio"
+            placeholder="Enter user bio"
+            rows="4"
+            [class]="getFieldClass('bio')"
+          ></textarea>
+        </div>
+
+        <!-- Social Links -->
+        <div class="field-group">
+          <label for="website">Website</label>
+          <input
+            type="url"
+            id="website"
+            formControlName="socialLinks.website"
+            placeholder="https://example.com"
+            [class]="getFieldClass('socialLinks.website')"
+          />
+        </div>
+
+        <div class="field-group">
+          <label for="facebook">Facebook</label>
+          <input
+            type="url"
+            id="facebook"
+            formControlName="socialLinks.facebook"
+            placeholder="https://facebook.com/username"
+            [class]="getFieldClass('socialLinks.facebook')"
+          />
+        </div>
+
+        <div class="field-group">
+          <label for="x">X (Twitter)</label>
+          <input
+            type="url"
+            id="x"
+            formControlName="socialLinks.x"
+            placeholder="https://x.com/username"
+            [class]="getFieldClass('socialLinks.x')"
+          />
+        </div>
+
+        <div class="field-group">
+          <label for="linkedIn">LinkedIn</label>
+          <input
+            type="url"
+            id="linkedIn"
+            formControlName="socialLinks.linkedIn"
+            placeholder="https://linkedin.com/in/username"
+            [class]="getFieldClass('socialLinks.linkedIn')"
+          />
+        </div>
+
+        <div class="field-group">
+          <label for="instagram">Instagram</label>
+          <input
+            type="url"
+            id="instagram"
+            formControlName="socialLinks.instagram"
+            placeholder="https://instagram.com/username"
+            [class]="getFieldClass('socialLinks.instagram')"
+          />
+        </div>
+
+        <!-- Avatar Upload -->
+        <div class="field-group full-width">
+          <label>Avatar</label>
+          <div class="avatar-upload-container" style="width: 100%; height: auto; min-height: 200px">
+            <div
+              class="avatar-preview-wrapper"
+              style="
+                width: 100%;
+                height: 200px;
+                border-radius: 12px;
+                overflow: hidden;
+                background: var(--a-hover-bg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px dashed var(--a-border-color);
+                position: relative;
+              "
+            >
+              @if (previewUrl()) {
+                <img
+                  [src]="previewUrl()"
+                  class="avatar-preview"
+                  style="width: 100%; height: 100%; object-fit: cover; border-radius: 0"
+                />
+              }
+              @if (!previewUrl()) {
+                <div class="text-center" style="color: var(--a-text-light)">
+                  <i class="ph ph-user" style="font-size: 48px"></i>
+                  <p>No avatar selected</p>
+                </div>
+              }
+              @if (isUploading()) {
+                <div class="spinner-overlay" style="position: absolute">
+                  <div class="spinner-small"></div>
+                </div>
+              }
+
+              <!-- Delete Button -->
+              @if (previewUrl() && !isUploading()) {
+                <button
+                  type="button"
+                  class="remove-image-btn"
+                  (click)="onRemoveImage()"
+                  title="Remove avatar"
+                >
+                  <i class="ph ph-trash"></i>
+                </button>
+              }
+            </div>
+            <label for="avatar" class="avatar-edit-btn" style="bottom: 10px; right: 10px">
+              <i class="ph ph-camera"></i>
+            </label>
+            <input
+              type="file"
+              id="avatar"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              style="display: none"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onReset()">
+        {{ isEditMode() ? 'Reset' : 'Clear' }}
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="form.invalid || isUploading() || globalLoading()"
+      >
+        @if (!isUploading() && !globalLoading()) {
+          <span>{{ isEditMode() ? 'Update' : 'Create' }}</span>
+        }
+        @if (isUploading() || globalLoading()) {
+          <div class="spinner-small"></div>
+        }
+      </button>
+    </div>
+  </form>
+</div>

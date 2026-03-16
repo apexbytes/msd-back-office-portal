@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-tickets',
@@ -6,4 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.css',
 })
-export class TicketsComponent {}
+export class TicketsComponent {
+  private readonly dialog = inject(MatDialog);
+}

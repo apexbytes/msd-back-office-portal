@@ -1,0 +1,192 @@
+<div class="profile-info-card">
+  <div class="modal-header">
+    <h2>{{ isEditMode() ? 'Update' : 'Create' }} Testimonial</h2>
+    <button type="button" class="modal-close" (click)="onCancel()">
+      <i class="ph ph-x"></i>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" id="testimonial-form-wrapper">
+    <div class="modal-body">
+      <div class="fields-row">
+        <!-- Name -->
+        <div class="field-group">
+          <label for="name">Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            placeholder="Enter person's name"
+            [class]="getFieldClass('name')"
+          />
+          @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
+            <span class="error-message"> Name is required. </span>
+          }
+          @if (form.get('name')?.touched && form.get('name')?.errors?.['minlength']) {
+            <span class="error-message"> Name must be at least 2 characters. </span>
+          }
+        </div>
+
+        <!-- Designation -->
+        <div class="field-group">
+          <label for="designation">Designation</label>
+          <input
+            type="text"
+            id="designation"
+            formControlName="designation"
+            placeholder="e.g., CEO, Manager"
+          />
+        </div>
+
+        <!-- Company -->
+        <div class="field-group">
+          <label for="company">Company</label>
+          <input type="text" id="company" formControlName="company" placeholder="Company name" />
+        </div>
+
+        <!-- Rating -->
+        <div class="field-group">
+          <label for="rating">Rating</label>
+          <input
+            type="number"
+            id="rating"
+            formControlName="rating"
+            min="1"
+            max="5"
+            placeholder="1-5"
+            [class]="getFieldClass('rating')"
+          />
+          @if (form.get('rating')?.touched && form.get('rating')?.errors) {
+            <span class="error-message"> Rating must be between 1 and 5. </span>
+          }
+        </div>
+
+        <!-- Message -->
+        <div class="field-group full-width">
+          <label for="message">Message <span class="required">*</span></label>
+          <textarea
+            id="message"
+            formControlName="message"
+            placeholder="Enter testimonial message"
+            [class]="getFieldClass('message')"
+          ></textarea>
+          @if (form.get('message')?.touched && form.get('message')?.errors?.['required']) {
+            <span class="error-message"> Message is required. </span>
+          }
+          @if (form.get('message')?.touched && form.get('message')?.errors?.['minlength']) {
+            <span class="error-message"> Message must be at least 10 characters. </span>
+          }
+        </div>
+
+        <!-- Image Upload -->
+        <div class="field-group full-width">
+          <label>Image <span class="required">*</span></label>
+          <div class="avatar-upload-container" style="width: 100%; height: auto; min-height: 200px">
+            <div
+              class="avatar-preview-wrapper"
+              style="
+                width: 100%;
+                height: 200px;
+                border-radius: 12px;
+                overflow: hidden;
+                background: var(--a-hover-bg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px dashed var(--a-border-color);
+                position: relative;
+              "
+            >
+              @if (previewUrl()) {
+                <img
+                  [src]="previewUrl()"
+                  class="avatar-preview"
+                  style="width: 100%; height: 100%; object-fit: contain; border-radius: 0"
+                />
+              }
+              @if (!previewUrl()) {
+                <div class="text-center" style="color: var(--a-text-light)">
+                  <i class="ph ph-image" style="font-size: 48px"></i>
+                  <p>No image selected</p>
+                </div>
+              }
+              @if (isUploading()) {
+                <div class="spinner-overlay" style="position: absolute">
+                  <div class="spinner-small"></div>
+                </div>
+              }
+
+              <!-- Delete Button -->
+              @if (previewUrl() && !isUploading()) {
+                <button
+                  type="button"
+                  class="remove-image-btn"
+                  (click)="onRemoveImage()"
+                  title="Remove image"
+                >
+                  <i class="ph ph-trash"></i>
+                </button>
+              }
+            </div>
+            <label for="image" class="avatar-edit-btn" style="bottom: 10px; right: 10px">
+              <i class="ph ph-camera"></i>
+            </label>
+            <input
+              type="file"
+              id="image"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              style="display: none"
+            />
+          </div>
+          @if (form.get('image')?.touched && form.get('image')?.invalid) {
+            <span class="error-message"> Image is required. </span>
+          }
+        </div>
+
+        <!-- Featured Toggle -->
+        <div class="field-group">
+          <label>Featured</label>
+          <label class="table-toggle">
+            <input type="checkbox" formControlName="featured" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Sort Order -->
+        <div class="field-group">
+          <label for="sortOrder">Sort Order</label>
+          <input
+            type="number"
+            id="sortOrder"
+            formControlName="sortOrder"
+            min="0"
+            placeholder="0"
+            [class]="getFieldClass('sortOrder')"
+          />
+          @if (form.get('sortOrder')?.touched && form.get('sortOrder')?.errors) {
+            <span class="error-message"> Sort order must be 0 or greater. </span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onReset()">
+        {{ isEditMode() ? 'Reset' : 'Clear' }}
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="form.invalid || isUploading() || globalLoading()"
+      >
+        @if (!isUploading() && !globalLoading()) {
+          <span>{{ isEditMode() ? 'Update' : 'Create' }}</span>
+        }
+        @if (isUploading() || globalLoading()) {
+          <div class="spinner-small"></div>
+        }
+      </button>
+    </div>
+  </form>
+</div>

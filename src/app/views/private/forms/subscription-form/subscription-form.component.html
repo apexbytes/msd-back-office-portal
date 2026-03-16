@@ -1,0 +1,98 @@
+<div class="profile-info-card">
+  <div class="modal-header">
+    <h2>{{ isEditMode() ? 'Update' : 'Grant' }} Subscription</h2>
+    <button type="button" class="modal-close" (click)="onCancel()">
+      <i class="ph ph-x"></i>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" id="subscription-form-wrapper">
+    <div class="modal-body">
+      <div class="fields-row">
+        <div class="field-group full-width">
+          <label for="userId">Client / User <span class="required">*</span></label>
+          <div class="custom-select">
+            <select
+              id="userId"
+              formControlName="userId"
+              [class]="getFieldClass('userId')"
+              [disabled]="isEditMode()"
+            >
+              <option value="" disabled selected>-- Select a Client --</option>
+              @for (user of clientUsers(); track user.id) {
+                <option [value]="user.id">
+                  {{ user.companyName ? user.companyName : (user | fullName) }} ({{ user.email }})
+                </option>
+              }
+            </select>
+          </div>
+          @if (form.get('userId')?.touched && form.get('userId')?.errors?.['required']) {
+            <span class="error-message">Client selection is required.</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="type">Subscription Type <span class="required">*</span></label>
+          <div class="custom-select">
+            <select id="type" formControlName="type" [class]="getFieldClass('type')">
+              <option value="VEHICLE">Vehicle</option>
+              <option value="PROPERTY">Property</option>
+            </select>
+          </div>
+          @if (form.get('type')?.touched && form.get('type')?.errors?.['required']) {
+            <span class="error-message">Type is required.</span>
+          }
+        </div>
+
+        <div class="field-group unique-checkbox">
+          <label class="custom-checkbox">
+            <input type="checkbox" formControlName="isOverride" />
+            <span class="checkmark"></span>
+            <span class="checkmaker-label" style="display: block;margin-left: 1.5rem;white-space: nowrap;">Explicit Override (Do not mathematically add to existing limit)</span>
+          </label>
+        </div>
+
+        <div class="field-group">
+          <label for="durationMonths">Duration (Months) <span class="required">*</span></label>
+          <input
+            type="number"
+            id="durationMonths"
+            formControlName="durationMonths"
+            placeholder="e.g., 1"
+            [class]="getFieldClass('durationMonths')"
+          />
+          @if (form.get('durationMonths')?.touched && form.get('durationMonths')?.errors) {
+            <span class="error-message">Duration must be at least 1 month.</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="uploadLimit">Upload Limit <span class="required">*</span></label>
+          <input
+            type="number"
+            id="uploadLimit"
+            formControlName="uploadLimit"
+            placeholder="e.g., 5"
+            [class]="getFieldClass('uploadLimit')"
+          />
+          @if (form.get('uploadLimit')?.touched && form.get('uploadLimit')?.errors) {
+            <span class="error-message">Upload limit must be at least 1.</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onReset()">
+        {{ isEditMode() ? 'Reset' : 'Clear' }}
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || globalLoading()">
+        @if (!globalLoading()) {
+          <span>{{ isEditMode() ? 'Update' : 'Grant' }}</span>
+        } @else {
+          <div class="spinner-small"></div>
+        }
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,99 @@
+/* Form Layout */
+.fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .fields-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field-group.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Avatar/Image Upload Styling */
+.avatar-upload-container {
+  position: relative;
+}
+
+.avatar-preview {
+  display: block;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #ff5f56;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.remove-image-btn:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.avatar-edit-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: var(--primary);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.avatar-edit-btn:hover {
+  background: var(--primary-hover, #0056b3);
+}
+
+.spinner-overlay {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--a-border-color);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.text-center {
+  text-align: center;
+}
