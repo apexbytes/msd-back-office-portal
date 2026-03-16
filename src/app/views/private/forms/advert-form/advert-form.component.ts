@@ -27,7 +27,7 @@ export class AdvertFormComponent implements OnInit {
   protected readonly previewUrl = signal<string | null>(null);
   protected readonly isUploading = signal(false);
   protected readonly globalLoading = this.loadingService.isLoading;
-  
+
   protected form!: FormGroup;
 
   ngOnInit(): void {
@@ -45,7 +45,7 @@ export class AdvertFormComponent implements OnInit {
       published: [false],
       websiteUrl: [''],
       contactEmail: ['', [Validators.email]],
-      media: [null, [Validators.required]]
+      media: [null, [Validators.required]],
     });
   }
 
@@ -57,7 +57,7 @@ export class AdvertFormComponent implements OnInit {
       published: advert.published,
       websiteUrl: advert.metadata?.websiteUrl || '',
       contactEmail: advert.metadata?.contactEmail || '',
-      media: advert.media
+      media: advert.media,
     });
 
     if (advert.media?.url) {
@@ -69,7 +69,7 @@ export class AdvertFormComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      
+
       const reader = new FileReader();
       reader.onload = () => {
         this.previewUrl.set(reader.result as string);
@@ -77,19 +77,22 @@ export class AdvertFormComponent implements OnInit {
       reader.readAsDataURL(file);
 
       this.isUploading.set(true);
+      this.form.get('media')?.setErrors({ uploading: true });
+
       this.loadingService.show();
       this.uploadService.uploadTemp(file).subscribe({
         next: (response) => {
-          if (response.success && response.data.length > 0) {
+          if (response.success && response.data && response.data.length > 0) {
             const uploadedFile = response.data[0];
             const mediaResult: FileUploadResult = {
               public_id: uploadedFile.public_id,
               url: uploadedFile.url,
-              width: uploadedFile.width,
-              height: uploadedFile.height,
-              storageType: uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL'
+              width: uploadedFile.width || 0,
+              height: uploadedFile.height || 0,
+              storageType: (uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL') || 'CLOUDINARY',
             };
             this.form.patchValue({ media: mediaResult });
+            this.form.get('media')?.setErrors(null);
             this.form.get('media')?.markAsDirty();
           }
           this.isUploading.set(false);
@@ -97,9 +100,10 @@ export class AdvertFormComponent implements OnInit {
         },
         error: (err) => {
           console.error('Upload failed', err);
+          this.form.get('media')?.setErrors({ uploadFailed: true });
           this.isUploading.set(false);
           this.loadingService.hide();
-        }
+        },
       });
     }
   }
@@ -115,34 +119,50 @@ export class AdvertFormComponent implements OnInit {
   }
 
   protected onSubmit(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.isUploading()) {
       this.form.markAllAsTouched();
       return;
     }
 
     const formValue = this.form.value;
-    const advertData: Partial<Advert> = {
+    const advertData: any = {
       title: formValue.title,
       description: formValue.description,
       lifespanDays: formValue.lifespanDays,
       published: formValue.published,
-      media: formValue.media,
-      metadata: {
-        websiteUrl: formValue.websiteUrl,
-        contactEmail: formValue.contactEmail
-      }
+      metadata: {},
     };
 
-    this.loadingService.show();
-    const request = (this.isEditMode() && this.data?.advert)
-      ? this.advertService.updateAdvert(this.data.advert.id, advertData)
-      : this.advertService.createAdvert(advertData);
+    if (formValue.websiteUrl && formValue.websiteUrl.trim() !== '') {
+      advertData.metadata.websiteUrl = formValue.websiteUrl.trim();
+    }
+    if (formValue.contactEmail && formValue.contactEmail.trim() !== '') {
+      advertData.metadata.contactEmail = formValue.contactEmail.trim();
+    }
 
-    request.subscribe({
-      next: (response) => {
+    if (this.form.get('media')?.dirty) {
+      if (formValue.media) {
+        advertData.media = formValue.media.public_id;
+      } else {
+        advertData.removeMedia = true;
+      }
+    } else if (!this.isEditMode()) {
+      advertData.media = formValue.media?.public_id || null;
+    }
+
+    this.loadingService.show();
+
+    const request$ =
+      this.isEditMode() && this.data?.advert?.id
+        ? this.advertService.updateAdvert(this.data.advert.id, advertData)
+        : this.advertService.createAdvert(advertData);
+
+    request$.subscribe({
+      next: (response: any) => {
         if (response.success) {
           this.form.reset();
-          this.dialogRef.close(true);
+          const returnedData = response.data?.advert || response.data;
+          this.dialogRef.close(returnedData);
         }
         this.loadingService.hide();
       },
@@ -160,7 +180,7 @@ export class AdvertFormComponent implements OnInit {
   protected onReset(): void {
     this.form.reset({
       lifespanDays: 30,
-      published: false
+      published: false,
     });
     this.previewUrl.set(null);
     if (this.isEditMode() && this.data?.advert) {
