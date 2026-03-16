@@ -103,7 +103,6 @@ export class PartnerFormComponent implements OnInit {
               storageType: (uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL') || 'CLOUDINARY',
             };
 
-            // Unlock form and patch value
             this.form.patchValue({ logo: logoResult });
             this.form.get('logo')?.setErrors(null);
             this.form.get('logo')?.markAsDirty();
@@ -126,7 +125,6 @@ export class PartnerFormComponent implements OnInit {
     this.form.get('logo')?.markAsDirty();
     this.form.get('logo')?.markAsTouched();
 
-    // Clear the physical input
     const fileInput = document.getElementById('logo') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
@@ -141,8 +139,6 @@ export class PartnerFormComponent implements OnInit {
 
     const formValue = this.form.value;
 
-    // Notice we use 'any' or a looser type here because the API payload
-    // expects a string for logo, while our Partner model expects an object
     const partnerData: any = {
       name: formValue.name,
       partnershipLevel: formValue.partnershipLevel,
@@ -150,21 +146,16 @@ export class PartnerFormComponent implements OnInit {
       description: formValue.description,
     };
 
-    // Only include logo data if it was changed
     if (this.form.get('logo')?.dirty) {
       if (formValue.logo) {
-        // Send ONLY the string ID as expected by the API
         partnerData.logo = formValue.logo.public_id;
       } else {
-        // If they cleared the logo, tell the API to remove it
         partnerData.removeLogo = true;
       }
     } else if (!this.isEditMode()) {
-      // If creating a new partner, always append the logo ID string
       partnerData.logo = formValue.logo?.public_id || null;
     }
 
-    // Clean up empty strings for optional URL field
     if (formValue.website && formValue.website.trim() !== '') {
       partnerData.website = formValue.website.trim();
     }

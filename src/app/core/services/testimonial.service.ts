@@ -28,41 +28,25 @@ export class TestimonialService {
     return httpParams;
   }
 
-  // --- Admin Endpoints ---
-
-  /**
-   * Admin endpoint to view all testimonials in the system (published, pending, rejected).
-   */
   getAllTestimonialsInSystem(params?: QueryParams): Observable<ApiResponse<Testimonial[]>> {
-    return this.http.get<ApiResponse<Testimonial[]>>(`${this.apiUrl}/admin/all`, {
+    return this.http.get<ApiResponse<Testimonial[]>>(`${this.apiUrl}/admin`, {
       params: this.buildParams(params),
     });
   }
 
-  /**
-   * Admin endpoint to approve, reject, or update the general status of a testimonial.
-   */
   adminManageTestimonial(
     id: string,
     payload: AdminStatusUpdateRequest,
   ): Observable<ApiResponse<Testimonial>> {
-    return this.http.patch<ApiResponse<Testimonial>>(`${this.apiUrl}/admin/${id}/manage`, payload);
+    return this.http.patch<ApiResponse<Testimonial>>(`${this.apiUrl}/${id}/status`, payload);
   }
 
-  /**
-   * Admin endpoint specifically to toggle the featured status of a testimonial.
-   */
   toggleFeaturedTestimonial(id: string, featured: boolean): Observable<ApiResponse<Testimonial>> {
     return this.http.patch<ApiResponse<Testimonial>>(`${this.apiUrl}/admin/${id}/featured`, {
       featured,
     });
   }
 
-  // --- Public / Shared Endpoints ---
-
-  /**
-   * Public endpoint to get only the approved/published testimonials for the frontend.
-   */
   getPublishedTestimonials(params?: QueryParams): Observable<ApiResponse<Testimonial[]>> {
     return this.http.get<ApiResponse<Testimonial[]>>(`${this.apiUrl}/published`, {
       params: this.buildParams(params),

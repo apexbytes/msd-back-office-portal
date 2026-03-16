@@ -59,7 +59,7 @@
             <td>
               <div class="user-cell">
                 @if (t.image) {
-                  <img [src]="t.image" [alt]="t.name">
+                  <img [src]="t.image.url" [alt]="t.name">
                 }
                 <span>{{ t.name }}</span>
               </div>

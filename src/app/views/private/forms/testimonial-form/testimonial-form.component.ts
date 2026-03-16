@@ -46,7 +46,7 @@ export class TestimonialFormComponent implements OnInit {
       image: [null, [Validators.required]],
       rating: [5, [Validators.min(1), Validators.max(5)]],
       featured: [false],
-      sortOrder: [0, [Validators.min(0)]]
+      sortOrder: [0, [Validators.min(0)]],
     });
   }
 
@@ -59,7 +59,7 @@ export class TestimonialFormComponent implements OnInit {
       image: testimonial.image,
       rating: testimonial.rating || 5,
       featured: testimonial.featured || false,
-      sortOrder: testimonial.sortOrder || 0
+      sortOrder: testimonial.sortOrder || 0,
     });
 
     if (testimonial.image?.url) {
@@ -79,29 +79,30 @@ export class TestimonialFormComponent implements OnInit {
       reader.readAsDataURL(file);
 
       this.isUploading.set(true);
-      this.loadingService.show();
+      this.form.get('image')?.setErrors({ uploading: true });
+
       this.uploadService.uploadTemp(file).subscribe({
         next: (response) => {
-          if (response.success && response.data.length > 0) {
+          if (response.success && response.data && response.data.length > 0) {
             const uploadedFile = response.data[0];
             const imageResult: FileUploadResult = {
               public_id: uploadedFile.public_id,
               url: uploadedFile.url,
-              width: uploadedFile.width,
-              height: uploadedFile.height,
-              storageType: uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL'
+              width: uploadedFile.width || 0,
+              height: uploadedFile.height || 0,
+              storageType: (uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL') || 'CLOUDINARY',
             };
             this.form.patchValue({ image: imageResult });
+            this.form.get('image')?.setErrors(null);
             this.form.get('image')?.markAsDirty();
           }
           this.isUploading.set(false);
-          this.loadingService.hide();
         },
         error: (err) => {
           console.error('Upload failed', err);
+          this.form.get('image')?.setErrors({ uploadFailed: true });
           this.isUploading.set(false);
-          this.loadingService.hide();
-        }
+        },
       });
     }
   }
@@ -117,33 +118,50 @@ export class TestimonialFormComponent implements OnInit {
   }
 
   protected onSubmit(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.isUploading()) {
       this.form.markAllAsTouched();
       return;
     }
 
     const formValue = this.form.value;
-    const testimonialData: Partial<Testimonial> = {
+
+    const testimonialData: any = {
       name: formValue.name,
-      designation: formValue.designation || undefined,
-      company: formValue.company || undefined,
       message: formValue.message,
-      image: formValue.image,
       rating: formValue.rating,
       featured: formValue.featured,
-      sortOrder: formValue.sortOrder
+      sortOrder: formValue.sortOrder,
     };
 
-    this.loadingService.show();
-    const request = (this.isEditMode() && this.data?.testimonial)
-      ? this.testimonialService.updateTestimonial(this.data.testimonial.id, testimonialData)
-      : this.testimonialService.createTestimonial(testimonialData);
+    if (formValue.designation && formValue.designation.trim() !== '') {
+      testimonialData.designation = formValue.designation.trim();
+    }
+    if (formValue.company && formValue.company.trim() !== '') {
+      testimonialData.company = formValue.company.trim();
+    }
 
-    request.subscribe({
+    if (this.form.get('image')?.dirty) {
+      if (formValue.image) {
+        testimonialData.image = formValue.image.public_id;
+      } else {
+        testimonialData.removeImage = true;
+      }
+    } else if (!this.isEditMode()) {
+      testimonialData.image = formValue.image?.public_id || null;
+    }
+
+    this.loadingService.show();
+
+    const request$ =
+      this.isEditMode() && this.data?.testimonial?.id
+        ? this.testimonialService.updateTestimonial(this.data.testimonial.id, testimonialData)
+        : this.testimonialService.createTestimonial(testimonialData);
+
+    request$.subscribe({
       next: (response) => {
         if (response.success) {
           this.form.reset();
-          this.dialogRef.close(true);
+          this.dialogRef.close(response.data);
         }
         this.loadingService.hide();
       },
@@ -162,7 +180,7 @@ export class TestimonialFormComponent implements OnInit {
     this.form.reset({
       rating: 5,
       featured: false,
-      sortOrder: 0
+      sortOrder: 0,
     });
     this.previewUrl.set(null);
     if (this.isEditMode() && this.data?.testimonial) {
