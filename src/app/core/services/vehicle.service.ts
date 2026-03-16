@@ -28,10 +28,9 @@ export class VehicleService {
     return httpParams;
   }
 
-  // --- Admin Inventory Management ---
 
   getAllVehiclesInSystem(params?: QueryParams): Observable<ApiResponse<Vehicle[]>> {
-    return this.http.get<ApiResponse<Vehicle[]>>(`${this.apiUrl}/admin/all`, {
+    return this.http.get<ApiResponse<Vehicle[]>>(`${this.apiUrl}/system`, {
       params: this.buildParams(params),
     });
   }
@@ -40,7 +39,19 @@ export class VehicleService {
     id: string,
     payload: AdminStatusUpdateRequest,
   ): Observable<ApiResponse<Vehicle>> {
-    return this.http.patch<ApiResponse<Vehicle>>(`${this.apiUrl}/admin/${id}/manage`, payload);
+    if (payload.featured !== undefined) {
+      return this.http.patch<ApiResponse<Vehicle>>(`${this.apiUrl}/${id}/feature`, {
+        featured: payload.featured
+      });
+    }
+
+    return this.http.patch<ApiResponse<Vehicle>>(`${this.apiUrl}/${id}/status`, {
+      status: payload.status
+    });
+  }
+
+  getVehicleById(id: string): Observable<ApiResponse<Vehicle>> {
+    return this.http.get<ApiResponse<Vehicle>>(`${this.apiUrl}/${id}`);
   }
 
   createVehicle(vehicleData: Partial<Vehicle>): Observable<ApiResponse<Vehicle>> {
@@ -55,7 +66,6 @@ export class VehicleService {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`);
   }
 
-  // --- Makes & Models Management ---
 
   getAllMakes(): Observable<ApiResponse<VehicleMake[]>> {
     return this.http.get<ApiResponse<VehicleMake[]>>(`${this.apiUrl}/makes`);
