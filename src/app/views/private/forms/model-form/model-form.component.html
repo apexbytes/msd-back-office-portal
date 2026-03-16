@@ -1,0 +1,64 @@
+<div class="modal-header">
+  <h2>{{ isEditMode() ? 'Edit Model' : 'Add New Model' }}</h2>
+  <span class="badge badge-outline" style="margin-left: 10px;">{{ data.makeName }}</span>
+  <button type="button" class="modal-close" (click)="onCancel()">
+    <i class="ph ph-x"></i>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="standard-form">
+
+    <div class="form-row">
+      <div class="field-group" [ngClass]="getFieldClass('name')">
+        <label for="name">Model Name <span class="required">*</span></label>
+        <div class="input-with-icon">
+          <i class="ph ph-car"></i>
+          <input type="text" id="name" formControlName="name" placeholder="e.g. Corolla, Mustang, X5" />
+        </div>
+        @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
+          <span class="error-message">Model name is required.</span>
+        }
+      </div>
+
+      <div class="field-group" [ngClass]="getFieldClass('year')">
+        <label for="year">Release Year <span class="optional">(Optional)</span></label>
+        <div class="input-with-icon">
+          <i class="ph ph-calendar-blank"></i>
+          <input type="number" id="year" formControlName="year" placeholder="e.g. 2024" />
+        </div>
+        @if (form.get('year')?.errors?.['min'] || form.get('year')?.errors?.['max']) {
+          <span class="error-message">Please enter a valid year.</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field-group full-width" [ngClass]="getFieldClass('bodyStyles')">
+        <label for="bodyStyles">Body Styles <span class="optional">(Optional)</span></label>
+        <div class="input-with-icon">
+          <i class="ph ph-shapes"></i>
+          <input type="text" id="bodyStyles" formControlName="bodyStyles" placeholder="e.g. Sedan, Hatchback, Wagon" />
+        </div>
+        <small style="color: var(--a-text-light); margin-top: 4px; display: block;">
+          Separate multiple body styles with a comma.
+        </small>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<div class="modal-footer">
+  <div class="footer-actions" style="margin-left: auto;">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="globalLoading()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid || globalLoading()">
+      @if (globalLoading()) {
+        <div class="spinner-small"></div>
+        Saving...
+      } @else {
+        <i class="ph ph-floppy-disk"></i> {{ isEditMode() ? 'Update Model' : 'Create Model' }}
+      }
+    </button>
+  </div>
+</div>

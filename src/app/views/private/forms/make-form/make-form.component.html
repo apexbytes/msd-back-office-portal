@@ -1,0 +1,100 @@
+<div class="modal-header">
+  <h2>{{ isEditMode() ? 'Edit Vehicle Make' : 'Add New Vehicle Make' }}</h2>
+  <button type="button" class="modal-close" (click)="onCancel()">
+    <i class="ph ph-x"></i>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="standard-form">
+
+    <div class="form-row">
+      <div class="field-group" [ngClass]="getFieldClass('name')">
+        <label for="name">Make Name <span class="required">*</span></label>
+        <div class="input-with-icon">
+          <i class="ph ph-tag"></i>
+          <input type="text" id="name" formControlName="name" placeholder="e.g. Toyota, Ford, BMW" />
+        </div>
+        @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
+          <span class="error-message">Name is required.</span>
+        }
+      </div>
+
+      <div class="field-group" [ngClass]="getFieldClass('countryOfOrigin')">
+        <label for="countryOfOrigin">Country of Origin</label>
+        <div class="input-with-icon">
+          <i class="ph ph-flag"></i>
+          <input type="text" id="countryOfOrigin" formControlName="countryOfOrigin" placeholder="e.g. Japan, Germany, USA" />
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group full-width">
+      <label>Make Logo</label>
+      <div class="avatar-upload-container" style="width: 100%; height: auto; min-height: 150px;">
+        <div class="avatar-preview-wrapper" style="width: 100%; height: 150px; border-radius: 12px; overflow: hidden; background: var(--a-hover-bg); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--a-border-color); position: relative;">
+          @if (previewUrl()) {
+            <img [src]="previewUrl()" class="avatar-preview" style="width: 100%; height: 100%; object-fit: contain; border-radius: 0; padding: 1rem;" />
+          }
+          @if (!previewUrl()) {
+            <div class="text-center" style="color: var(--a-text-light);">
+              <i class="ph ph-image" style="font-size: 40px;"></i>
+              <p style="margin-top: 5px; font-size: 14px;">Upload logo (Optional)</p>
+            </div>
+          }
+          @if (isUploading()) {
+            <div class="spinner-overlay" style="position: absolute; background: rgba(0,0,0,0.5); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+              <div class="spinner-small"></div>
+            </div>
+          }
+
+          @if (previewUrl() && !isUploading()) {
+            <button
+              type="button"
+              class="remove-image-btn"
+              (click)="onRemoveLogo()"
+              title="Remove logo"
+              style="position: absolute; top: 10px; right: 10px;"
+            >
+              <i class="ph ph-trash"></i>
+            </button>
+          }
+        </div>
+
+        @if (!isUploading()) {
+          <label for="logoUrl" class="avatar-edit-btn" style="position: absolute; bottom: 10px; right: 10px; cursor: pointer;">
+            <i class="ph ph-camera"></i>
+          </label>
+        }
+        <input
+          type="file"
+          id="logoUrl"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          style="display: none;"
+        />
+      </div>
+
+      @if (form.get('logoUrl')?.errors?.['uploadFailed']) {
+        <span class="error-message">Logo failed to upload to the server. Please try again.</span>
+      }
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="onReset()" [disabled]="globalLoading() || isUploading()">
+    <i class="ph ph-arrow-counter-clockwise"></i> Reset
+  </button>
+  <div class="footer-actions">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="globalLoading() || isUploading()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid || globalLoading() || isUploading()">
+      @if (globalLoading() || isUploading()) {
+        <div class="spinner-small"></div>
+        {{ isUploading() ? 'Uploading...' : 'Saving...' }}
+      } @else {
+        <i class="ph ph-floppy-disk"></i> {{ isEditMode() ? 'Update Make' : 'Create Make' }}
+      }
+    </button>
+  </div>
+</div>
