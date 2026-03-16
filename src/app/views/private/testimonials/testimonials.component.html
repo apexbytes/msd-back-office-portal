@@ -43,57 +43,57 @@
       </tr>
       </thead>
       <tbody>
-      @if (isLoading()) {
-        <tr>
-          <td colspan="6" align="center">Loading testimonials...</td>
-        </tr>
-      } @else {
-        @for (t of testimonials(); track t.id) {
+        @if (isLoading()) {
           <tr>
-            <td>
-              <label class="custom-checkbox">
-                <input type="checkbox">
-                <span class="checkmark"></span>
-              </label>
-            </td>
-            <td>
-              <div class="user-cell">
-                @if (t.image) {
-                  <img [src]="t.image.url" [alt]="t.name">
-                }
-                <span>{{ t.name }}</span>
-              </div>
-            </td>
-            <td>
-              <span [title]="t.message">{{ t.message | slice:0:50 }}{{ t.message.length > 50 ? '...' : '' }}</span>
-            </td>
-            <td>
+            <td colspan="6" align="center">Loading testimonials...</td>
+          </tr>
+        } @else {
+          @for (t of testimonials(); track t.id) {
+            <tr>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                <div class="user-cell">
+                  @if (t.image) {
+                    <img [src]="t.image.url" [alt]="t.name">
+                  }
+                  <span>{{ t.name }}</span>
+                </div>
+              </td>
+              <td>
+                <span [title]="t.message">{{ t.message | slice:0:50 }}{{ t.message.length > 50 ? '...' : '' }}</span>
+              </td>
+              <td>
               <span class="status-badge" [class]="t.status.toLowerCase()">
                 {{ t.status }}
               </span>
-            </td>
-            <td>
-              <label class="table-toggle">
-                <input type="checkbox" [checked]="t.featured" disabled>
-                <span class="toggle-slider"></span>
-              </label>
-            </td>
-            <td class="actions-cell">
-              <div class="dropdown-container" tabindex="0">
-                <button class="action-icon"><i class="ph ph-dots-three-vertical"></i></button>
-                <div class="dropdown-menu">
-                  <a (click)="onEdit(t)"><i class="ph ph-pencil-simple"></i> Edit</a>
-                  <a class="danger" (click)="onDelete(t)"><i class="ph ph-trash"></i> Delete</a>
+              </td>
+              <td>
+                <label class="table-toggle">
+                  <input type="checkbox" [checked]="t.featured" (change)="onToggleFeatured(t)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </td>
+              <td class="actions-cell">
+                <div class="dropdown-container" tabindex="0">
+                  <button class="action-icon"><i class="ph ph-dots-three-vertical"></i></button>
+                  <div class="dropdown-menu">
+                    <a href="javascript:void(0)" (click)="onEdit(t)"><i class="ph ph-pencil-simple"></i> Edit</a>
+                    <a href="javascript:void(0)" class="danger" (click)="onDelete(t)"><i class="ph ph-trash"></i> Delete</a>
+                  </div>
                 </div>
-              </div>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="6" align="center">No testimonials found.</td>
-          </tr>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" align="center">No testimonials found.</td>
+            </tr>
+          }
         }
-      }
       </tbody>
     </table>
   </div>
