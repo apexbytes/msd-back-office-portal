@@ -1,0 +1,77 @@
+<div class="profile-info-card" style="margin: 0; max-height: 90vh; display: flex; flex-direction: column;">
+  <div class="modal-header" style="flex-shrink: 0; padding-bottom: 1rem; border-bottom: 1px solid var(--a-border-color);">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      @if (data.make.logoUrl && data.make.logoUrl.url) {
+        <img [src]="data.make.logoUrl.url" alt="Logo" style="height: 32px; object-fit: contain;">
+      }
+      <h2 style="margin: 0;">{{ data.make.name }} Models</h2>
+    </div>
+    <button type="button" class="modal-close" (click)="closeDialog()">
+      <i class="ph ph-x"></i>
+    </button>
+  </div>
+
+  <div class="table-toolbar" style="padding: 1rem 1.5rem; flex-shrink: 0; justify-content: space-between; display: flex;">
+    <span class="page-subtitle" style="align-self: center;">
+      <i class="ph ph-list-numbers"></i> Total: {{ models().length }} Models
+    </span>
+    <button class="btn btn-primary btn-sm" (click)="onCreateModel()">
+      <i class="ph ph-plus"></i> Add Model
+    </button>
+  </div>
+
+  <div class="modal-body" style="padding: 0; overflow-y: auto;">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th style="padding-left: 1.5rem;">MODEL NAME</th>
+        <th>RELEASE YEAR</th>
+        <th>BODY STYLES</th>
+        <th align="right" style="padding-right: 1.5rem;">ACTIONS</th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (isLoading()) {
+          <tr>
+            <td colspan="4" align="center" style="padding: 3rem;">
+              <div class="spinner-small" style="margin-bottom: 1rem;"></div>
+              Loading models...
+            </td>
+          </tr>
+        } @else {
+          @for (model of models(); track model.id) {
+            <tr>
+              <td style="padding-left: 1.5rem;">
+                <strong>{{ model.name }}</strong>
+              </td>
+              <td>
+                {{ model.year || '-' }}
+              </td>
+              <td>
+                @if (model.bodyStyles && model.bodyStyles.length > 0) {
+                  <span style="color: var(--a-text-light);">
+                    {{ model.bodyStyles.join(', ') }}
+                  </span>
+                } @else {
+                  -
+                }
+              </td>
+              <td style="padding-right: 1.5rem;" align="right">
+                <div class="actions-cell" style="justify-content: flex-end;">
+                  <button class="action-icon" (click)="onEditModel(model)"><i class="ph ph-pencil-simple"></i></button>
+                  <button class="action-icon danger" (click)="onDeleteModel(model)"><i class="ph ph-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" align="center" style="padding: 3rem; color: var(--a-text-light);">
+                No models have been added for {{ data.make.name }} yet.
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

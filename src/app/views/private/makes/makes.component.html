@@ -1,0 +1,117 @@
+<header class="page-header">
+  <div class="page-title">
+    <h1>Vehicle Makes</h1>
+    <span class="page-subtitle"><i class="ph ph-tag"></i> Total: {{ totalCount() }} Makes</span>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-primary" (click)="onCreateMake()">
+      <i class="ph ph-plus"></i> Add Make
+    </button>
+  </div>
+</header>
+
+<div class="table-card">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th width="40">
+          <label class="custom-checkbox master-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </th>
+        <th>LOGO</th>
+        <th>MAKE NAME <i class="ph ph-caret-up-down"></i></th>
+        <th>COUNTRY OF ORIGIN</th>
+        <th align="right">ACTIONS</th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (isLoading()) {
+          <tr>
+            <td colspan="5" align="center" style="padding: 2rem;">Loading vehicle makes...</td>
+          </tr>
+        } @else {
+          @for (make of paginatedMakes(); track make.id) {
+            <tr>
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                @if (make.logoUrl && make.logoUrl.url) {
+                  <div class="property-cell">
+                    <img [src]="make.logoUrl.url" alt="{{ make.name }} Logo" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; border: 1px solid var(--a-border-color);">
+                  </div>
+                } @else {
+                  <div class="property-cell">
+                    <div class="avatar-placeholder" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--a-hover-bg); border-radius: 4px; color: var(--a-text-light);">
+                      <i class="ph ph-image"></i>
+                    </div>
+                  </div>
+                }
+              </td>
+
+              <td>
+                <strong>{{ make.name }}</strong>
+              </td>
+
+              <td>
+              <span class="badge badge-outline">
+                {{ make.countryOfOrigin || 'Unknown' }}
+              </span>
+              </td>
+
+              <td>
+                <div class="actions-cell">
+                  <button class="btn btn-secondary btn-sm" style="margin-right: 10px;" (click)="onViewModels(make)">
+                    <i class="ph ph-list"></i> View Models
+                  </button>
+
+                  <div class="dropdown-container" tabindex="0">
+                    <button class="action-icon"><i class="ph ph-dots-three-vertical"></i></button>
+                    <div class="dropdown-menu">
+                      <a href="javascript:void(0)" (click)="onEditMake(make)"><i class="ph ph-pencil-simple"></i> Edit Make</a>
+                      <a href="javascript:void(0)" class="danger" (click)="onDeleteMake(make)"><i class="ph ph-trash"></i> Delete</a>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" align="center" style="padding: 2rem;">No vehicle makes found.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (!isLoading() && totalCount() > 0) {
+    <div class="table-footer" style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--a-border-color);">
+      <div class="pagination-info" style="color: var(--a-text-light); font-size: 0.875rem;">
+        Showing {{ (currentPage() - 1) * pageSize() + (paginatedMakes().length ? 1 : 0) }}
+        to {{ (currentPage() - 1) * pageSize() + paginatedMakes().length }}
+        of {{ totalCount() }} entries
+      </div>
+
+      <div class="pagination-controls" style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-secondary btn-sm" [disabled]="currentPage() === 1" (click)="prevPage()" style="display: flex; align-items: center; gap: 4px;">
+          <i class="ph ph-caret-left"></i> Previous
+        </button>
+
+        <span style="font-size: 0.875rem; font-weight: 500; padding: 0 0.5rem;">
+          Page {{ currentPage() }} of {{ totalPages() }}
+        </span>
+
+        <button class="btn btn-secondary btn-sm" [disabled]="currentPage() === totalPages()" (click)="nextPage()" style="display: flex; align-items: center; gap: 4px;">
+          Next <i class="ph ph-caret-right"></i>
+        </button>
+      </div>
+    </div>
+  }
+</div>

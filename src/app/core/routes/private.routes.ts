@@ -32,6 +32,10 @@ export  const PRIVATE_ROUTES = [
         loadComponent: () => import('@app/views/private/vehicles/vehicles.component').then(m => m.VehiclesComponent)
       },
       {
+        path: 'vehicle-makes',
+        loadComponent: () => import('@app/views/private/makes/makes.component').then(m => m.MakesComponent)
+      },
+      {
         path: 'partners',
         loadComponent: () => import('@app/views/private/partners/partners.component').then(m => m.PartnersComponent)
       },

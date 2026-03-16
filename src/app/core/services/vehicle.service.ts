@@ -28,7 +28,6 @@ export class VehicleService {
     return httpParams;
   }
 
-
   getAllVehiclesInSystem(params?: QueryParams): Observable<ApiResponse<Vehicle[]>> {
     return this.http.get<ApiResponse<Vehicle[]>>(`${this.apiUrl}/system`, {
       params: this.buildParams(params),
@@ -41,12 +40,12 @@ export class VehicleService {
   ): Observable<ApiResponse<Vehicle>> {
     if (payload.featured !== undefined) {
       return this.http.patch<ApiResponse<Vehicle>>(`${this.apiUrl}/${id}/feature`, {
-        featured: payload.featured
+        featured: payload.featured,
       });
     }
 
     return this.http.patch<ApiResponse<Vehicle>>(`${this.apiUrl}/${id}/status`, {
-      status: payload.status
+      status: payload.status,
     });
   }
 
@@ -66,36 +65,35 @@ export class VehicleService {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`);
   }
 
-
   getAllMakes(): Observable<ApiResponse<VehicleMake[]>> {
-    return this.http.get<ApiResponse<VehicleMake[]>>(`${this.apiUrl}/makes`);
+    return this.http.get<ApiResponse<VehicleMake[]>>(`${this.apiUrl}/data/makes`);
   }
 
   createMake(makeData: Partial<VehicleMake>): Observable<ApiResponse<VehicleMake>> {
-    return this.http.post<ApiResponse<VehicleMake>>(`${this.apiUrl}/makes`, makeData);
+    return this.http.post<ApiResponse<VehicleMake>>(`${this.apiUrl}/data/makes`, makeData);
   }
 
   updateMake(id: string, makeData: Partial<VehicleMake>): Observable<ApiResponse<VehicleMake>> {
-    return this.http.put<ApiResponse<VehicleMake>>(`${this.apiUrl}/makes/${id}`, makeData);
+    return this.http.put<ApiResponse<VehicleMake>>(`${this.apiUrl}/data/makes/${id}`, makeData);
   }
 
   deleteMake(id: string): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/makes/${id}`);
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/data/makes/${id}`);
   }
 
   getModelsByMake(makeId: string): Observable<ApiResponse<VehicleModel[]>> {
-    return this.http.get<ApiResponse<VehicleModel[]>>(`${this.apiUrl}/makes/${makeId}/models`);
+    return this.http.get<ApiResponse<VehicleModel[]>>(`${this.apiUrl}/data/makes/${makeId}/models`);
   }
 
   createModel(modelData: Partial<VehicleModel>): Observable<ApiResponse<VehicleModel>> {
-    return this.http.post<ApiResponse<VehicleModel>>(`${this.apiUrl}/models`, modelData);
+    return this.http.post<ApiResponse<VehicleModel>>(`${this.apiUrl}/data/models`, modelData);
   }
 
   updateModel(id: string, modelData: Partial<VehicleModel>): Observable<ApiResponse<VehicleModel>> {
-    return this.http.put<ApiResponse<VehicleModel>>(`${this.apiUrl}/models/${id}`, modelData);
+    return this.http.put<ApiResponse<VehicleModel>>(`${this.apiUrl}/data/models/${id}`, modelData);
   }
 
   deleteModel(id: string): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/models/${id}`);
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/data/models/${id}`);
   }
 }
