@@ -109,6 +109,10 @@ body:has(#theme-toggle:checked) {
   text-decoration: none;
 }
 
+a {
+  cursor: pointer;
+}
+
 body {
   background-color: var(--a-bg-app);
   color: var(--a-text-main);

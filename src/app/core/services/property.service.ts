@@ -28,10 +28,9 @@ export class PropertyService {
     return httpParams;
   }
 
-  // --- Admin Property Management ---
 
   getAllPropertiesInSystem(params?: QueryParams): Observable<ApiResponse<Property[]>> {
-    return this.http.get<ApiResponse<Property[]>>(`${this.apiUrl}/admin/all`, {
+    return this.http.get<ApiResponse<Property[]>>(`${this.apiUrl}/system`, {
       params: this.buildParams(params),
     });
   }
@@ -40,7 +39,15 @@ export class PropertyService {
     id: string,
     payload: AdminStatusUpdateRequest,
   ): Observable<ApiResponse<Property>> {
-    return this.http.patch<ApiResponse<Property>>(`${this.apiUrl}/admin/${id}/manage`, payload);
+    if (payload.featured !== undefined) {
+      return this.http.patch<ApiResponse<Property>>(`${this.apiUrl}/${id}/feature`, {
+        featured: payload.featured
+      });
+    }
+
+    return this.http.patch<ApiResponse<Property>>(`${this.apiUrl}/${id}/status`, {
+      status: payload.status
+    });
   }
 
   getPropertyById(id: string): Observable<ApiResponse<Property>> {
