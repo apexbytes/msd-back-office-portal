@@ -27,19 +27,19 @@ export class PartnerFormComponent implements OnInit {
   protected readonly previewUrl = signal<string | null>(null);
   protected readonly isUploading = signal(false);
   protected readonly globalLoading = this.loadingService.isLoading;
-  
+
   protected form!: FormGroup;
 
   protected readonly partnershipLevels = [
     { label: 'Premium', value: 'PREMIUM' },
     { label: 'Standard', value: 'STANDARD' },
-    { label: 'Basic', value: 'BASIC' }
+    { label: 'Basic', value: 'BASIC' },
   ];
 
   protected readonly statuses = [
     { label: 'Active', value: 'ACTIVE' },
     { label: 'Inactive', value: 'INACTIVE' },
-    { label: 'Archived', value: 'ARCHIVED' }
+    { label: 'Archived', value: 'ARCHIVED' },
   ];
 
   ngOnInit(): void {
@@ -56,7 +56,7 @@ export class PartnerFormComponent implements OnInit {
       partnershipLevel: ['STANDARD', [Validators.required]],
       status: ['ACTIVE', [Validators.required]],
       description: ['', [Validators.required]],
-      logo: [null, [Validators.required]]
+      logo: [null, [Validators.required]],
     });
   }
 
@@ -67,7 +67,7 @@ export class PartnerFormComponent implements OnInit {
       partnershipLevel: partner.partnershipLevel,
       status: partner.status,
       description: partner.description,
-      logo: partner.logo
+      logo: partner.logo,
     });
 
     if (partner.logo?.url) {
@@ -79,37 +79,43 @@ export class PartnerFormComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      
+
+      // 1. Show instant local preview
       const reader = new FileReader();
       reader.onload = () => {
         this.previewUrl.set(reader.result as string);
       };
       reader.readAsDataURL(file);
 
+      // 2. Lock form & start upload
       this.isUploading.set(true);
-      this.loadingService.show();
+      this.form.get('logo')?.setErrors({ uploading: true });
+
       this.uploadService.uploadTemp(file).subscribe({
         next: (response) => {
-          if (response.success && response.data.length > 0) {
+          if (response.success && response.data && response.data.length > 0) {
             const uploadedFile = response.data[0];
             const logoResult: FileUploadResult = {
               public_id: uploadedFile.public_id,
               url: uploadedFile.url,
-              width: uploadedFile.width,
-              height: uploadedFile.height,
-              storageType: uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL'
+              width: uploadedFile.width || 0,
+              height: uploadedFile.height || 0,
+              storageType: (uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL') || 'CLOUDINARY',
             };
+
+            // Unlock form and patch value
             this.form.patchValue({ logo: logoResult });
+            this.form.get('logo')?.setErrors(null);
             this.form.get('logo')?.markAsDirty();
+            this.form.get('logo')?.markAsTouched();
           }
           this.isUploading.set(false);
-          this.loadingService.hide();
         },
         error: (err) => {
           console.error('Logo upload failed', err);
+          this.form.get('logo')?.setErrors({ uploadFailed: true });
           this.isUploading.set(false);
-          this.loadingService.hide();
-        }
+        },
       });
     }
   }
@@ -118,6 +124,9 @@ export class PartnerFormComponent implements OnInit {
     this.previewUrl.set(null);
     this.form.patchValue({ logo: null });
     this.form.get('logo')?.markAsDirty();
+    this.form.get('logo')?.markAsTouched();
+
+    // Clear the physical input
     const fileInput = document.getElementById('logo') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
@@ -125,23 +134,53 @@ export class PartnerFormComponent implements OnInit {
   }
 
   protected onSubmit(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.isUploading()) {
       this.form.markAllAsTouched();
       return;
     }
 
-    const partnerData: Partial<Partner> = this.form.value;
+    const formValue = this.form.value;
+
+    // Notice we use 'any' or a looser type here because the API payload
+    // expects a string for logo, while our Partner model expects an object
+    const partnerData: any = {
+      name: formValue.name,
+      partnershipLevel: formValue.partnershipLevel,
+      status: formValue.status,
+      description: formValue.description,
+    };
+
+    // Only include logo data if it was changed
+    if (this.form.get('logo')?.dirty) {
+      if (formValue.logo) {
+        // Send ONLY the string ID as expected by the API
+        partnerData.logo = formValue.logo.public_id;
+      } else {
+        // If they cleared the logo, tell the API to remove it
+        partnerData.removeLogo = true;
+      }
+    } else if (!this.isEditMode()) {
+      // If creating a new partner, always append the logo ID string
+      partnerData.logo = formValue.logo?.public_id || null;
+    }
+
+    // Clean up empty strings for optional URL field
+    if (formValue.website && formValue.website.trim() !== '') {
+      partnerData.website = formValue.website.trim();
+    }
 
     this.loadingService.show();
-    const request = (this.isEditMode() && this.data?.partner)
-      ? this.partnerService.updatePartner(this.data.partner.id, partnerData)
-      : this.partnerService.createPartner(partnerData);
 
-    request.subscribe({
+    const request$ =
+      this.isEditMode() && this.data?.partner?.id
+        ? this.partnerService.updatePartner(this.data.partner.id, partnerData)
+        : this.partnerService.createPartner(partnerData);
+
+    request$.subscribe({
       next: (response) => {
         if (response.success) {
           this.form.reset();
-          this.dialogRef.close(true);
+          this.dialogRef.close(response.data);
         }
         this.loadingService.hide();
       },
@@ -159,7 +198,7 @@ export class PartnerFormComponent implements OnInit {
   protected onReset(): void {
     this.form.reset({
       partnershipLevel: 'STANDARD',
-      status: 'ACTIVE'
+      status: 'ACTIVE',
     });
     this.previewUrl.set(null);
     if (this.isEditMode() && this.data?.partner) {

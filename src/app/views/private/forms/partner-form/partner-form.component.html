@@ -113,26 +113,29 @@
                 </div>
               }
               @if (isUploading()) {
-                <div class="spinner-overlay" style="position: absolute;">
+                <div class="spinner-overlay" style="position: absolute; background: rgba(0,0,0,0.5); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
                   <div class="spinner-small"></div>
                 </div>
               }
 
-              <!-- Delete Button -->
               @if (previewUrl() && !isUploading()) {
                 <button
                   type="button"
                   class="remove-image-btn"
                   (click)="onRemoveLogo()"
                   title="Remove logo"
+                  style="position: absolute; top: 10px; right: 10px;"
                 >
                   <i class="ph ph-trash"></i>
                 </button>
               }
             </div>
-            <label for="logo" class="avatar-edit-btn" style="bottom: 10px; right: 10px;">
-              <i class="ph ph-camera"></i>
-            </label>
+
+            @if (!isUploading()) {
+              <label for="logo" class="avatar-edit-btn" style="position: absolute; bottom: 10px; right: 10px; cursor: pointer;">
+                <i class="ph ph-camera"></i>
+              </label>
+            }
             <input
               type="file"
               id="logo"
@@ -141,10 +144,12 @@
               style="display: none;"
             />
           </div>
-          @if (form.get('logo')?.touched && form.get('logo')?.invalid) {
-            <span class="error-message">
-              Logo is required.
-            </span>
+
+          @if (form.get('logo')?.touched && form.get('logo')?.errors?.['required']) {
+            <span class="error-message">Logo is required.</span>
+          }
+          @if (form.get('logo')?.errors?.['uploadFailed']) {
+            <span class="error-message">Logo failed to upload to the server. Please try again.</span>
           }
         </div>
       </div>

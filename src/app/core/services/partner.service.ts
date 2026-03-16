@@ -27,8 +27,10 @@ export class PartnerService {
     return httpParams;
   }
 
+  // In src/app/core/services/partner.service.ts
+
   getAllPartners(params?: QueryParams): Observable<ApiResponse<Partner[]>> {
-    return this.http.get<ApiResponse<Partner[]>>(`${this.apiUrl}/admin/all`, {
+    return this.http.get<ApiResponse<Partner[]>>(`${this.apiUrl}/admin`, {
       params: this.buildParams(params),
     });
   }

@@ -5,11 +5,12 @@ import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-di
 import { DeleteDialogData } from '@app/core/models/delete.interface';
 import { PartnerService, QueryParams } from '@app/core/services/partner.service';
 import { Partner } from '@app/core/models/partner.model';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-partners',
   standalone: true,
-  imports: [ ],
+  imports: [TitleCasePipe],
   templateUrl: './partners.component.html',
   styleUrl: './partners.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,7 +84,8 @@ export class PartnersComponent implements OnInit {
       data: {
         entityName: 'Partner',
         title: 'Delete Partner?',
-        message: 'Are you sure you want to delete "' + partner.name + '"? This process is permanent.',
+        message:
+          'Are you sure you want to delete "' + partner.name + '"? This process is permanent.',
         deleteFn: () => this.partnerService.deletePartner(partner.id),
       } as DeleteDialogData,
       disableClose: true,
