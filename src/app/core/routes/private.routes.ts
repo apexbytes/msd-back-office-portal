@@ -91,7 +91,7 @@ export  const PRIVATE_ROUTES = [
       {
         path: 'help',
         loadComponent: () =>
-          import('@app/views/private/home/home.component').then((m) => m.HomeComponent),
+          import('@app/views/private/help/help.component').then((m) => m.HelpComponent),
       },
       {
         path: 'logs',

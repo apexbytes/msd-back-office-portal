@@ -89,9 +89,6 @@ export class RolesFormComponent implements OnInit {
     }
 
     this.isLoading.set(true);
-
-    // Use getRawValue() so disabled fields (like name/type for SUPERADMIN) are included in the payload
-    // to satisfy the API, which will ignore/validate them.
     const roleData = this.roleForm.getRawValue();
 
     const request =

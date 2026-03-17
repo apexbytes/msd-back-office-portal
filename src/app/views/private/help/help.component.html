@@ -1,1 +1,108 @@
-<p>help.component works!</p>
+<div class="page-container" style="max-width: 1000px; margin: 0 auto; padding: 2rem;">
+
+  <header style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--a-border-color); padding-bottom: 1.5rem;">
+    <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-radius: 12px; margin-bottom: 1rem;">
+      <i class="ph ph-book-open-text" style="font-size: 24px;"></i>
+    </div>
+    <h1 style="font-size: 2rem; color: var(--a-text-main); margin: 0 0 0.5rem 0;">Staff User Guide & Documentation</h1>
+    <p style="color: var(--a-text-light); font-size: 1.05rem; margin: 0;">
+      Welcome to the team, <strong>{{ currentUser()?.firstName || 'Staff Member' }}</strong>! This guide will help you navigate the administrative portal and manage the platform effectively.
+    </p>
+  </header>
+
+  <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+
+    <section style="background: var(--a-bg-card); border: 1px solid var(--a-border-color); border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+      <h2 style="font-size: 1.4rem; color: var(--a-text-main); margin: 0 0 1rem 0; display: flex; align-items: center; gap: 8px;">
+        <i class="ph ph-globe-hemisphere-west" style="color: #8b5cf6;"></i> System Overview
+      </h2>
+      <p style="color: var(--a-text-light); line-height: 1.6; margin-bottom: 1rem;">
+        Musondosi is a multi-vertical classifieds and listing platform. As an administrator or support agent, your primary responsibility is to ensure the safety, quality, and smooth operation of the platform.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+        <div style="padding: 1rem; border: 1px dashed var(--a-border-color); border-radius: 8px; background: var(--a-bg-sidebar);">
+          <strong style="color: var(--a-text-main); display: block; margin-bottom: 0.5rem;">SUPERADMIN Role</strong>
+          <p style="margin: 0; font-size: 0.9rem; color: var(--a-text-light);">Has unrestricted access. Can manage security settings, system logs, create new roles, and assign permissions to other staff members.</p>
+        </div>
+        <div style="padding: 1rem; border: 1px dashed var(--a-border-color); border-radius: 8px; background: var(--a-bg-sidebar);">
+          <strong style="color: var(--a-text-main); display: block; margin-bottom: 0.5rem;">SUPPORT Role</strong>
+          <p style="margin: 0; font-size: 0.9rem; color: var(--a-text-light);">Focuses on user assistance. Can moderate listings, reply to support tickets, and assist users with subscription issues.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="background: var(--a-bg-card); border: 1px solid var(--a-border-color); border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+      <h2 style="font-size: 1.4rem; color: var(--a-text-main); margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 8px;">
+        <i class="ph ph-compass" style="color: #10b981;"></i> Navigating the Portal
+      </h2>
+
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+        <div>
+          <h3 style="font-size: 1.1rem; color: var(--a-text-main); margin: 0 0 0.5rem 0;"><i class="ph ph-users" style="margin-right: 6px;"></i> User Management</h3>
+          <p style="color: var(--a-text-light); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Found under the <strong>Users</strong> tab. Here you can view all registered users, their verification status, and their online activity. You can manually unlock accounts that have been locked due to too many failed login attempts, or ban/deactivate malicious users.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: 1.1rem; color: var(--a-text-main); margin: 0 0 0.5rem 0;"><i class="ph ph-files" style="margin-right: 6px;"></i> Listings (Properties & Vehicles)</h3>
+          <p style="color: var(--a-text-light); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Found under the <strong>Properties</strong> and <strong>Vehicles</strong> tabs. This is where you moderate user-submitted content. You can toggle the "Published" state of a listing, mark listings as "Featured" so they appear on the homepage, or delete listings that violate our terms of service. For vehicles, you also manage the <strong>Makes & Models</strong> taxonomies.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: 1.1rem; color: var(--a-text-main); margin: 0 0 0.5rem 0;"><i class="ph ph-money" style="margin-right: 6px;"></i> Monetization (Adverts & Subscriptions)</h3>
+          <p style="color: var(--a-text-light); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Found under the <strong>Adverts</strong> and <strong>Subscriptions</strong> tabs. Adverts are banner ads placed around the public site. Subscriptions dictate how many listings a user can post. If a user pays offline, you can manually "Grant" or "Override" their subscription tier from here.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: 1.1rem; color: var(--a-text-main); margin: 0 0 0.5rem 0;"><i class="ph ph-ticket" style="margin-right: 6px;"></i> Support Tickets</h3>
+          <p style="color: var(--a-text-light); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Found under the <strong>Tickets</strong> tab. When users submit contact forms or help requests, they appear here. You can view the conversation thread, reply directly to the user's email, and update the ticket status (e.g., Open, In Progress, Resolved).
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: 1.1rem; color: var(--a-text-main); margin: 0 0 0.5rem 0;"><i class="ph ph-megaphone" style="margin-right: 6px;"></i> Marketing (Testimonials & Partners)</h3>
+          <p style="color: var(--a-text-light); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Found under the <strong>Testimonials</strong> and <strong>Partners</strong> tabs. These control the content shown on the public landing page. Add client logos to Partners, and highlight glowing reviews in the Testimonials section.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    @if (isSuperAdmin) {
+      <section style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #ef4444; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 8px;">
+          <i class="ph ph-shield-warning"></i> Super Admin Area
+        </h2>
+        <p style="color: var(--a-text-main); font-weight: 500; margin-bottom: 1rem;">
+          Because you have the SUPERADMIN role, you have access to critical system infrastructure:
+        </p>
+        <ul style="color: var(--a-text-light); font-size: 0.95rem; line-height: 1.8; margin: 0; padding-left: 1.2rem;">
+          <li><strong>Roles & Permissions:</strong> You can create custom roles (e.g., "BLOG_EDITOR") and explicitly check off which API permissions they are granted.</li>
+          <li><strong>System Settings:</strong> Under the Settings page, you can globally enforce MFA, adjust session timeouts, and set max login failure thresholds.</li>
+          <li><strong>Audit Logs:</strong> Under the Logs tab, every sensitive action (logins, deletions, role changes) is recorded. Use this to track down who made a specific change.</li>
+        </ul>
+      </section>
+    }
+
+    <section style="background: var(--a-bg-card); border: 1px solid var(--a-border-color); border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+      <h2 style="font-size: 1.4rem; color: var(--a-text-main); margin: 0 0 1rem 0; display: flex; align-items: center; gap: 8px;">
+        <i class="ph ph-lock-key" style="color: #f59e0b;"></i> Security Best Practices
+      </h2>
+      <ul style="color: var(--a-text-light); font-size: 0.95rem; line-height: 1.8; margin: 0; padding-left: 1.2rem;">
+        <li><strong>Enable Multi-Factor Authentication (MFA):</strong> Go to your <a routerLink="/settings" style="color: var(--primary); text-decoration: none;">Profile Settings</a> and enable MFA immediately to protect your staff account.</li>
+        <li><strong>Save Backup Codes:</strong> When generating MFA Backup Codes, save them securely offline. Do not store them on your desktop.</li>
+        <li><strong>Log Out:</strong> The system has an automatic idle timeout, but you should always manually log out when stepping away from a shared or public computer.</li>
+        <li><strong>Verify Users:</strong> Before making account changes or overriding subscriptions on behalf of a user, always verify their identity via their registered email address.</li>
+      </ul>
+    </section>
+
+  </div>
+</div>
