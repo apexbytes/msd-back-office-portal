@@ -54,7 +54,7 @@ export class RoleService {
   // --- Permissions Management ---
 
   getAllPermissions(): Observable<ApiResponse<Permission[]>> {
-    return this.http.get<ApiResponse<Permission[]>>(`${this.apiUrl}/permissions/all`);
+    return this.http.get<ApiResponse<Permission[]>>(`${this.apiUrl}/permissions`);
   }
 
   // --- User-Role Assignments ---

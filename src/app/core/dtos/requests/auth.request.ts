@@ -12,7 +12,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   role: string;
-  avatar?: string; // public_id from temp-upload
+  avatar?: string;
 }
 
 export interface ResetPasswordRequest {

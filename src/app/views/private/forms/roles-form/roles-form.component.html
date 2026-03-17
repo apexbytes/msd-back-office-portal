@@ -1,1 +1,99 @@
-<p>roles-form.component works!</p>
+<div class="modal-header" style="padding: 1.5rem; border-bottom: 1px solid var(--a-border-color); display: flex; justify-content: space-between; align-items: center;">
+  <h2 style="margin: 0; font-size: 1.25rem; color: var(--a-text-main); font-weight: 600;">
+    {{ isEditMode() ? 'Edit Role' : 'Create New Role' }}
+  </h2>
+  <button type="button" class="modal-close" (click)="onCancel()" style="background: none; border: none; cursor: pointer; color: var(--a-text-light);">
+    <i class="ph ph-x" style="font-size: 1.2rem;"></i>
+  </button>
+</div>
+
+<form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
+  <div class="modal-body" style="padding: 1.5rem; max-height: 70vh; overflow-y: auto;">
+
+    @if (isSuperAdmin()) {
+      <div style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; color: #b45309; font-size: 0.9rem;">
+        <i class="ph ph-warning-circle"></i> The <strong>SUPERADMIN</strong> role is a system core role. You cannot modify its name or type, but you can adjust its permissions.
+      </div>
+    }
+
+    <div class="fields-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+      <div class="field-group">
+        <label style="display: block; margin-bottom: 0.5rem; color: var(--a-text-main); font-weight: 500; font-size: 0.9rem;">Role Name <span style="color: #ef4444;">*</span></label>
+        <input
+          type="text"
+          formControlName="name"
+          placeholder="e.g. EDITOR"
+          style="width: 100%; padding: 0.6rem; border: 1px solid var(--a-border-color); border-radius: 6px; background: var(--a-bg-card); color: var(--a-text-main);"
+          [class.disabled-input]="isSuperAdmin()"
+        >
+        @if (roleForm.get('name')?.invalid && roleForm.get('name')?.touched) {
+          <span style="color: #ef4444; font-size: 0.8rem; margin-top: 4px; display: block;">Role name is required</span>
+        }
+      </div>
+
+      <div class="field-group">
+        <label style="display: block; margin-bottom: 0.5rem; color: var(--a-text-main); font-weight: 500; font-size: 0.9rem;">Role Type <span style="color: #ef4444;">*</span></label>
+        <select
+          formControlName="type"
+          style="width: 100%; padding: 0.6rem; border: 1px solid var(--a-border-color); border-radius: 6px; background: var(--a-bg-card); color: var(--a-text-main);"
+          [class.disabled-input]="isSuperAdmin()"
+        >
+          <option value="SYSTEM">SYSTEM</option>
+          <option value="CUSTOM">CUSTOM</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-group" style="margin-bottom: 1.5rem;">
+      <label style="display: block; margin-bottom: 0.5rem; color: var(--a-text-main); font-weight: 500; font-size: 0.9rem;">Description</label>
+      <textarea
+        formControlName="description"
+        rows="3"
+        placeholder="Describe what users with this role can do..."
+        style="width: 100%; padding: 0.6rem; border: 1px solid var(--a-border-color); border-radius: 6px; background: var(--a-bg-card); color: var(--a-text-main); resize: vertical;"
+      ></textarea>
+    </div>
+
+    <h3 style="font-size: 1.1rem; color: var(--a-text-main); font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid var(--a-border-color); padding-bottom: 0.5rem;">
+      Role Permissions
+    </h3>
+
+    @if (permissionsLoading()) {
+      <div style="text-align: center; padding: 2rem; color: var(--a-text-light);">
+        <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i>
+        <p>Loading available permissions...</p>
+      </div>
+    } @else {
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.8rem;">
+        @for (perm of allPermissions(); track perm.id) {
+          <label style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.8rem; border: 1px solid var(--a-border-color); border-radius: 6px; background: var(--a-bg-sidebar); cursor: pointer; transition: all 0.2s;">
+            <input
+              type="checkbox"
+              [checked]="isPermissionSelected(perm.id)"
+              (change)="togglePermission(perm.id, $event)"
+              style="margin-top: 3px;"
+            >
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-weight: 500; font-size: 0.9rem; color: var(--a-text-main);">{{ perm.action }}</span>
+              @if (perm.description) {
+                <span style="font-size: 0.75rem; color: var(--a-text-light); margin-top: 2px;">{{ perm.description }}</span>
+              }
+            </div>
+          </label>
+        }
+      </div>
+    }
+
+  </div>
+
+  <div class="modal-footer" style="padding: 1rem 1.5rem; border-top: 1px solid var(--a-border-color); display: flex; justify-content: flex-end; gap: 1rem;">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()" style="padding: 0.6rem 1.2rem;">Cancel</button>
+    <button type="submit" class="btn btn-primary" [disabled]="roleForm.invalid || isLoading() || permissionsLoading()" style="padding: 0.6rem 1.2rem; display: flex; align-items: center; gap: 8px;">
+      @if (isLoading()) {
+        <i class="ph ph-spinner ph-spin"></i> Saving...
+      } @else {
+        <i class="ph ph-floppy-disk"></i> Save Role
+      }
+    </button>
+  </div>
+</form>
