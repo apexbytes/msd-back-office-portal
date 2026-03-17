@@ -1,36 +1,192 @@
-<header class="main-header">
-  <h1>Dashboard Overview</h1>
-  <p>Welcome back, Ronald.</p>
-</header>
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="header-info">
+      <h1>Dashboard Overview</h1>
+      <p class="welcome-text">Welcome back, <span class="user-highlight">{{ (currentUser() | fullName) || 'Admin' }}</span></p>
+      <p class="subtitle">Here's what's happening with your platform today</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="ngOnInit()">
+        <i class="ph ph-arrows-clockwise"></i> Refresh
+      </button>
+    </div>
+  </header>
 
-<div class="dashboard-cards">
-  <div class="card">
-    <div class="card-icon"><i class="ph ph-users"></i></div>
-    <div class="card-info">
-      <h3>Total Subscribers</h3>
-      <h2>125,430</h2>
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p class="loading-text">Aggregating system statistics...</p>
     </div>
-  </div>
-  <div class="card">
-    <div class="card-icon"><i class="ph ph-eye"></i></div>
-    <div class="card-info">
-      <h3>Channel Views</h3>
-      <h2>1.2M</h2>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-icon"><i class="ph ph-clock"></i></div>
-    <div class="card-info">
-      <h3>Watch Time (hrs)</h3>
-      <h2>45,200</h2>
-    </div>
-  </div>
-</div>
+  } @else if (stats()) {
 
-<div class="dashboard-chart">
-  <h2>Analytics Overview</h2>
-  <div class="chart-placeholder">
-    <i class="ph ph-chart-line-up"></i>
-    <p>Chart data will load here...</p>
-  </div>
+    <div class="quick-stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrapper users-gradient">
+          <i class="ph-fill ph-users"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Users</span>
+          <span class="stat-value">{{ stats().users.total | number }}</span>
+          <div class="stat-trend">
+            <i class="ph ph-trend-up"></i>
+            <span>Active Platform Users</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrapper vehicles-gradient">
+          <i class="ph-fill ph-car"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Vehicles</span>
+          <span class="stat-value">{{ stats().listings.vehicles.total | number }}</span>
+          <div class="stat-trend">
+            <i class="ph ph-list-bullets"></i>
+            <span>Listed Vehicles</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrapper properties-gradient">
+          <i class="ph-fill ph-house"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Properties</span>
+          <span class="stat-value">{{ stats().listings.properties.total | number }}</span>
+          <div class="stat-trend">
+            <i class="ph ph-buildings"></i>
+            <span>Listed Properties</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrapper subs-gradient">
+          <i class="ph-fill ph-monitor-play"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Active Subscriptions</span>
+          <span class="stat-value">{{ stats().subscriptions.active | number }}</span>
+          <div class="stat-trend">
+            <i class="ph ph-check-circle"></i>
+            <span>Premium Members</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+
+      <div class="detail-card support-card">
+        <div class="card-header">
+          <div class="card-icon danger-bg">
+            <i class="ph-fill ph-headset"></i>
+          </div>
+          <div class="card-title-section">
+            <h3>Support Desk</h3>
+            <p class="card-subtitle">Customer ticket overview</p>
+          </div>
+        </div>
+        <ul class="breakdown-list">
+          <li class="breakdown-item">
+            <div class="breakdown-label-wrapper">
+              <i class="ph ph-stack"></i>
+              <span class="breakdown-label">Total Tickets</span>
+            </div>
+            <span class="breakdown-value">{{ stats().support.total | number }}</span>
+          </li>
+          <li class="breakdown-item">
+            <div class="breakdown-label-wrapper">
+              <i class="ph ph-clock-clockwise"></i>
+              <span class="breakdown-label">Currently Open</span>
+            </div>
+            <span class="breakdown-value warning-badge">{{ stats().support.open | number }}</span>
+          </li>
+          <li class="breakdown-item">
+            <div class="breakdown-label-wrapper">
+              <i class="ph ph-spinner-gap"></i>
+              <span class="breakdown-label">In Progress</span>
+            </div>
+            <span class="breakdown-value primary-badge">{{ stats().support.inProgress | number }}</span>
+          </li>
+          <li class="breakdown-item priority-item">
+            <div class="breakdown-label-wrapper">
+              <i class="ph-fill ph-warning-circle"></i>
+              <span class="breakdown-label">Needs Assignment</span>
+            </div>
+            <span class="breakdown-value danger-badge">{{ stats().support.needsAssignment | number }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="detail-card moderation-card">
+        <div class="card-header">
+          <div class="card-icon success-bg">
+            <i class="ph-fill ph-shield-check"></i>
+          </div>
+          <div class="card-title-section">
+            <h3>Content Moderation</h3>
+            <p class="card-subtitle">Listing approval status</p>
+          </div>
+        </div>
+        <ul class="breakdown-list">
+          <li class="breakdown-item">
+            <div class="breakdown-label-wrapper">
+              <i class="ph ph-check-square"></i>
+              <span class="breakdown-label">Published Vehicles</span>
+            </div>
+            <span class="breakdown-value success-badge">{{ stats().listings.vehicles.published | number }}</span>
+          </li>
+          <li class="breakdown-item">
+            <div class="breakdown-label-wrapper">
+              <i class="ph ph-x-square"></i>
+              <span class="breakdown-label">Banned Vehicles</span>
+            </div>
+            <span class="breakdown-value danger-badge">{{ stats().listings.vehicles.banned | number }}</span>
+          </li>
+          <li class="breakdown-item">
+            <div class="breakdown-label-wrapper">
+              <i class="ph ph-check-square"></i>
+              <span class="breakdown-label">Published Properties</span>
+            </div>
+            <span class="breakdown-value success-badge">{{ stats().listings.properties.published | number }}</span>
+          </li>
+          <li class="breakdown-item">
+            <div class="breakdown-label-wrapper">
+              <i class="ph ph-x-square"></i>
+              <span class="breakdown-label">Banned Properties</span>
+            </div>
+            <span class="breakdown-value danger-badge">{{ stats().listings.properties.banned | number }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="detail-card signups-card">
+        <div class="card-header">
+          <div class="card-icon primary-bg">
+            <i class="ph-fill ph-user-plus"></i>
+          </div>
+          <div class="card-title-section">
+            <h3>Latest Sign-ups</h3>
+            <p class="card-subtitle">Recent user registrations</p>
+          </div>
+        </div>
+        <div class="recent-users-list">
+          @for (user of stats().users.recentSignups; track user.id) {
+            <div class="user-item">
+              @if (user.avatar) {
+                <img [src]="user.avatar.url" class="user-avatar" alt="Avatar">
+              } @else {
+                <div class="user-avatar placeholder">{{ user | fullName | initials }}</div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  }
 </div>

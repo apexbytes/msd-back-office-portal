@@ -4,6 +4,8 @@ import { VehicleService } from '@app/core/services/vehicle.service';
 import { LoadingService } from '@app/core/services/loading.service';
 import { Vehicle } from '@app/core/models/vehicle.model';
 import { AdminStatusUpdateRequest } from '@app/core/dtos/requests/admin.request';
+import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-vehicles',
@@ -16,12 +18,19 @@ import { AdminStatusUpdateRequest } from '@app/core/dtos/requests/admin.request'
 export class VehiclesComponent implements OnInit {
   private readonly vehicleService = inject(VehicleService);
   private readonly loadingService = inject(LoadingService);
+  private readonly dialog = inject(MatDialog);
 
   protected readonly vehicles = signal<Vehicle[]>([]);
-  protected readonly totalCount = signal(0);
   protected readonly isLoading = signal(true);
-
   protected readonly updatingIds = signal<Set<string>>(new Set());
+
+  // Pagination Signals
+  protected readonly currentPage = signal(1);
+  protected readonly limit = signal(10);
+  protected readonly totalCount = signal(0);
+  protected readonly totalPages = signal(0);
+  protected readonly hasNext = signal(false);
+  protected readonly hasPrev = signal(false);
 
   ngOnInit(): void {
     this.loadVehicles();
@@ -29,19 +38,61 @@ export class VehiclesComponent implements OnInit {
 
   loadVehicles(): void {
     this.isLoading.set(true);
-    this.vehicleService.getAllVehiclesInSystem({ page: 1, limit: 100 }).subscribe({
-      next: (res: any) => {
-        const data = res.data?.vehicles || res.data || [];
-        this.vehicles.set(data);
-        this.totalCount.set(res.pagination?.totalCount || res.data?.totalCount || data.length);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading vehicles', err);
-        this.isLoading.set(false);
-      },
-    });
+    this.vehicleService
+      .getAllVehiclesInSystem({ page: this.currentPage(), limit: this.limit() })
+      .subscribe({
+        next: (res: any) => {
+          const data = res.data?.vehicles || res.data || [];
+          this.vehicles.set(data);
+
+          const pagination = res.pagination || res.data?.pagination;
+          this.totalCount.set(pagination?.totalCount || res.data?.totalCount || data.length);
+          this.currentPage.set(pagination?.currentPage || 1);
+          this.totalPages.set(
+            pagination?.totalPages || Math.ceil(this.totalCount() / this.limit()),
+          );
+          this.hasNext.set(pagination?.hasNext || false);
+          this.hasPrev.set(pagination?.hasPrev || false);
+
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error loading vehicles', err);
+          this.isLoading.set(false);
+        },
+      });
   }
+
+  // --- Pagination Methods ---
+  protected get showingFrom(): number {
+    return this.totalCount() === 0 ? 0 : (this.currentPage() - 1) * this.limit() + 1;
+  }
+
+  protected get showingTo(): number {
+    return Math.min(this.currentPage() * this.limit(), this.totalCount());
+  }
+
+  protected nextPage(): void {
+    if (this.hasNext()) {
+      this.currentPage.update((p) => p + 1);
+      this.loadVehicles();
+    }
+  }
+
+  protected prevPage(): void {
+    if (this.hasPrev()) {
+      this.currentPage.update((p) => p - 1);
+      this.loadVehicles();
+    }
+  }
+
+  protected onLimitChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.limit.set(Number(select.value));
+    this.currentPage.set(1);
+    this.loadVehicles();
+  }
+  // --------------------------
 
   private updateVehicleState(id: string, payload: AdminStatusUpdateRequest): void {
     const currentSet = new Set(this.updatingIds());
@@ -94,5 +145,40 @@ export class VehiclesComponent implements OnInit {
 
   protected onUnban(vehicle: Vehicle): void {
     this.updateVehicleState(vehicle.id, { status: 'DRAFT' as any });
+  }
+
+  protected onDelete(vehicle: Vehicle): void {
+    const displayTitle = (vehicle as any).title || (vehicle as any).name || 'this vehicle';
+
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '540px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'full-screen-modal',
+      data: {
+        title: 'Delete Vehicle',
+        message: `Are you sure you want to delete "${displayTitle}"? This process is permanent and cannot be undone.`,
+        itemType: 'Vehicle',
+        itemName: displayTitle,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.loadingService.show();
+        this.vehicleService.deleteVehicle(vehicle.id).subscribe({
+          next: (response: any) => {
+            if (response.success) {
+              this.loadVehicles();
+            }
+            this.loadingService.hide();
+          },
+          error: (err: any) => {
+            console.error(`Error deleting vehicle:`, err);
+            this.loadingService.hide();
+          },
+        });
+      }
+    });
   }
 }

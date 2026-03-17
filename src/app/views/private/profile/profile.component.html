@@ -1,144 +1,177 @@
-<div class="profile-container" id="profile-form-wrapper">
-  <header class="profile-header">
-    <div class="profile-title-group">
-      <h1>Profile Settings</h1>
-      <div class="page-subtitle">
-        <i class="ph-user"></i>
-        <span>Manage your personal information and preferences</span>
-      </div>
-    </div>
-
-    <div class="mode-toggle-wrapper">
-      <label class="mode-toggle-label label-view" for="mode-toggle">View Mode</label>
-      <div class="table-toggle">
-        <label class="toggle-switch">
-          <input type="checkbox" id="mode-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-      <label class="mode-toggle-label label-edit" for="mode-toggle">Edit Mode</label>
-    </div>
-  </header>
-
-  <div class="profile-grid">
-    <!-- Left Sidebar: Avatar & Quick Info -->
-    <aside class="profile-sidebar-card">
-      <div class="profile-info-card text-center">
-        <div class="avatar-upload-container">
-          <img src="https://ui-avatars.com/api/?name=User&background=65e975&color=1e1e2d&size=160" alt="Avatar" class="avatar-preview">
-          <label for="avatar-input" class="avatar-edit-btn edit-only">
-            <i class="ph-camera"></i>
-            <input type="file" id="avatar-input" hidden accept="image/*">
-          </label>
-        </div>
-        <div style="margin-top: 20px;">
-          <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">John Doe</h2>
-          <p style="color: var(--a-text-light); font-size: 14px;">Administrator</p>
-        </div>
-      </div>
-
-      <div class="profile-info-card">
-        <h3 class="section-title" style="font-size: 16px; border-bottom: none; margin-bottom: 12px;">Account Status</h3>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
-          <span style="font-size: 14px; font-weight: 600;">Active</span>
-        </div>
-        <div style="margin-top: 16px; font-size: 13px; color: var(--a-text-light);">
-          <p>Member since March 2024</p>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Content: Form Fields -->
-    <main class="profile-main-content">
-      <div class="profile-info-card">
-        <h2 class="section-title">Personal Information</h2>
-
-        <div class="fields-row">
-          <div class="field-group">
-            <label>First Name <span class="required edit-only">*</span></label>
-            <input type="text" value="John" placeholder="Enter first name">
-          </div>
-          <div class="field-group">
-            <label>Last Name <span class="required edit-only">*</span></label>
-            <input type="text" value="Doe" placeholder="Enter last name">
+@if (isLoading()) {
+  <div class="loading-state text-center" style="padding: 40px;">
+    <p>Loading profile...</p>
+  </div>
+} @else {
+  @if (currentUser(); as user) {
+    <div class="profile-container" id="profile-form-wrapper">
+      <header class="profile-header">
+        <div class="profile-title-group">
+          <h1>Profile Settings</h1>
+          <div class="page-subtitle">
+            <i class="ph-user"></i>
+            <span>Manage your personal information and preferences</span>
           </div>
         </div>
 
-        <div class="fields-row">
-          <div class="field-group">
-            <label>Username</label>
-            <input type="text" value="johndoe" readonly>
+        <div class="mode-toggle-wrapper">
+          <label class="mode-toggle-label label-view" for="mode-toggle">View Mode</label>
+          <div class="table-toggle">
+            <label class="toggle-switch">
+              <input type="checkbox" id="mode-toggle" [checked]="isEditMode()" (change)="toggleMode($event)">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
-          <div class="field-group">
-            <label>Email Address</label>
-            <input type="email" value="john.doe@example.com" readonly>
-          </div>
+          <label class="mode-toggle-label label-edit" for="mode-toggle">Edit Mode</label>
         </div>
+      </header>
 
-        <div class="fields-row">
-          <div class="field-group">
-            <label>Mobile Number</label>
-            <input type="text" value="+1 234 567 890" placeholder="Enter mobile number">
-          </div>
-          <div class="field-group">
-            <label>Company Name</label>
-            <input type="text" value="Tech Solutions Inc." placeholder="Enter company name">
-          </div>
-        </div>
+      <form class="profile-layout" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <!-- Profile Sidebar -->
+        <aside class="profile-sidebar">
+          <div class="profile-avatar-section">
+            <div class="avatar-upload-container">
+              @if (tempAvatarUrl()) {
+                <img
+                  [src]="tempAvatarUrl()"
+                  alt="Avatar"
+                  class="avatar-preview"
+                  [class.uploading]="uploadService.isUploading()">
+              } @else {
+                <div
+                  class="avatar-preview initials-avatar"
+                  [class.uploading]="uploadService.isUploading()"
+                  [style.backgroundColor]="(user | fullName) | initials:'color'">
+                  {{ (user | fullName) | initials }}
+                </div>
+              }
 
-        <div class="field-group full-width">
-          <label>Bio</label>
-          <textarea placeholder="Tell us about yourself...">Experienced software administrator with a passion for clean code and user-centric design.</textarea>
-        </div>
+              @if (uploadService.isUploading()) {
+                <div class="upload-progress-overlay">
+                  <span>{{ uploadService.uploadProgress() }}%</span>
+                </div>
+              }
 
-        <div class="fields-row">
-          <div class="field-group">
-            <label>City</label>
-            <input type="text" value="New York" placeholder="Enter city">
-          </div>
-          <div class="field-group">
-            <label>Country</label>
-            <div class="custom-select">
-              <select>
-                <option value="US" selected>United States</option>
-                <option value="UK">United Kingdom</option>
-                <option value="CA">Canada</option>
-                <option value="AU">Australia</option>
-              </select>
+              @if (isEditMode()) {
+                <label for="avatar-input" class="avatar-edit-btn">
+                  <i class="ph-camera"></i>
+                  <input type="file" id="avatar-input" hidden accept="image/*" (change)="onAvatarSelected($event)">
+                </label>
+              }
+            </div>
+            <div class="profile-user-info">
+              <h2 class="profile-user-name">{{ user | fullName }}</h2>
+              <p class="profile-user-role">{{ user?.roles?.[0]?.name || 'User' }}</p>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="profile-info-card" style="margin-top: 24px;">
-        <h2 class="section-title">Social Links</h2>
-        <div class="fields-row">
-          <div class="field-group">
-            <label><i class="ph-globe"></i> Website</label>
-            <input type="text" value="https://johndoe.com" placeholder="https://">
+          <div class="profile-stats-section">
+            <div class="stat-item">
+              <span class="stat-label">Account Status</span>
+              <div class="stat-value-badge" [class.status-active]="user?.status === 'ACTIVE'" [class.status-pending]="user?.status !== 'ACTIVE'">
+                <span class="status-dot"></span>
+                {{ user?.status | titlecase }}
+              </div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Member Since</span>
+              <span class="stat-value">{{ user?.createdAt | date:'MMMM yyyy' }}</span>
+            </div>
           </div>
-          <div class="field-group">
-            <label><i class="ph-linkedin-logo"></i> LinkedIn</label>
-            <input type="text" value="https://linkedin.com/in/johndoe" placeholder="https://linkedin.com/in/">
-          </div>
-        </div>
-        <div class="fields-row">
-          <div class="field-group">
-            <label><i class="ph-x-logo"></i> X (formerly Twitter)</label>
-            <input type="text" value="https://x.com/johndoe" placeholder="https://x.com/">
-          </div>
-          <div class="field-group">
-            <label><i class="ph-facebook-logo"></i> Facebook</label>
-            <input type="text" value="" placeholder="https://facebook.com/">
-          </div>
-        </div>
-      </div>
+        </aside>
 
-      <div class="form-actions edit-only">
-        <button class="btn btn-secondary" type="button" onclick="document.getElementById('mode-toggle').checked = false">Cancel</button>
-        <button class="btn btn-primary" type="submit">Save Changes</button>
-      </div>
-    </main>
-  </div>
-</div>
+        <!-- Profile Content -->
+        <main class="profile-content">
+          <section class="profile-section">
+            <h3 class="section-title">Personal Information</h3>
+            <div class="fields-grid">
+              <div class="field-group">
+                <label>
+                  First Name
+                  @if (isEditMode()) { <span class="required">*</span> }
+                </label>
+                <input type="text" formControlName="firstName" placeholder="Enter first name" [class.readonly-input]="!isEditMode()">
+              </div>
+              <div class="field-group">
+                <label>
+                  Last Name
+                  @if (isEditMode()) { <span class="required">*</span> }
+                </label>
+                <input type="text" formControlName="lastName" placeholder="Enter last name" [class.readonly-input]="!isEditMode()">
+              </div>
+              <div class="field-group">
+                <label>Username</label>
+                <input type="text" [value]="user?.username || ''" readonly class="readonly-input">
+              </div>
+              <div class="field-group">
+                <label>Email Address</label>
+                <input type="email" [value]="user?.email || ''" readonly class="readonly-input">
+              </div>
+              <div class="field-group">
+                <label>Mobile Number</label>
+                <input type="text" formControlName="mobileNumber" placeholder="Enter mobile number" [class.readonly-input]="!isEditMode()">
+              </div>
+              <div class="field-group">
+                <label>Company Name</label>
+                <input type="text" formControlName="companyName" placeholder="Enter company name" [class.readonly-input]="!isEditMode()">
+              </div>
+              <div class="field-group full-width">
+                <label>Bio</label>
+                <textarea formControlName="bio" placeholder="Tell us about yourself..." [class.readonly-input]="!isEditMode()"></textarea>
+              </div>
+              <div class="field-group">
+                <label>City</label>
+                <input type="text" formControlName="city" placeholder="Enter city" [class.readonly-input]="!isEditMode()">
+              </div>
+              <div class="field-group">
+                <label>Country</label>
+                <div class="custom-select" [class.disabled-select]="!isEditMode()">
+                  <select formControlName="country">
+                    <option value="">Select a country</option>
+                    <option value="US">United States</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="CA">Canada</option>
+                    <option value="AU">Australia</option>
+                    <option value="ZA">South Africa</option>
+                    <option value="ZW">Zimbabwe</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="profile-section" formGroupName="socialLinks">
+            <h3 class="section-title">Social Links</h3>
+            <div class="fields-grid">
+              <div class="field-group">
+                <label><i class="ph-globe"></i> Website</label>
+                <input type="text" formControlName="website" placeholder="https://" [class.readonly-input]="!isEditMode()">
+              </div>
+              <div class="field-group">
+                <label><i class="ph-linkedin-logo"></i> LinkedIn</label>
+                <input type="text" formControlName="linkedIn" placeholder="https://linkedin.com/in/" [class.readonly-input]="!isEditMode()">
+              </div>
+              <div class="field-group">
+                <label><i class="ph-x-logo"></i> X (formerly Twitter)</label>
+                <input type="text" formControlName="x" placeholder="https://x.com/" [class.readonly-input]="!isEditMode()">
+              </div>
+              <div class="field-group">
+                <label><i class="ph-facebook-logo"></i> Facebook</label>
+                <input type="text" formControlName="facebook" placeholder="https://facebook.com/" [class.readonly-input]="!isEditMode()">
+              </div>
+            </div>
+          </section>
+
+          @if (isEditMode()) {
+            <div class="form-actions">
+              <button class="btn btn-ghost" type="button" (click)="toggleMode($any({target: {checked: false}}))">Cancel</button>
+              <button class="btn btn-primary" type="submit" [disabled]="profileForm.invalid || isSaving() || !profileForm.dirty">
+                {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
+          }
+        </main>
+      </form>
+    </div>
+  }
+}

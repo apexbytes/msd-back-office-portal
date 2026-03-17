@@ -84,7 +84,7 @@ export class SubscriptionFormComponent implements OnInit {
     this.form = this.fb.group({
       userId: [this.userId() || '', [Validators.required]],
       type: ['VEHICLE', [Validators.required]],
-      durationMonths: [1, [Validators.required, Validators.min(1)]],
+      durationMonths: [1, [Validators.required]],
       uploadLimit: [1, [Validators.required, Validators.min(1)]],
       isOverride: [false],
     });
@@ -96,7 +96,7 @@ export class SubscriptionFormComponent implements OnInit {
       type: sub.type,
       durationMonths: sub.durationMonths || 1,
       uploadLimit: sub.uploadLimit,
-      isOverride: true, // Default to override if updating existing
+      isOverride: true,
     });
   }
 
@@ -110,8 +110,8 @@ export class SubscriptionFormComponent implements OnInit {
     const targetUserId = formValue.userId;
     const payload: GrantSubscriptionRequest = {
       type: formValue.type,
-      durationMonths: formValue.durationMonths,
-      uploadLimit: formValue.uploadLimit,
+      durationMonths: Number(formValue.durationMonths),
+      uploadLimit: Number(formValue.uploadLimit),
     };
 
     this.loadingService.show();

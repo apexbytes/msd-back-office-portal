@@ -4,6 +4,9 @@
     <span class="page-subtitle"><i class="ph ph-monitor-play"></i> Total: {{ totalCount() }}</span>
   </div>
   <div class="page-actions">
+    <button class="btn btn-secondary" (click)="onNotifyExpiring()">
+      <i class="ph ph-bell-ringing"></i> Notify Expiring
+    </button>
     <button class="btn btn-secondary">
       <i class="ph ph-download-simple"></i> Export
     </button>
@@ -53,7 +56,7 @@
       <tbody>
         @if (isLoading()) {
           <tr>
-            <td colspan="9" align="center">Loading subscriptions...</td>
+            <td colspan="9" align="center" style="padding: 2rem;">Loading subscriptions...</td>
           </tr>
         } @else {
           @for (sub of subscriptions(); track sub.id) {
@@ -64,7 +67,7 @@
                   <span class="checkmark"></span>
                 </label>
               </td>
-              <td>{{ sub.userId | slice:0:8 }}</td>
+              <td title="{{ sub.userId }}">{{ sub.userId | slice:0:8 }}...</td>
               <td>{{ sub.type }}</td>
               <td>
               <span class="status-badge" [class.active]="sub.status === 'ACTIVE'" [class.expired]="sub.status === 'EXPIRED' || sub.status === 'CANCELLED'">
@@ -80,18 +83,44 @@
                   <button class="action-icon"><i class="ph ph-dots-three"></i></button>
                   <div class="dropdown-menu">
                     <a href="javascript:void(0)" (click)="onEdit(sub)"><i class="ph ph-pencil-simple"></i> Edit</a>
-                    <a href="javascript:void(0)" class="danger" (click)="onDelete(sub)"><i class="ph ph-trash"></i> Delete</a>
+
+                    @if (sub.status === 'ACTIVE') {
+                      <a href="javascript:void(0)" class="danger" (click)="onCancel(sub)"><i class="ph ph-x-circle"></i> Cancel</a>
+                    }
                   </div>
                 </div>
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="9" align="center">No subscriptions found.</td>
+              <td colspan="9" align="center" style="padding: 2rem;">No subscriptions found.</td>
             </tr>
           }
         }
       </tbody>
     </table>
   </div>
+
+  <div class="table-pagination" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-top: 1px solid var(--a-border-color);">
+    <div class="pagination-info" style="color: var(--a-text-light); font-size: 0.875rem;">
+      Showing <strong>{{ showingFrom }}</strong> to <strong>{{ showingTo }}</strong> of <strong>{{ totalCount() }}</strong> entries
+    </div>
+    <div class="pagination-controls" style="display: flex; gap: 1rem; align-items: center;">
+      <div class="custom-select" style="min-width: 120px;">
+        <select (change)="onLimitChange($event)" [value]="limit()">
+          <option value="10">10 per page</option>
+          <option value="25">25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="100">100 per page</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <div class="page-buttons" style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" [disabled]="!hasPrev()" (click)="prevPage()"><i class="ph ph-caret-left"></i> Prev</button>
+        <span style="padding: 0 0.5rem; font-size: 0.875rem; font-weight: 500;">Page {{ currentPage() }} of {{ totalPages() || 1 }}</span>
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" [disabled]="!hasNext()" (click)="nextPage()">Next <i class="ph ph-caret-right"></i></button>
+      </div>
+    </div>
+  </div>
+
 </div>

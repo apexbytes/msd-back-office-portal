@@ -53,16 +53,17 @@
         </div>
 
         <div class="field-group">
-          <label for="durationMonths">Duration (Months) <span class="required">*</span></label>
-          <input
-            type="number"
-            id="durationMonths"
-            formControlName="durationMonths"
-            placeholder="e.g., 1"
-            [class]="getFieldClass('durationMonths')"
-          />
+          <label for="durationMonths">Duration <span class="required">*</span></label>
+          <div class="custom-select">
+            <select id="durationMonths" formControlName="durationMonths" [class]="getFieldClass('durationMonths')">
+              <option [ngValue]="1">1 Month</option>
+              <option [ngValue]="3">3 Months</option>
+              <option [ngValue]="6">6 Months</option>
+              <option [ngValue]="12">1 Year</option>
+            </select>
+          </div>
           @if (form.get('durationMonths')?.touched && form.get('durationMonths')?.errors) {
-            <span class="error-message">Duration must be at least 1 month.</span>
+            <span class="error-message">Please select a valid duration.</span>
           }
         </div>
 

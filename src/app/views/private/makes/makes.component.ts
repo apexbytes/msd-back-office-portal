@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { VehicleService } from '@app/core/services/vehicle.service';
@@ -23,23 +30,30 @@ export class MakesComponent implements OnInit {
 
   // --- Data State ---
   protected readonly allMakes = signal<VehicleMake[]>([]);
-  protected readonly totalCount = signal(0);
   protected readonly isLoading = signal(true);
 
   // --- Pagination State ---
   protected readonly currentPage = signal(1);
-  protected readonly pageSize = signal(10);
+  protected readonly limit = signal(10);
+  protected readonly totalCount = signal(0);
 
-  // Automatically recalculate the displayed subset when page or data changes
+  // Computed properties for client-side pagination matching the server-side interface
+  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.limit()) || 1);
+  protected readonly hasNext = computed(() => this.currentPage() < this.totalPages());
+  protected readonly hasPrev = computed(() => this.currentPage() > 1);
+
+  protected readonly showingFrom = computed(() =>
+    this.totalCount() === 0 ? 0 : (this.currentPage() - 1) * this.limit() + 1,
+  );
+
+  protected readonly showingTo = computed(() =>
+    Math.min(this.currentPage() * this.limit(), this.totalCount()),
+  );
+
   protected readonly paginatedMakes = computed(() => {
-    const start = (this.currentPage() - 1) * this.pageSize();
-    const end = start + this.pageSize();
+    const start = (this.currentPage() - 1) * this.limit();
+    const end = start + this.limit();
     return this.allMakes().slice(start, end);
-  });
-
-  // Automatically calculate total pages
-  protected readonly totalPages = computed(() => {
-    return Math.ceil(this.totalCount() / this.pageSize()) || 1;
   });
 
   ngOnInit(): void {
@@ -53,7 +67,12 @@ export class MakesComponent implements OnInit {
         const data = res.data?.makes || res.data || [];
         this.allMakes.set(data);
         this.totalCount.set(data.length);
-        this.currentPage.set(1);
+
+        // Safety check to reset page if limit/data changes push current page out of bounds
+        if (this.currentPage() > this.totalPages()) {
+          this.currentPage.set(1);
+        }
+
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -64,21 +83,25 @@ export class MakesComponent implements OnInit {
   }
 
   // --- Pagination Methods ---
-
   protected nextPage(): void {
-    if (this.currentPage() < this.totalPages()) {
+    if (this.hasNext()) {
       this.currentPage.update((p) => p + 1);
     }
   }
 
   protected prevPage(): void {
-    if (this.currentPage() > 1) {
+    if (this.hasPrev()) {
       this.currentPage.update((p) => p - 1);
     }
   }
 
-  // --- Actions ---
+  protected onLimitChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.limit.set(Number(select.value));
+    this.currentPage.set(1);
+  }
 
+  // --- Actions ---
   protected onViewModels(make: VehicleMake): void {
     this.dialog.open(ModelDialogComponent, {
       width: '800px',

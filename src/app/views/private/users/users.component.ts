@@ -7,13 +7,14 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService, QueryParams } from '@/app/core/services/user.service';
+import { UserService } from '@/app/core/services/user.service';
 import { User } from '@/app/core/models/user.model';
 import { MatDialog } from '@angular/material/dialog';
 import { UserFormComponent } from '@app/views/private/forms/user-form/user-form.component';
 import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-dialog.component';
 import { DeleteDialogData } from '@app/core/models/delete.interface';
 import { LoadingService } from '@app/core/services/loading.service';
+import { QueryParams } from '@app/core/services/role.service';
 
 @Component({
   selector: 'app-users',

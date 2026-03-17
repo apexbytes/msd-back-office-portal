@@ -91,27 +91,25 @@
     </table>
   </div>
 
-  @if (!isLoading() && totalCount() > 0) {
-    <div class="table-footer" style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--a-border-color);">
-      <div class="pagination-info" style="color: var(--a-text-light); font-size: 0.875rem;">
-        Showing {{ (currentPage() - 1) * pageSize() + (paginatedMakes().length ? 1 : 0) }}
-        to {{ (currentPage() - 1) * pageSize() + paginatedMakes().length }}
-        of {{ totalCount() }} entries
+  <div class="table-pagination" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-top: 1px solid var(--a-border-color);">
+    <div class="pagination-info" style="color: var(--a-text-light); font-size: 0.875rem;">
+      Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of <strong>{{ totalCount() }}</strong> entries
+    </div>
+    <div class="pagination-controls" style="display: flex; gap: 1rem; align-items: center;">
+      <div class="custom-select" style="min-width: 120px;">
+        <select (change)="onLimitChange($event)" [value]="limit()">
+          <option value="10">10 per page</option>
+          <option value="25">25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="100">100 per page</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
       </div>
-
-      <div class="pagination-controls" style="display: flex; gap: 0.5rem; align-items: center;">
-        <button class="btn btn-secondary btn-sm" [disabled]="currentPage() === 1" (click)="prevPage()" style="display: flex; align-items: center; gap: 4px;">
-          <i class="ph ph-caret-left"></i> Previous
-        </button>
-
-        <span style="font-size: 0.875rem; font-weight: 500; padding: 0 0.5rem;">
-          Page {{ currentPage() }} of {{ totalPages() }}
-        </span>
-
-        <button class="btn btn-secondary btn-sm" [disabled]="currentPage() === totalPages()" (click)="nextPage()" style="display: flex; align-items: center; gap: 4px;">
-          Next <i class="ph ph-caret-right"></i>
-        </button>
+      <div class="page-buttons" style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" [disabled]="!hasPrev()" (click)="prevPage()"><i class="ph ph-caret-left"></i> Prev</button>
+        <span style="padding: 0 0.5rem; font-size: 0.875rem; font-weight: 500;">Page {{ currentPage() }} of {{ totalPages() || 1 }}</span>
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" [disabled]="!hasNext()" (click)="nextPage()">Next <i class="ph ph-caret-right"></i></button>
       </div>
     </div>
-  }
+  </div>
 </div>
