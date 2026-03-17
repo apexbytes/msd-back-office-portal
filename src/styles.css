@@ -1868,6 +1868,12 @@ select:-webkit-autofill:focus {
   justify-content: flex-end;
 }
 
+.footer-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 .modal-footer .btn {
   min-width: 100px;
   justify-content: center;

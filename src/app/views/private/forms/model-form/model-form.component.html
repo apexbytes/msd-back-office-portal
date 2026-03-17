@@ -50,7 +50,7 @@
 </div>
 
 <div class="modal-footer">
-  <div class="footer-actions" style="margin-left: auto;">
+  <div class="footer-actions">
     <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="globalLoading()">Cancel</button>
     <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid || globalLoading()">
       @if (globalLoading()) {
