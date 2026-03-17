@@ -6,6 +6,7 @@ import {
   computed,
   PLATFORM_ID,
   OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -18,28 +19,24 @@ import { of } from 'rxjs';
 
 @Component({
   selector: 'app-otp',
+  standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './otp.component.html',
   styleUrl: './otp.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OtpComponent implements OnDestroy {
+export class OtpComponent implements OnInit, OnDestroy {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   protected readonly loadingService = inject(LoadingService);
 
+  // Toggle state
+  protected readonly useBackupCode = signal<boolean>(false);
+
   protected readonly otpForm = this.fb.group({
-    token: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(6),
-        Validators.maxLength(6),
-        Validators.pattern('^[0-9]*$'),
-      ],
-    ],
+    code: ['', [Validators.required]],
   });
 
   protected readonly resendCountdown = signal<number>(0);
@@ -49,10 +46,13 @@ export class OtpComponent implements OnDestroy {
   constructor() {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
-    }
-    else if (!this.authService.pendingCredentials()) {
+    } else if (!this.authService.pendingCredentials()) {
       this.router.navigate(['/login']);
     }
+  }
+
+  ngOnInit(): void {
+    this.setValidators();
   }
 
   ngOnDestroy(): void {
@@ -61,13 +61,37 @@ export class OtpComponent implements OnDestroy {
     }
   }
 
+  toggleMode(): void {
+    this.useBackupCode.set(!this.useBackupCode());
+    this.setValidators();
+    this.otpForm.reset();
+  }
+
+  private setValidators(): void {
+    const control = this.otpForm.get('code');
+    control?.clearValidators();
+
+    if (this.useBackupCode()) {
+      control?.setValidators([Validators.required, Validators.minLength(8)]);
+    } else {
+      // Standard 6-digit numeric OTP
+      control?.setValidators([
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(6),
+        Validators.pattern('^[0-9]*$'),
+      ]);
+    }
+    control?.updateValueAndValidity();
+  }
+
   onSubmit(): void {
     if (this.otpForm.invalid) {
       this.otpForm.markAllAsTouched();
       return;
     }
 
-    const { token } = this.otpForm.getRawValue();
+    const { code } = this.otpForm.getRawValue();
     const pendingCreds = this.authService.pendingCredentials();
 
     if (!pendingCreds) {
@@ -75,9 +99,10 @@ export class OtpComponent implements OnDestroy {
       return;
     }
 
+    // Attach either the mfaToken or backupCode based on the active mode
     const finalCredentials = {
       ...pendingCreds,
-      mfaToken: token,
+      ...(this.useBackupCode() ? { backupCode: code } : { mfaToken: code }),
     };
 
     this.authService
@@ -111,9 +136,7 @@ export class OtpComponent implements OnDestroy {
   }
 
   private startResendTimer(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
 
     this.resendCountdown.set(60);
     if (this.timerId) {

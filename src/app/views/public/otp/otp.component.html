@@ -6,34 +6,42 @@
           <img src="/logo.png" alt="Musondosi Logo">
         </div>
         <h1>MFA Verification</h1>
-        <p>Please enter the 6-digit code from your email.</p>
+        <p>
+          @if (useBackupCode()) {
+            Please enter one of your 8-digit backup codes.
+          } @else {
+            Please enter the 6-digit code from your email.
+          }
+        </p>
       </div>
 
       <form class="otp-form" [formGroup]="otpForm" (ngSubmit)="onSubmit()" novalidate>
         <div class="field-group">
-          <label for="token">
-            Verification Code
+          <label for="code">
+            {{ useBackupCode() ? 'Backup Code' : 'Verification Code' }}
             <span class="required" aria-hidden="true">*</span>
           </label>
           <input
             type="text"
-            id="token"
-            formControlName="token"
-            placeholder="0 0 0 0 0 0"
-            maxlength="6"
-            inputmode="numeric"
+            id="code"
+            formControlName="code"
+            [placeholder]="useBackupCode() ? 'Enter backup code' : '0 0 0 0 0 0'"
+            [attr.maxlength]="useBackupCode() ? null : 6"
+            [attr.inputmode]="useBackupCode() ? 'text' : 'numeric'"
             autocomplete="one-time-code"
-            [class.error]="otpForm.get('token')?.invalid && otpForm.get('token')?.touched"
+            [class.error]="otpForm.get('code')?.invalid && otpForm.get('code')?.touched"
             aria-required="true"
-            [attr.aria-invalid]="otpForm.get('token')?.invalid && otpForm.get('token')?.touched"
-            aria-describedby="token-error"
+            [attr.aria-invalid]="otpForm.get('code')?.invalid && otpForm.get('code')?.touched"
           >
-          @if (otpForm.get('token')?.invalid && otpForm.get('token')?.touched) {
-            <span class="error-message" id="token-error">
-              @if (otpForm.get('token')?.errors?.['required']) {
-                Verification code is required
-              } @else if (otpForm.get('token')?.errors?.['minlength'] || otpForm.get('token')?.errors?.['maxlength'] || otpForm.get('token')?.errors?.['pattern']) {
+
+          @if (otpForm.get('code')?.invalid && otpForm.get('code')?.touched) {
+            <span class="error-message">
+              @if (otpForm.get('code')?.errors?.['required']) {
+                {{ useBackupCode() ? 'Backup code' : 'Verification code' }} is required
+              } @else if (!useBackupCode() && (otpForm.get('code')?.errors?.['minlength'] || otpForm.get('code')?.errors?.['pattern'])) {
                 Code must be exactly 6 digits
+              } @else if (useBackupCode() && otpForm.get('code')?.errors?.['minlength']) {
+                Backup code is too short
               }
             </span>
           }
@@ -48,26 +56,38 @@
             <div class="spinner-small" style="margin-right: 8px;"></div>
             Verifying...
           } @else {
-            Verify Code
+            {{ useBackupCode() ? 'Use Backup Code' : 'Verify Code' }}
           }
         </button>
       </form>
 
-      <div class="resend-container">
-        <p>Didn't receive the code?</p>
-        <button
-          type="button"
-          class="resend-link"
-          [disabled]="!canResend() || loadingService.isLoading()"
-          (click)="onResend()"
-        >
-          @if (!canResend()) {
-            Resend in {{ resendCountdown() }}s
+      <div style="text-align: center; margin-top: 1.5rem;">
+        <button type="button" class="resend-link" (click)="toggleMode()">
+          @if (useBackupCode()) {
+            Use email verification code instead
           } @else {
-            Resend Code
+            Having trouble? Use a backup code
           }
         </button>
       </div>
+
+      @if (!useBackupCode()) {
+        <div class="resend-container" style="margin-top: 1rem; border-top: 1px solid var(--a-border-color); padding-top: 1rem;">
+          <p>Didn't receive the code?</p>
+          <button
+            type="button"
+            class="resend-link"
+            [disabled]="!canResend() || loadingService.isLoading()"
+            (click)="onResend()"
+          >
+            @if (!canResend()) {
+              Resend in {{ resendCountdown() }}s
+            } @else {
+              Resend Code
+            }
+          </button>
+        </div>
+      }
 
       <div class="login-footer">
         Back to <a routerLink="/login">Sign in</a>

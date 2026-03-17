@@ -1,0 +1,85 @@
+<div class="page-container" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+
+  <header style="margin-bottom: 2rem;">
+    <h1 style="font-size: 1.75rem; color: var(--a-text-main); margin-bottom: 0.5rem;">Security Settings</h1>
+    <p style="color: var(--a-text-light);">Manage your account's security protocols and multi-factor authentication.</p>
+  </header>
+
+  @if (isLoading()) {
+    <div style="text-align: center; padding: 3rem;">
+      <i class="ph ph-spinner ph-spin" style="font-size: 2rem; color: var(--primary);"></i>
+      <p style="margin-top: 1rem; color: var(--a-text-light);">Loading security data...</p>
+    </div>
+  } @else {
+    <section style="background: var(--a-bg-card); border: 1px solid var(--a-border-color); border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--a-border-color); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 1rem;">
+          <div [style.background]="mfaStatus()?.mfaEnabled ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)'"
+               [style.color]="mfaStatus()?.mfaEnabled ? '#10b981' : '#6b7280'"
+               style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <i class="ph ph-shield-check" style="font-size: 24px;"></i>
+          </div>
+          <div>
+            <h2 style="margin: 0 0 0.25rem; font-size: 1.25rem; font-weight: 600;">Multi-Factor Authentication (MFA)</h2>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+              <span>Status:</span>
+              @if (mfaStatus()?.mfaEnabled) {
+                <span style="color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                  <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span> Active
+                </span>
+              } @else {
+                <span style="color: #6b7280; font-weight: 600;">Disabled</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <button class="btn"
+                [class]="mfaStatus()?.mfaEnabled ? 'btn-secondary' : 'btn-primary'"
+                [disabled]="isActionLoading()"
+                (click)="toggleMFA()">
+          {{ isActionLoading() ? 'Processing...' : (mfaStatus()?.mfaEnabled ? 'Disable MFA' : 'Enable MFA') }}
+        </button>
+      </div>
+
+      @if (mfaStatus()?.mfaEnabled) {
+        <div style="background: var(--a-bg-sidebar); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--a-border-color);">
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h3 style="margin: 0 0 0.5rem; font-size: 1.1rem;">Backup Codes</h3>
+              <p style="margin: 0; color: var(--a-text-light); font-size: 0.9rem;">
+                Use these codes to log in if you lose access to your email.
+              </p>
+            </div>
+            <button class="btn btn-secondary" (click)="generateBackupCodes()" [disabled]="isActionLoading()">
+              <i class="ph ph-arrows-clockwise"></i> Generate New Codes
+            </button>
+          </div>
+
+          @if (mfaStatus()!.remainingBackupCodes <= 2) {
+            <div style="margin-top: 1rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; border-radius: 4px; display: flex; align-items: center; gap: 12px; color: #b45309;">
+              <i class="ph ph-warning-circle" style="font-size: 24px;"></i>
+              <div>
+                <strong>Warning:</strong> You only have {{ mfaStatus()!.remainingBackupCodes }} backup code(s) remaining.
+                Generate new ones to avoid getting locked out.
+              </div>
+            </div>
+          } @else {
+            <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--a-text-main); display: flex; align-items: center; gap: 8px;">
+              <i class="ph ph-key" style="color: #3b82f6;"></i>
+              <strong>{{ mfaStatus()!.remainingBackupCodes }}</strong> valid codes remaining.
+            </div>
+          }
+
+        </div>
+      } @else {
+        <p style="color: var(--a-text-light); font-size: 0.95rem; line-height: 1.5;">
+          Protect your account from unauthorized access by requiring a second authentication method in addition to your password. When enabled, a verification code will be sent to your registered email address every time you log in.
+        </p>
+      }
+
+    </section>
+  }
+</div>

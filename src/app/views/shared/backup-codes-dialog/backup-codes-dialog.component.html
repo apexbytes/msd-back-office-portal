@@ -1,0 +1,74 @@
+<div
+  class="modal-header"
+  style="border-bottom: 1px solid var(--a-border-color); padding: 1.5rem;"
+>
+  <h2 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+    <i class="ph ph-shield-check" style="color: #10b981;"></i> Save Backup Codes
+  </h2>
+</div>
+
+<div class="modal-body" style="padding: 1.5rem;">
+  <div
+    style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-left: 4px solid #ef4444; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;"
+  >
+    <p style="margin: 0; color: #ef4444; font-size: 0.9rem; font-weight: 500;">
+      <i class="ph ph-warning"></i> Warning: Copy or download these codes now. Once you close
+      this window, you will not be able to view them again!
+    </p>
+  </div>
+
+  <div
+    style="background: var(--a-bg-sidebar); border: 1px solid var(--a-border-color); border-radius: 8px; padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;"
+  >
+    @for (code of data.backupCodes; track code) {
+      <div
+        style="font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; text-align: center; background: var(--a-bg-card); padding: 0.5rem; border-radius: 4px; border: 1px dashed var(--a-border-color);"
+      >
+        {{ code }}
+      </div>
+    }
+  </div>
+
+  <div style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center;">
+    <button
+      class="btn btn-secondary"
+      (click)="copyToClipboard()"
+      style="display: flex; align-items: center; gap: 6px;"
+    >
+      <i class="ph ph-copy"></i> Copy to Clipboard
+    </button>
+    <button
+      class="btn btn-secondary"
+      (click)="downloadTxt()"
+      style="display: flex; align-items: center; gap: 6px;"
+    >
+      <i class="ph ph-download-simple"></i> Download .txt
+    </button>
+  </div>
+
+  <div
+    style="margin-top: 2rem; display: flex; align-items: center; gap: 8px; justify-content: center;"
+  >
+    <input
+      type="checkbox"
+      id="savedCheck"
+      [(ngModel)]="hasSaved"
+      style="width: 18px; height: 18px;"
+    />
+    <label
+      for="savedCheck"
+      style="cursor: pointer; color: var(--a-text-main); font-weight: 500;"
+    >
+      I have securely saved my backup codes.
+    </label>
+  </div>
+</div>
+
+<div
+  class="modal-footer"
+  style="padding: 1rem 1.5rem; border-top: 1px solid var(--a-border-color); display: flex; justify-content: flex-end;"
+>
+  <button class="btn btn-primary" [disabled]="!hasSaved()" (click)="onClose()">
+    Close Window
+  </button>
+</div>
