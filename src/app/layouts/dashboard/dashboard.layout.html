@@ -1,5 +1,5 @@
 <input type="checkbox" id="menu-toggle" hidden>
-<input type="checkbox" id="theme-toggle" hidden>
+<input type="checkbox" id="theme-toggle" hidden [checked]="themeService.isDark()" (change)="themeService.toggleTheme()">
 
 <div class="app-container">
 

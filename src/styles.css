@@ -73,7 +73,7 @@
 }
 
 /* Dark Theme (Triggered by the hidden checkbox) */
-body:has(#theme-toggle:checked) {
+body.dark-theme {
   --a-bg-app: #0a0a0a;
   --a-bg-sidebar: #121212;
   --a-bg-card: #1e1e1e;
@@ -293,7 +293,7 @@ body {
   padding-top: 16px;
 }
 
-/* Theme Switch Pill */
+/* --- Theme Switch Pill --- */
 .theme-switch {
   cursor: pointer;
   margin: 0 8px;
@@ -302,20 +302,21 @@ body {
 .switch-track {
   background-color: var(--a-toggle-bg);
   border-radius: 40px;
-  padding: 8px;
+  padding: 6px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   position: relative;
-  transition: all var(--transition-speed);
+  transition: background-color var(--transition-speed);
 }
 
 .switch-track i {
   font-size: 20px;
   z-index: 2;
-  width: 50%;
+  flex: 1;
   text-align: center;
-  color: var(--a-text-main);
+  color: var(--a-text-muted);
+  transition: color var(--transition-speed);
+  padding: 6px 0;
 }
 
 .switch-thumb {
@@ -327,14 +328,47 @@ body {
   background-color: var(--a-toggle-thumb);
   border-radius: 50px;
   z-index: 1;
-  transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1), background-color var(--transition-speed);
+  box-shadow: var(--shadow-s);
 }
 
-/* Dark mode thumb inversion */
-body:has(#theme-toggle:checked) .switch-thumb { background-color: #444; }
-body:has(#theme-toggle:checked) .switch-track i.ph-moon { color: #fff; }
-body:has(#theme-toggle:checked) .switch-thumb { transform: translateX(100%); }
+/* Light Mode Active State */
+body:not(.dark-theme) .switch-track i.ph-sun {
+  color: #f59e0b;
+}
+
+/* Dark Mode Active State */
+body.dark-theme .switch-thumb {
+  background-color: #2b2b36;
+  transform: translateX(100%);
+}
+
+body.dark-theme .switch-track i.ph-moon {
+  color: #60a5fa; /* Cool blue moon */
+}
+
+
+body:has(#menu-toggle:checked) .switch-track {
+  flex-direction: column;
+  padding: 6px;
+  gap: 0;
+}
+
+body:has(#menu-toggle:checked) .switch-track i {
+  width: 100%;
+}
+
+body:has(#menu-toggle:checked) .switch-thumb {
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  width: auto;
+  height: calc(50% - 6px);
+}
+
+body.dark-theme:has(#menu-toggle:checked) .switch-thumb {
+  transform: translateY(100%);
+}
 
 /* User Profile */
 .user-profile {
@@ -370,12 +404,16 @@ body:has(#menu-toggle:checked) .sidebar {
   padding-left: 12px;
   padding-right: 12px;
 }
+body:has(#menu-toggle:checked) .logo-container {
+  display: none;
+}
 
 body:has(#menu-toggle:checked) .brand-name,
 body:has(#menu-toggle:checked) .nav-text,
 body:has(#menu-toggle:checked) .user-name,
 body:has(#menu-toggle:checked) .brand-icon,
-body:has(#menu-toggle:checked) .user-options {
+body:has(#menu-toggle:checked) .user-options,
+body:has(#menu-toggle:checked) .logo-container {
   max-width: 0;
   opacity: 0;
   pointer-events: none;
@@ -420,7 +458,7 @@ body:has(#menu-toggle:checked) .switch-thumb {
   height: calc(50% - 6px);
 }
 
-body:has(#theme-toggle:checked):has(#menu-toggle:checked) .switch-thumb {
+body.dark-theme:has(#menu-toggle:checked) .switch-thumb {
   transform: translateY(100%);
 }
 
@@ -1069,10 +1107,10 @@ body:has(#theme-toggle:checked):has(#menu-toggle:checked) .switch-thumb {
 }
 
 /* Dark mode adjustment for unchecked toggle background */
-body:has(#theme-toggle:checked) .toggle-slider {
+body.dark-theme .toggle-slider {
   background-color: #3d3d3d;
 }
-body:has(#theme-toggle:checked) .toggle-slider:before {
+body.dark-theme .toggle-slider:before {
   background-color: #aaaaaa;
 }
 
@@ -1183,7 +1221,7 @@ body:has(#theme-toggle:checked) .toggle-slider:before {
 .status-sold .table-select { border-color: var(--a-text-light); color: var(--a-text-light); }
 .status-maintenance .table-select { border-color: #ffbd2e; color: #b2821b; }
 
-body:has(#theme-toggle:checked) .status-maintenance .table-select {
+body.dark-theme .status-maintenance .table-select {
   color: #ffbd2e;
 }
 
@@ -1880,11 +1918,11 @@ select:-webkit-autofill:focus {
 }
 
 /* Specific theme overrides for dark mode if needed (mostly handled by variables) */
-body:has(#theme-toggle:checked) .modal-overlay {
+body.dark-theme .modal-overlay {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-body:has(#theme-toggle:checked) .modal-container {
+body.dark-theme .modal-container {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
@@ -1932,7 +1970,7 @@ body:has(#theme-toggle:checked) .modal-container {
 }
 
 /* Specific theme overrides for dark mode background */
-body:has(#theme-toggle:checked) .spinner-overlay {
+body.dark-theme .spinner-overlay {
   background-color: rgba(10, 10, 10, 0.7);
 }
 
