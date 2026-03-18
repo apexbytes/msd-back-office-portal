@@ -1,0 +1,185 @@
+<header class="page-header">
+  <div class="page-title">
+    <h1>Vehicles</h1>
+    <span class="page-subtitle"><i class="ph ph-car"></i> Total: {{ totalCount() }} Vehicles</span>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary">
+      <i class="ph ph-download-simple"></i> Export data
+    </button>
+  </div>
+</header>
+
+<div class="table-card">
+  <div class="table-toolbar">
+    <div class="filters-group">
+      <div class="field-group">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="text" placeholder="Search vehicles..." (input)="onSearch($event)">
+      </div>
+      <div class="custom-select">
+        <select (change)="onStatusChange($event)">
+          <option value="">All Status</option>
+          <option value="FOR_SALE">For Sale</option>
+          <option value="DRAFT">Draft</option>
+          <option value="SOLD">Sold</option>
+          <option value="DELETED">Deleted</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <button class="btn-filter">
+        <i class="ph ph-faders"></i> All filters
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th width="40">
+          <label class="custom-checkbox master-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </th>
+        <th>IMAGE</th>
+        <th>VEHICLE <i class="ph ph-caret-up-down"></i></th>
+        <th>DETAILS <i class="ph ph-caret-up-down"></i></th>
+        <th>PRICE <i class="ph ph-caret-up-down"></i></th>
+        <th>STATUS <i class="ph ph-caret-up-down"></i></th>
+        <th>FEATURED</th>
+        <th align="right">ACTIONS</th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (isLoading()) {
+          <tr>
+            <td colspan="8" align="center" style="padding: 2rem;">Loading vehicles...</td>
+          </tr>
+        } @else {
+          @for (vehicle of vehicles(); track vehicle.id) {
+            <tr [style.opacity]="isUpdating(vehicle.id) ? '0.6' : '1'">
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+              <td>
+                @if (vehicle.images && vehicle.images.length > 0 && vehicle.images[0].url) {
+                  <div class="property-cell">
+                    <img [src]="vehicle.images[0].url" alt="Vehicle Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid var(--a-border-color);">
+                  </div>
+                } @else {
+                  <div class="property-cell">
+                    <div class="avatar-placeholder" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: var(--a-hover-bg); border-radius: 4px; color: var(--a-text-light);">
+                      <i class="ph ph-car"></i>
+                    </div>
+                  </div>
+                }
+              </td>
+
+              <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="(vehicle.make?.name || '') + ' ' + (vehicle.model?.name || '')">
+                <strong>{{ vehicle.year }} {{ vehicle.make?.name || 'Unknown Make' }} {{ vehicle.model?.name || 'Unknown Model' }}</strong><br>
+                <small style="color: var(--a-text-light);">{{ vehicle.location || 'Unknown Location' }}</small>
+              </td>
+
+              <td>
+                <span class="badge badge-outline">{{ vehicle.condition | titlecase }}</span><br>
+                <small style="color: var(--a-text-light);">{{ vehicle.mileage | number }} km</small>
+              </td>
+
+              <td>
+                <strong>USD {{ vehicle.price | number }}</strong>
+              </td>
+
+              <td>
+              <span class="status-badge"
+                    [class.active]="vehicle.status === 'FOR_SALE'"
+                    [class.inactive]="vehicle.status === 'DRAFT' || vehicle.status === 'SOLD'"
+                    [class.danger]="vehicle.status === 'DELETED'">
+                {{ vehicle.status === 'FOR_SALE' ? 'For Sale' : (vehicle.status | titlecase) }}
+              </span>
+              </td>
+
+              <td>
+                <label class="table-toggle" [class.disabled]="isUpdating(vehicle.id) || vehicle.status === 'DELETED'">
+                  <input type="checkbox"
+                         [checked]="vehicle.featured"
+                         [disabled]="isUpdating(vehicle.id) || vehicle.status === 'DELETED'"
+                         (click)="onToggleFeature(vehicle, $event)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </td>
+
+              <td>
+                <div class="actions-cell">
+                  @if (isUpdating(vehicle.id)) {
+                    <div class="spinner-small" style="margin-right: 15px;"></div>
+                  } @else {
+                    <div class="dropdown-container" tabindex="0">
+                      <button class="action-icon"><i class="ph ph-dots-three-vertical"></i></button>
+                      <div class="dropdown-menu">
+
+                        @if (vehicle.status !== 'DELETED') {
+                          <a (click)="onTogglePublish(vehicle)">
+                            @if (vehicle.status === 'FOR_SALE') {
+                              <i class="ph ph-eye-slash"></i> Unpublish
+                            } @else {
+                              <i class="ph ph-eye"></i> Publish
+                            }
+                          </a>
+                        }
+
+                        @if (vehicle.status === 'DELETED') {
+                          <a (click)="onUnban(vehicle)">
+                            <i class="ph ph-check-circle"></i> Unban
+                          </a>
+                        } @else {
+                          <a class="danger" (click)="onBan(vehicle)">
+                            <i class="ph ph-prohibit"></i> Ban
+                          </a>
+                        }
+
+                        <a class="danger" (click)="onDelete(vehicle)"><i class="ph ph-trash"></i> Delete</a>
+
+                      </div>
+                    </div>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" align="center" style="padding: 2rem;">No vehicles found.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-pagination" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-top: 1px solid var(--a-border-color);">
+    <div class="pagination-info" style="color: var(--a-text-light); font-size: 0.875rem;">
+      Showing <strong>{{ showingFrom }}</strong> to <strong>{{ showingTo }}</strong> of <strong>{{ totalCount() }}</strong> entries
+    </div>
+    <div class="pagination-controls" style="display: flex; gap: 1rem; align-items: center;">
+      <div class="custom-select" style="min-width: 120px;">
+        <select (change)="onLimitChange($event)" [value]="limit()">
+          <option value="10">10 per page</option>
+          <option value="25">25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="100">100 per page</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <div class="page-buttons" style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" [disabled]="!hasPrev()" (click)="prevPage()"><i class="ph ph-caret-left"></i> Prev</button>
+        <span style="padding: 0 0.5rem; font-size: 0.875rem; font-weight: 500;">Page {{ currentPage() }} of {{ totalPages() || 1 }}</span>
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" [disabled]="!hasNext()" (click)="nextPage()">Next <i class="ph ph-caret-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+</div>

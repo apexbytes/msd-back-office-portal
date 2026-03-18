@@ -1,0 +1,173 @@
+<header class="page-header">
+  <div class="page-title">
+    <h1>Support Tickets</h1>
+    <span class="page-subtitle"><i class="ph ph-ticket"></i> Total: {{ totalCount() }} Tickets</span>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary">
+      <i class="ph ph-download-simple"></i> Export
+    </button>
+  </div>
+</header>
+
+<div class="table-card">
+  <div class="table-toolbar">
+    <div class="filters-group">
+      <div class="field-group">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="text" placeholder="Search tickets..." (input)="onSearch($event)">
+      </div>
+      <div class="custom-select">
+        <select (change)="onStatusChange($event)">
+          <option value="">All Status</option>
+          <option value="OPEN">Open</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="RESOLVED">Resolved</option>
+          <option value="CLOSED">Closed</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <button class="btn-filter">
+        <i class="ph ph-faders"></i> Filter
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th width="40">
+          <label class="custom-checkbox master-checkbox">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+          </label>
+        </th>
+        <th>TICKET ID <i class="ph ph-caret-up-down"></i></th>
+        <th>USER / CLIENT <i class="ph ph-caret-up-down"></i></th>
+        <th>SUBJECT <i class="ph ph-caret-up-down"></i></th>
+        <th>PRIORITY <i class="ph ph-caret-up-down"></i></th>
+        <th>STATUS <i class="ph ph-caret-up-down"></i></th>
+        <th>ASSIGNEE <i class="ph ph-caret-up-down"></i></th>
+        <th>UPDATED <i class="ph ph-caret-up-down"></i></th>
+        <th align="right">ACTIONS</th>
+      </tr>
+      </thead>
+      <tbody>
+        @if (isLoading()) {
+          <tr>
+            <td colspan="9" align="center" style="padding: 2rem;">Loading tickets...</td>
+          </tr>
+        } @else {
+          @for (ticket of tickets(); track ticket.id) {
+            <tr [style.opacity]="isUpdating(ticket.id) ? '0.6' : '1'">
+              <td>
+                <label class="custom-checkbox">
+                  <input type="checkbox">
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+
+              <td><strong>{{ ticket.ticketUid }}</strong></td>
+
+              <td>
+                @if (ticket.user) {
+                  <strong>{{ ticket.user.companyName ? ticket.user.companyName : (ticket.user | fullName) }}</strong><br>
+                  <small style="color: var(--a-text-light);">{{ ticket.user.email || 'No email' }}</small>
+                } @else {
+                  <span style="color: var(--a-text-light);">Unknown User</span>
+                }
+              </td>
+
+              <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="ticket.subject">
+                <strong>{{ ticket.subject }}</strong><br>
+                <small style="color: var(--a-text-light);">{{ ticket.category | titlecase }}</small>
+              </td>
+
+              <td>
+                <span class="badge badge-outline"
+                      [class.danger]="ticket.priority === 'URGENT' || ticket.priority === 'HIGH'">
+                  {{ ticket.priority }}
+                </span>
+              </td>
+
+              <td>
+                <span class="status-badge"
+                      [class.active]="ticket.status === 'OPEN' || ticket.status === 'IN_PROGRESS'"
+                      [class.inactive]="ticket.status === 'RESOLVED'"
+                      [class.expired]="ticket.status === 'CLOSED'">
+                  {{ ticket.status }}
+                </span>
+              </td>
+
+              <td>
+                @if (ticket.assignee) {
+                  <span>{{ ticket.assignee | fullName }}</span>
+                } @else {
+                  <span class="badge badge-outline">Unassigned</span>
+                }
+              </td>
+
+              <td>{{ ticket.updatedAt | date:'short' }}</td>
+
+              <td>
+                <div class="actions-cell">
+                  @if (isUpdating(ticket.id)) {
+                    <div class="spinner-small" style="margin-right: 15px;"></div>
+                  } @else {
+                    <button class="btn btn-secondary btn-sm" style="margin-right: 10px;" (click)="onViewDetails(ticket)">
+                      <i class="ph ph-chat-circle-text"></i> View
+                    </button>
+
+                    <div class="dropdown-container" tabindex="0">
+                      <button class="action-icon"><i class="ph ph-dots-three-vertical"></i></button>
+                      <div class="dropdown-menu">
+                        @if (ticket.status === 'OPEN') {
+                          <a (click)="onMarkInProgress(ticket)"><i class="ph ph-play-circle"></i> Mark In Progress</a>
+                        }
+                        @if (ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED') {
+                          <a (click)="onResolve(ticket)"><i class="ph ph-check-circle"></i> Mark Resolved</a>
+                          <a class="danger" (click)="onClose(ticket)"><i class="ph ph-x-circle"></i> Close Ticket</a>
+                        }
+                        @if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
+                          <a (click)="onReopen(ticket)"><i class="ph ph-arrow-counter-clockwise"></i> Reopen Ticket</a>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" align="center" style="padding: 2rem;">No support tickets found.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-pagination" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-top: 1px solid var(--a-border-color);">
+    <div class="pagination-info" style="color: var(--a-text-light); font-size: 0.875rem;">
+      Showing <strong>{{ showingFrom }}</strong> to <strong>{{ showingTo }}</strong> of <strong>{{ totalCount() }}</strong> entries
+    </div>
+    <div class="pagination-controls" style="display: flex; gap: 1rem; align-items: center;">
+      <div class="custom-select" style="min-width: 120px;">
+        <select (change)="onLimitChange($event)" [value]="limit()">
+          <option value="10">10 per page</option>
+          <option value="25">25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="100">100 per page</option>
+        </select>
+        <i class="ph ph-caret-down"></i>
+      </div>
+      <div class="page-buttons" style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" [disabled]="!hasPrev()" (click)="prevPage()"><i class="ph ph-caret-left"></i> Prev</button>
+        <span style="padding: 0 0.5rem; font-size: 0.875rem; font-weight: 500;">Page {{ currentPage() }} of {{ totalPages() || 1 }}</span>
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem;" [disabled]="!hasNext()" (click)="nextPage()">Next <i class="ph ph-caret-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+</div>

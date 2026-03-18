@@ -1,0 +1,26 @@
+.field-group {
+  position: relative;
+  padding-left: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--form-border-default);
+  margin-bottom: 0 !important;
+}
+.field-group input {
+  border: none;
+  outline: none !important;
+}
+.field-group input:focus {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transform: scale(1);
+}
+
+
+.field-group i {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--a-text-muted);
+}
