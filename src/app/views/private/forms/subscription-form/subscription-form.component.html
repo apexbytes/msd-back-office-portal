@@ -1,14 +1,17 @@
-<div class="profile-info-card">
-  <div class="modal-header">
-    <h2>{{ isEditMode() ? 'Update' : 'Grant' }} Subscription</h2>
-    <button type="button" class="modal-close" (click)="onCancel()">
-      <i class="ph ph-x"></i>
-    </button>
+<div class="profile-info-card" style="margin: 0; display: flex; flex-direction: column; max-height: 90vh;">
+  <div class="dialog-header">
+    <h4 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+      <i class="ph" [class.ph-calendar-plus]="!isEditMode()" [class.ph-pencil-simple]="isEditMode()" style="color: var(--primary); font-size: 1.5rem;"></i>
+      {{ isEditMode() ? 'Update' : 'Grant' }} Subscription
+    </h4>
+    <a class="close_dialog" (click)="onCancel()"><i class="ph ph-x"></i></a>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" id="subscription-form-wrapper">
-    <div class="modal-body">
-      <div class="fields-row">
+  <div class="dialog-content" style="padding: 24px; background: var(--a-bg-app); flex: 1; overflow-y: auto;">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" id="subscription-form-wrapper">
+
+      <h5 class="section-title">Recipient Information</h5>
+      <div class="form-grid">
         <div class="field-group full-width">
           <label for="userId">Client / User <span class="required">*</span></label>
           <div class="custom-select">
@@ -30,7 +33,10 @@
             <span class="error-message">Client selection is required.</span>
           }
         </div>
+      </div>
 
+      <h5 class="section-title">Subscription Details</h5>
+      <div class="form-grid">
         <div class="field-group">
           <label for="type">Subscription Type <span class="required">*</span></label>
           <div class="custom-select">
@@ -42,14 +48,6 @@
           @if (form.get('type')?.touched && form.get('type')?.errors?.['required']) {
             <span class="error-message">Type is required.</span>
           }
-        </div>
-
-        <div class="field-group unique-checkbox">
-          <label class="custom-checkbox">
-            <input type="checkbox" formControlName="isOverride" />
-            <span class="checkmark"></span>
-            <span class="checkmaker-label" style="display: block;margin-left: 1.5rem;white-space: nowrap;">Explicit Override (Do not mathematically add to existing limit)</span>
-          </label>
         </div>
 
         <div class="field-group">
@@ -80,20 +78,32 @@
             <span class="error-message">Upload limit must be at least 1.</span>
           }
         </div>
-      </div>
-    </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="onReset()">
-        {{ isEditMode() ? 'Reset' : 'Clear' }}
-      </button>
-      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || globalLoading()">
-        @if (!globalLoading()) {
-          <span>{{ isEditMode() ? 'Update' : 'Grant' }}</span>
-        } @else {
-          <div class="spinner-small"></div>
-        }
-      </button>
-    </div>
-  </form>
+        <div class="field-group unique-checkbox" style="display: flex; align-items: flex-end; padding-bottom: 10px;">
+          <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 0; cursor: pointer;">
+            <input type="checkbox" formControlName="isOverride" />
+            <span style="font-size: 0.9rem; color: var(--a-text-main);">Explicit Override</span>
+          </label>
+        </div>
+        <div class="full-width">
+           <small class="text-muted" style="margin-top: -10px; margin-bottom: 10px; display: block;">If checked, this will set the limit exactly as specified rather than adding to it.</small>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="dialog-actions">
+    <button type="button" class="btn btn-secondary" (click)="onReset()">
+      {{ isEditMode() ? 'Reset' : 'Clear' }}
+    </button>
+    <button type="submit" (click)="onSubmit()" class="btn btn-primary" [disabled]="form.invalid || globalLoading()">
+      @if (!globalLoading()) {
+        <i class="ph ph-floppy-disk" style="margin-right: 4px;"></i>
+        <span>{{ isEditMode() ? 'Update' : 'Grant' }} Subscription</span>
+      } @else {
+        <div class="spinner-small" style="margin-right: 8px;"></div> Processing...
+      }
+    </button>
+  </div>
 </div>

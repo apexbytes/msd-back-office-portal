@@ -1,180 +1,126 @@
-<div class="profile-info-card">
-  <div class="modal-header">
-    <h2>{{ isEditMode() ? 'Update' : 'Create' }} Advert</h2>
-    <button type="button" class="modal-close" (click)="onCancel()">
-      <i class="ph ph-x"></i>
-    </button>
+<div class="profile-info-card" style="margin: 0; display: flex; flex-direction: column; max-height: 90vh;">
+
+  <div class="dialog-header">
+    <h4 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+      <i class="ph" [class.ph-megaphone]="!isEditMode()" [class.ph-pencil-simple]="isEditMode()" style="color: var(--primary); font-size: 1.5rem;"></i>
+      {{ isEditMode() ? 'Update Advert' : 'Create Advert' }}
+    </h4>
+    <a class="close_dialog" (click)="onCancel()"><i class="ph ph-x"></i></a>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" id="advert-form-wrapper">
-    <div class="modal-body">
-      <div class="fields-row">
-        <!-- Title -->
-        <div class="field-group">
-          <label for="title">Title <span class="required">*</span></label>
-          <input
-            type="text"
-            id="title"
-            formControlName="title"
-            placeholder="Enter advert title"
-            [class]="getFieldClass('title')"
-          />
+  <div class="dialog-content" style="padding: 24px; background: var(--a-bg-app); flex: 1; overflow-y: auto;">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="file-upload-section">
+        <div class="upload-preview">
+          @if (previewUrl()) {
+            <img [src]="previewUrl()" alt="Advert Image">
+          } @else {
+            <i class="ph ph-image"></i>
+          }
+          @if (isUploading()) {
+            <div class="upload-overlay"><div class="spinner-small"></div></div>
+          }
+        </div>
+        <div class="upload-actions">
+          <label class="btn btn-secondary btn-sm" [class.disabled]="isUploading()">
+            <i class="ph ph-upload-simple"></i> Upload Banner
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" [disabled]="isUploading()">
+          </label>
+          <small class="text-muted">Recommended: High resolution JPG/PNG</small>
+          @if (previewUrl() && !isUploading()) {
+            <button type="button" class="btn btn-sm text-danger" style="margin-top: 4px; padding: 4px 8px; background: none; border: none;" (click)="onRemoveImage()">
+              <i class="ph ph-trash"></i> Remove Image
+            </button>
+          }
+        </div>
+        @if (form.get('media')?.touched && form.get('media')?.errors?.['required']) {
+          <span class="error-message" style="margin-left: auto;">Media is required.</span>
+        }
+        @if (form.get('media')?.errors?.['uploadFailed']) {
+          <span class="error-message" style="margin-left: auto;">Media failed to upload.</span>
+        }
+      </div>
+
+      <div class="form-grid">
+
+        <div class="field-group full-width">
+          <label>Campaign Title <span class="required">*</span></label>
+          <input type="text" formControlName="title" placeholder="e.g. Summer Sale 2026" [class]="getFieldClass('title')">
           @if (form.get('title')?.touched && form.get('title')?.errors?.['required']) {
-            <span class="error-message">
-              Title is required.
-            </span>
+            <small class="error-message">Title is required.</small>
           }
           @if (form.get('title')?.touched && form.get('title')?.errors?.['minlength']) {
-            <span class="error-message">
-              Title must be at least 3 characters.
-            </span>
+            <small class="error-message">Title must be at least 3 characters.</small>
           }
         </div>
 
-        <!-- Lifespan Days -->
+        <div class="field-group full-width">
+          <label>Description <span class="required">*</span></label>
+          <textarea formControlName="description" rows="3" placeholder="Enter advert description" [class]="getFieldClass('description')"></textarea>
+          @if (form.get('description')?.touched && form.get('description')?.errors?.['required']) {
+            <small class="error-message">Description is required.</small>
+          }
+        </div>
+
         <div class="field-group">
-          <label for="lifespanDays">Lifespan (Days) <span class="required">*</span></label>
+          <label>Lifespan (Days) <span class="required">*</span></label>
           <div class="custom-select">
-            <select
-              id="lifespanDays"
-              formControlName="lifespanDays"
-              [class]="getFieldClass('lifespanDays')"
-            >
+            <select formControlName="lifespanDays" [class]="getFieldClass('lifespanDays')">
               <option [value]="7">7 Days</option>
               <option [value]="14">14 Days</option>
               <option [value]="30">30 Days</option>
             </select>
-            <i class="ph ph-caret-down"></i>
           </div>
-          @if (form.get('lifespanDays')?.touched && form.get('lifespanDays')?.errors) {
-            <span class="error-message">
-              Lifespan is required.
-            </span>
-          }
         </div>
 
-        <!-- Description -->
-        <div class="field-group full-width">
-          <label for="description">Description <span class="required">*</span></label>
-          <textarea
-            id="description"
-            formControlName="description"
-            placeholder="Enter advert description"
-            [class]="getFieldClass('description')"
-          ></textarea>
-          @if (form.get('description')?.touched && form.get('description')?.errors) {
-            <span class="error-message">
-              Description is required.
-            </span>
-          }
-        </div>
-
-        <!-- Website URL -->
         <div class="field-group">
-          <label for="websiteUrl">Website URL</label>
-          <input
-            type="text"
-            id="websiteUrl"
-            formControlName="websiteUrl"
-            placeholder="https://example.com"
-          />
+          <label>Status</label>
+          <div style="display: flex; align-items: center; gap: 12px; height: 40px;">
+            <label class="table-toggle">
+              <input type="checkbox" formControlName="published" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-weight: 600; color: var(--a-text-dark);">
+              {{ form.get("published")?.value ? "Published" : "Draft" }}
+            </span>
+          </div>
         </div>
 
-        <!-- Contact Email -->
         <div class="field-group">
-          <label for="contactEmail">Contact Email</label>
-          <input
-            type="email"
-            id="contactEmail"
-            formControlName="contactEmail"
-            placeholder="contact@example.com"
-            [class]="getFieldClass('contactEmail')"
-          />
+          <label>Destination URL</label>
+          <div class="input-with-icon">
+            <i class="ph ph-link"></i>
+            <input type="url" formControlName="websiteUrl" placeholder="https://example.com" style="padding-left: 36px;">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Contact Email</label>
+          <div class="input-with-icon">
+            <i class="ph ph-envelope-simple"></i>
+            <input type="email" formControlName="contactEmail" placeholder="contact@example.com" style="padding-left: 36px;" [class]="getFieldClass('contactEmail')">
+          </div>
           @if (form.get('contactEmail')?.touched && form.get('contactEmail')?.errors) {
-            <span class="error-message">
-              Please enter a valid email.
-            </span>
+            <small class="error-message">Please enter a valid email.</small>
           }
         </div>
 
-        <!-- Media Upload -->
-        <div class="field-group full-width">
-          <label>Media <span class="required">*</span></label>
-          <div class="avatar-upload-container" style="width: 100%; height: auto; min-height: 200px;">
-            <div class="avatar-preview-wrapper" style="width: 100%; height: 200px; border-radius: 12px; overflow: hidden; background: var(--a-hover-bg); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--a-border-color); position: relative;">
-              @if (previewUrl()) {
-                <img [src]="previewUrl()" class="avatar-preview" style="width: 100%; height: 100%; object-fit: contain; border-radius: 0;" />
-              }
-              @if (!previewUrl()) {
-                <div class="text-center" style="color: var(--a-text-light);">
-                  <i class="ph ph-image" style="font-size: 48px;"></i>
-                  <p>No image selected</p>
-                </div>
-              }
-              @if (isUploading()) {
-                <div class="spinner-overlay" style="position: absolute; background: rgba(0,0,0,0.5); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
-                  <div class="spinner-small"></div>
-                </div>
-              }
-
-              @if (previewUrl() && !isUploading()) {
-                <button
-                  type="button"
-                  class="remove-image-btn"
-                  (click)="onRemoveImage()"
-                  title="Remove image"
-                  style="position: absolute; top: 10px; right: 10px;"
-                >
-                  <i class="ph ph-trash"></i>
-                </button>
-              }
-            </div>
-
-            @if (!isUploading()) {
-              <label for="media" class="avatar-edit-btn" style="position: absolute; bottom: 10px; right: 10px; cursor: pointer;">
-                <i class="ph ph-camera"></i>
-              </label>
-            }
-            <input
-              type="file"
-              id="media"
-              (change)="onFileSelected($event)"
-              accept="image/*"
-              style="display: none;"
-            />
-          </div>
-
-          @if (form.get('media')?.touched && form.get('media')?.errors?.['required']) {
-            <span class="error-message">Media is required.</span>
-          }
-          @if (form.get('media')?.errors?.['uploadFailed']) {
-            <span class="error-message">Media failed to upload to the server. Please try again.</span>
-          }
-        </div>
-
-        <!-- Published Toggle -->
-        <div class="field-group">
-          <label>Published</label>
-          <label class="table-toggle">
-            <input type="checkbox" formControlName="published" />
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
       </div>
-    </div>
+    </form>
+  </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="onReset()">
-        {{ isEditMode() ? 'Reset' : 'Clear' }}
-      </button>
-      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isUploading() || globalLoading()">
-        @if (!isUploading() && !globalLoading()) {
-          <span>{{ isEditMode() ? 'Update' : 'Create' }}</span>
-        }
-        @if (isUploading() || globalLoading()) {
-          <div class="spinner-small"></div>
-        }
-      </button>
-    </div>
-  </form>
+  <div class="dialog-actions" style="padding: 16px 24px; border-top: 1px solid var(--a-border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--a-bg-card);">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isUploading() || globalLoading()">
+      Cancel
+    </button>
+    <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid || isUploading() || globalLoading()">
+      @if (isUploading() || globalLoading()) {
+        <div class="spinner-small" style="margin-right: 8px;"></div> Saving...
+      } @else {
+        <i class="ph ph-floppy-disk"></i> {{ isEditMode() ? 'Update Advert' : 'Create Advert' }}
+      }
+    </button>
+  </div>
+
 </div>

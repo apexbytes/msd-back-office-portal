@@ -1,172 +1,72 @@
-<div class="profile-info-card">
-  <div class="modal-header">
-    <h2>{{ isEditMode() ? 'Update' : 'Create' }} Partner</h2>
-    <button type="button" class="modal-close" (click)="onCancel()">
-      <i class="ph ph-x"></i>
-    </button>
+<div class="profile-info-card" style="margin: 0; display: flex; flex-direction: column; max-height: 90vh;">
+  <div class="dialog-header">
+    <h4 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+      <i class="ph" [class.ph-handshake]="!isEditMode()" [class.ph-pencil-simple]="isEditMode()" style="color: var(--primary); font-size: 1.5rem;"></i>
+      {{ isEditMode() ? 'Update Partner' : 'Create Partner' }}
+    </h4>
+    <a class="close_dialog" (click)="onCancel()"><i class="ph ph-x"></i></a>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" id="partner-form-wrapper">
-    <div class="modal-body">
-      <div class="fields-row">
-        <!-- Name -->
+  <div class="dialog-content" style="padding: 24px; background: var(--a-bg-app); flex: 1; overflow-y: auto;">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="file-upload-section">
+        <div class="upload-preview">
+          @if (previewUrl()) { <img [src]="previewUrl()" alt="Partner Logo"> } @else { <i class="ph ph-buildings"></i> }
+          @if (isUploading()) { <div class="upload-overlay"><div class="spinner-small"></div></div> }
+        </div>
+        <div class="upload-actions">
+          <label class="btn btn-secondary btn-sm" [class.disabled]="isUploading()">
+            <i class="ph ph-upload-simple"></i> Upload Logo
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" [disabled]="isUploading()">
+          </label>
+        </div>
+      </div>
+
+      <div class="form-grid">
         <div class="field-group">
-          <label for="name">Name <span class="required">*</span></label>
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            placeholder="Enter partner name"
-            [class]="getFieldClass('name')"
-          />
-          @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
-            <span class="error-message">
-              Name is required.
-            </span>
-          }
-          @if (form.get('name')?.touched && form.get('name')?.errors?.['minlength']) {
-            <span class="error-message">
-              Name must be at least 2 characters.
-            </span>
-          }
+          <label>Name <span class="required">*</span></label>
+          <input type="text" formControlName="name" placeholder="Enter partner name" [class]="getFieldClass('name')" />
+          @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) { <small class="error-message">Name is required.</small> }
         </div>
 
-        <!-- Website -->
         <div class="field-group">
-          <label for="website">Website URL</label>
-          <input
-            type="text"
-            id="website"
-            formControlName="website"
-            placeholder="https://example.com"
-            [class]="getFieldClass('website')"
-          />
-          @if (form.get('website')?.touched && form.get('website')?.errors?.['pattern']) {
-            <span class="error-message">
-              Please enter a valid URL (starting with http:// or https://).
-            </span>
-          }
+          <label>Website URL</label>
+          <div class="input-with-icon">
+            <i class="ph ph-globe"></i>
+            <input type="text" formControlName="website" placeholder="https://example.com" [class]="getFieldClass('website')" style="padding-left: 36px;" />
+          </div>
         </div>
 
-        <!-- Partnership Level -->
         <div class="field-group">
-          <label for="partnershipLevel">Partnership Level <span class="required">*</span></label>
+          <label>Partnership Level <span class="required">*</span></label>
           <div class="custom-select">
-            <select id="partnershipLevel" formControlName="partnershipLevel" [class]="getFieldClass('partnershipLevel')">
+            <select formControlName="partnershipLevel" [class]="getFieldClass('partnershipLevel')">
               @for (level of partnershipLevels; track level.value) {
                 <option [value]="level.value">{{ level.label }}</option>
               }
             </select>
           </div>
-          @if (form.get('partnershipLevel')?.touched && form.get('partnershipLevel')?.errors) {
-            <span class="error-message">
-              Partnership level is required.
-            </span>
-          }
         </div>
 
-        <!-- Status -->
         <div class="field-group">
-          <label for="status">Status <span class="required">*</span></label>
+          <label>Status <span class="required">*</span></label>
           <div class="custom-select">
-            <select id="status" formControlName="status" [class]="getFieldClass('status')">
+            <select formControlName="status" [class]="getFieldClass('status')">
               @for (status of statuses; track status.value) {
                 <option [value]="status.value">{{ status.label }}</option>
               }
             </select>
           </div>
-          @if (form.get('status')?.touched && form.get('status')?.errors) {
-            <span class="error-message">
-              Status is required.
-            </span>
-          }
-        </div>
-
-        <!-- Description -->
-        <div class="field-group full-width">
-          <label for="description">Description <span class="required">*</span></label>
-          <textarea
-            id="description"
-            formControlName="description"
-            placeholder="Enter partner description"
-            [class]="getFieldClass('description')"
-          ></textarea>
-          @if (form.get('description')?.touched && form.get('description')?.errors) {
-            <span class="error-message">
-              Description is required.
-            </span>
-          }
-        </div>
-
-        <!-- Logo Upload -->
-        <div class="field-group full-width">
-          <label>Logo <span class="required">*</span></label>
-          <div class="avatar-upload-container" style="width: 100%; height: auto; min-height: 200px;">
-            <div class="avatar-preview-wrapper" style="width: 100%; height: 200px; border-radius: 12px; overflow: hidden; background: var(--a-hover-bg); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--a-border-color); position: relative;">
-              @if (previewUrl()) {
-                <img [src]="previewUrl()" class="avatar-preview" style="width: 100%; height: 100%; object-fit: contain; border-radius: 0;" />
-              }
-              @if (!previewUrl()) {
-                <div class="text-center" style="color: var(--a-text-light);">
-                  <i class="ph ph-image" style="font-size: 48px;"></i>
-                  <p>No logo selected</p>
-                </div>
-              }
-              @if (isUploading()) {
-                <div class="spinner-overlay" style="position: absolute; background: rgba(0,0,0,0.5); width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
-                  <div class="spinner-small"></div>
-                </div>
-              }
-
-              @if (previewUrl() && !isUploading()) {
-                <button
-                  type="button"
-                  class="remove-image-btn"
-                  (click)="onRemoveLogo()"
-                  title="Remove logo"
-                  style="position: absolute; top: 10px; right: 10px;"
-                >
-                  <i class="ph ph-trash"></i>
-                </button>
-              }
-            </div>
-
-            @if (!isUploading()) {
-              <label for="logo" class="avatar-edit-btn" style="position: absolute; bottom: 10px; right: 10px; cursor: pointer;">
-                <i class="ph ph-camera"></i>
-              </label>
-            }
-            <input
-              type="file"
-              id="logo"
-              (change)="onFileSelected($event)"
-              accept="image/*"
-              style="display: none;"
-            />
-          </div>
-
-          @if (form.get('logo')?.touched && form.get('logo')?.errors?.['required']) {
-            <span class="error-message">Logo is required.</span>
-          }
-          @if (form.get('logo')?.errors?.['uploadFailed']) {
-            <span class="error-message">Logo failed to upload to the server. Please try again.</span>
-          }
         </div>
       </div>
-    </div>
+    </form>
+  </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="onReset()">
-        {{ isEditMode() ? 'Reset' : 'Clear' }}
-      </button>
-      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isUploading() || globalLoading()">
-        @if (!isUploading() && !globalLoading()) {
-          <span>{{ isEditMode() ? 'Update' : 'Create' }}</span>
-        }
-        @if (isUploading() || globalLoading()) {
-          <div class="spinner-small"></div>
-        }
-      </button>
-    </div>
-  </form>
+  <div class="dialog-actions" style="padding: 16px 24px; border-top: 1px solid var(--a-border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--a-bg-card);">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isUploading() || globalLoading()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid || isUploading() || globalLoading()">
+      @if (isUploading() || globalLoading()) { <div class="spinner-small" style="margin-right: 8px;"></div> Saving... } @else { <i class="ph ph-floppy-disk"></i> {{ isEditMode() ? 'Save Changes' : 'Create Partner' }} }
+    </button>
+  </div>
 </div>

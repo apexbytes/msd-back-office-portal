@@ -1,213 +1,75 @@
-<div class="profile-info-card">
-  <div class="modal-header">
-    <h2>{{ isEditMode() ? 'Update' : 'Create' }} Testimonial</h2>
-    <button type="button" class="modal-close" (click)="onCancel()">
-      <i class="ph ph-x"></i>
-    </button>
+<div class="profile-info-card" style="margin: 0; display: flex; flex-direction: column; max-height: 90vh;">
+  <div class="dialog-header">
+    <h4 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+      <i class="ph" [class.ph-chat-circle-quote]="!isEditMode()" [class.ph-pencil-simple]="isEditMode()" style="color: var(--primary); font-size: 1.5rem;"></i>
+      {{ isEditMode() ? 'Update Testimonial' : 'Create Testimonial' }}
+    </h4>
+    <a class="close_dialog" (click)="onCancel()"><i class="ph ph-x"></i></a>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" id="testimonial-form-wrapper">
-    <div class="modal-body">
-      <div class="fields-row">
-        <!-- Name -->
-        <div class="field-group">
-          <label for="name">Name <span class="required">*</span></label>
-          <input
-            type="text"
-            id="name"
-            formControlName="name"
-            placeholder="Enter person's name"
-            [class]="getFieldClass('name')"
-          />
-          @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
-            <span class="error-message"> Name is required. </span>
-          }
-          @if (form.get('name')?.touched && form.get('name')?.errors?.['minlength']) {
-            <span class="error-message"> Name must be at least 2 characters. </span>
-          }
-        </div>
+  <div class="dialog-content" style="padding: 24px; background: var(--a-bg-app); flex: 1; overflow-y: auto;">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-        <!-- Designation -->
-        <div class="field-group">
-          <label for="designation">Designation</label>
-          <input
-            type="text"
-            id="designation"
-            formControlName="designation"
-            placeholder="e.g., CEO, Manager"
-          />
+      <div class="file-upload-section">
+        <div class="upload-preview circle">
+          @if (previewUrl()) { <img [src]="previewUrl()" alt="Avatar"> } @else { <i class="ph ph-user"></i> }
+          @if (isUploading()) { <div class="upload-overlay"><div class="spinner-small"></div></div> }
         </div>
+        <div class="upload-actions">
+          <label class="btn btn-secondary btn-sm" [class.disabled]="isUploading()">
+            <i class="ph ph-upload-simple"></i> Client Avatar
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" [disabled]="isUploading()">
+          </label>
+        </div>
+      </div>
 
-        <!-- Company -->
+      <div class="form-grid">
         <div class="field-group">
-          <label for="company">Company</label>
-          <input type="text" id="company" formControlName="company" placeholder="Company name" />
+          <label>Name <span class="required">*</span></label>
+          <input type="text" formControlName="name" placeholder="Enter person's name" [class]="getFieldClass('name')" />
+          @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) { <small class="error-message">Name is required.</small> }
         </div>
 
         <div class="field-group">
-          <label for="company">Company</label>
-          <input type="text" id="company" formControlName="company" placeholder="Company name" />
+          <label>Rating</label>
+          <input type="number" formControlName="rating" min="1" max="5" placeholder="1-5" [class]="getFieldClass('rating')" />
         </div>
 
         <div class="field-group">
-          <label for="status">Status <span class="required">*</span></label>
-          <div class="custom-select" style="width: 100%;">
-            <select id="status" formControlName="status" [class]="getFieldClass('status')" style="width: 100%;">
+          <label>Designation</label>
+          <input type="text" formControlName="designation" placeholder="e.g., CEO, Manager" />
+        </div>
+
+        <div class="field-group">
+          <label>Company</label>
+          <input type="text" formControlName="company" placeholder="Company name" />
+        </div>
+
+        <div class="field-group full-width">
+          <label>Testimonial Content <span class="required">*</span></label>
+          <textarea formControlName="message" rows="4" placeholder="What did the client say?" [class]="getFieldClass('message')"></textarea>
+          @if (form.get('message')?.touched && form.get('message')?.errors?.['required']) { <small class="error-message">Content is required.</small> }
+        </div>
+
+        <div class="field-group">
+          <label>Status <span class="required">*</span></label>
+          <div class="custom-select">
+            <select formControlName="status" [class]="getFieldClass('status')">
               <option value="DRAFT">Draft</option>
               <option value="PENDING">Pending</option>
               <option value="PUBLISHED">Published</option>
               <option value="REJECTED">Rejected</option>
             </select>
-            <i class="ph ph-caret-down"></i>
           </div>
-        </div>
-
-        <div class="field-group">
-
-        <!-- Rating -->
-        <div class="field-group">
-          <label for="rating">Rating</label>
-          <input
-            type="number"
-            id="rating"
-            formControlName="rating"
-            min="1"
-            max="5"
-            placeholder="1-5"
-            [class]="getFieldClass('rating')"
-          />
-          @if (form.get('rating')?.touched && form.get('rating')?.errors) {
-            <span class="error-message"> Rating must be between 1 and 5. </span>
-          }
-        </div>
-
-        <!-- Message -->
-        <div class="field-group full-width">
-          <label for="message">Message <span class="required">*</span></label>
-          <textarea
-            id="message"
-            formControlName="message"
-            placeholder="Enter testimonial message"
-            [class]="getFieldClass('message')"
-          ></textarea>
-          @if (form.get('message')?.touched && form.get('message')?.errors?.['required']) {
-            <span class="error-message"> Message is required. </span>
-          }
-          @if (form.get('message')?.touched && form.get('message')?.errors?.['minlength']) {
-            <span class="error-message"> Message must be at least 10 characters. </span>
-          }
-        </div>
-
-        <!-- Image Upload -->
-        <div class="field-group full-width">
-          <label>Image <span class="required">*</span></label>
-          <div class="avatar-upload-container" style="width: 100%; height: auto; min-height: 200px">
-            <div
-              class="avatar-preview-wrapper"
-              style="
-                width: 100%;
-                height: 200px;
-                border-radius: 12px;
-                overflow: hidden;
-                background: var(--a-hover-bg);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 2px dashed var(--a-border-color);
-                position: relative;
-              "
-            >
-              @if (previewUrl()) {
-                <img
-                  [src]="previewUrl()"
-                  class="avatar-preview"
-                  style="width: 100%; height: 100%; object-fit: contain; border-radius: 0"
-                />
-              }
-              @if (!previewUrl()) {
-                <div class="text-center" style="color: var(--a-text-light)">
-                  <i class="ph ph-image" style="font-size: 48px"></i>
-                  <p>No image selected</p>
-                </div>
-              }
-              @if (isUploading()) {
-                <div class="spinner-overlay" style="position: absolute">
-                  <div class="spinner-small"></div>
-                </div>
-              }
-
-              <!-- Delete Button -->
-              @if (previewUrl() && !isUploading()) {
-                <button
-                  type="button"
-                  class="remove-image-btn"
-                  (click)="onRemoveImage()"
-                  title="Remove image"
-                >
-                  <i class="ph ph-trash"></i>
-                </button>
-              }
-            </div>
-            <label for="image" class="avatar-edit-btn" style="bottom: 10px; right: 10px">
-              <i class="ph ph-camera"></i>
-            </label>
-            <input
-              type="file"
-              id="image"
-              (change)="onFileSelected($event)"
-              accept="image/*"
-              style="display: none"
-            />
-          </div>
-          @if (form.get('image')?.touched && form.get('image')?.invalid) {
-            <span class="error-message"> Image is required. </span>
-          }
-        </div>
-
-        <!-- Featured Toggle -->
-        <div class="field-group">
-          <label>Featured</label>
-          <label class="table-toggle">
-            <input type="checkbox" formControlName="featured" />
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-
-        <!-- Sort Order -->
-        <div class="field-group">
-          <label for="sortOrder">Sort Order</label>
-          <input
-            type="number"
-            id="sortOrder"
-            formControlName="sortOrder"
-            min="0"
-            placeholder="0"
-            [class]="getFieldClass('sortOrder')"
-          />
-          @if (form.get('sortOrder')?.touched && form.get('sortOrder')?.errors) {
-            <span class="error-message"> Sort order must be 0 or greater. </span>
-          }
         </div>
       </div>
-    </div>
+    </form>
+  </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="onReset()">
-        {{ isEditMode() ? 'Reset' : 'Clear' }}
-      </button>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="form.invalid || isUploading() || globalLoading()"
-      >
-        @if (!isUploading() && !globalLoading()) {
-          <span>{{ isEditMode() ? 'Update' : 'Create' }}</span>
-        }
-        @if (isUploading() || globalLoading()) {
-          <div class="spinner-small"></div>
-        }
-      </button>
-    </div>
-    </div>
-  </form>
+  <div class="dialog-actions" style="padding: 16px 24px; border-top: 1px solid var(--a-border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--a-bg-card);">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isUploading() || globalLoading()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid || isUploading() || globalLoading()">
+      @if (isUploading() || globalLoading()) { <div class="spinner-small" style="margin-right: 8px;"></div> Saving... } @else { <i class="ph ph-floppy-disk"></i> {{ isEditMode() ? 'Save Changes' : 'Save Testimonial' }} }
+    </button>
+  </div>
 </div>

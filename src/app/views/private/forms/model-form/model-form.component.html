@@ -1,64 +1,35 @@
-<div class="modal-header">
-  <h2>{{ isEditMode() ? 'Edit Model' : 'Add New Model' }}</h2>
-  <span class="badge badge-outline" style="margin-left: 10px;">{{ data.makeName }}</span>
-  <button type="button" class="modal-close" (click)="onCancel()">
-    <i class="ph ph-x"></i>
-  </button>
-</div>
+<div class="profile-info-card" style="margin: 0; display: flex; flex-direction: column; max-height: 90vh;">
 
-<div class="modal-body">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="standard-form">
+  <div class="dialog-header">
+    <h4 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+      <i class="ph ph-car-profile" style="color: var(--primary); font-size: 1.5rem;"></i>
+      {{ isEditMode() ? 'Edit Model' : 'Add New Model' }}
+      <span class="badge badge-outline" style="margin-left: 8px;">{{ data.makeName }}</span>
+    </h4>
+    <a class="close_dialog" (click)="onCancel()"><i class="ph ph-x"></i></a>
+  </div>
 
-    <div class="form-row">
-      <div class="field-group" [ngClass]="getFieldClass('name')">
-        <label for="name">Model Name <span class="required">*</span></label>
-        <div class="input-with-icon">
-          <i class="ph ph-car"></i>
-          <input type="text" id="name" formControlName="name" placeholder="e.g. Corolla, Mustang, X5" />
+  <div class="dialog-content" style="padding: 24px; background: var(--a-bg-app); flex: 1; overflow-y: auto;">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <div class="field-group full-width" [ngClass]="getFieldClass('name')">
+          <label>Model Name <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <i class="ph ph-car"></i>
+            <input type="text" formControlName="name" placeholder="e.g. Corolla, Mustang, X5" />
+          </div>
+          @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
+            <small class="required">Model name is required.</small>
+          }
         </div>
-        @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
-          <span class="error-message">Model name is required.</span>
-        }
       </div>
+    </form>
+  </div>
 
-      <div class="field-group" [ngClass]="getFieldClass('year')">
-        <label for="year">Release Year <span class="optional">(Optional)</span></label>
-        <div class="input-with-icon">
-          <i class="ph ph-calendar-blank"></i>
-          <input type="number" id="year" formControlName="year" placeholder="e.g. 2024" />
-        </div>
-        @if (form.get('year')?.errors?.['min'] || form.get('year')?.errors?.['max']) {
-          <span class="error-message">Please enter a valid year.</span>
-        }
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="field-group full-width" [ngClass]="getFieldClass('bodyStyles')">
-        <label for="bodyStyles">Body Styles <span class="optional">(Optional)</span></label>
-        <div class="input-with-icon">
-          <i class="ph ph-shapes"></i>
-          <input type="text" id="bodyStyles" formControlName="bodyStyles" placeholder="e.g. Sedan, Hatchback, Wagon" />
-        </div>
-        <small style="color: var(--a-text-light); margin-top: 4px; display: block;">
-          Separate multiple body styles with a comma.
-        </small>
-      </div>
-    </div>
-
-  </form>
-</div>
-
-<div class="modal-footer">
-  <div class="footer-actions">
+  <div class="dialog-actions" style="padding: 16px 24px; border-top: 1px solid var(--a-border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--a-bg-card);">
     <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="globalLoading()">Cancel</button>
     <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid || globalLoading()">
-      @if (globalLoading()) {
-        <div class="spinner-small"></div>
-        Saving...
-      } @else {
-        <i class="ph ph-floppy-disk"></i> {{ isEditMode() ? 'Update Model' : 'Create Model' }}
-      }
+      @if (globalLoading()) { <div class="spinner-small" style="margin-right: 8px;"></div> Saving... } @else { <i class="ph ph-floppy-disk"></i> {{ isEditMode() ? 'Save Changes' : 'Save Model' }} }
     </button>
   </div>
 </div>

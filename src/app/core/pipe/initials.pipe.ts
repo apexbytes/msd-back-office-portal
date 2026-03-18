@@ -26,15 +26,36 @@ export class InitialsPipe implements PipeTransform {
     '#607D8B',
   ];
 
-  transform(value: string, type: 'initials' | 'color' = 'initials'): string {
+  transform(value: any, type: 'initials' | 'color' = 'initials'): string {
     if (!value) return '';
 
-    if (type === 'color') {
-      return this.getColor(value);
+    // 1. Extract a string representation safely
+    let nameString = '';
+
+    if (typeof value === 'string') {
+      nameString = value;
+    } else {
+      // Handle the User object
+      if (value.firstName || value.lastName) {
+        nameString = `${value.firstName || ''} ${value.lastName || ''}`.trim();
+      } else if (value.companyName) {
+        nameString = value.companyName;
+      } else if (value.email) {
+        nameString = value.email;
+      } else {
+        nameString = 'U'; // Fallback
+      }
     }
 
-    return value
-      .split(' ')
+    // 2. Return color if requested
+    if (type === 'color') {
+      return this.getColor(nameString);
+    }
+
+    // 3. Generate initials safely
+    return nameString
+      .split(/[\s_\.-]+/) // Splits by space, underscore, dot, or hyphen
+      .filter((word) => word.length > 0)
       .map((word) => word.charAt(0))
       .slice(0, 2)
       .join('')
@@ -42,6 +63,8 @@ export class InitialsPipe implements PipeTransform {
   }
 
   private getColor(name: string): string {
+    if (!name) return this.colors[0];
+
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);

@@ -1,190 +1,264 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  signal,
-  computed,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '@/app/core/services/user.service';
-import { User } from '@/app/core/models/user.model';
-import { MatDialog } from '@angular/material/dialog';
-import { UserFormComponent } from '@app/views/private/forms/user-form/user-form.component';
+import { FormsModule } from '@angular/forms';
+import { UserService } from '@app/core/services/user.service';
+import { User } from '@app/core/models/user.model';
+import { FullNamePipe } from '@app/core/pipe/fullname.pipe';
+import { InitialsPipe } from '@app/core/pipe/initials.pipe';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { UserFormComponent } from '../forms/user-form/user-form.component';
 import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-dialog.component';
-import { DeleteDialogData } from '@app/core/models/delete.interface';
-import { LoadingService } from '@app/core/services/loading.service';
-import { QueryParams } from '@app/core/services/role.service';
+import { CustomDialogComponent } from '@app/views/shared/custom-dialog/custom-dialog.component';
 
 @Component({
   selector: 'app-users',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, FullNamePipe, InitialsPipe, MatDialogModule],
   templateUrl: './users.component.html',
   styleUrl: './users.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersComponent implements OnInit {
   private readonly userService = inject(UserService);
-  private readonly loadingService = inject(LoadingService);
   private readonly dialog = inject(MatDialog);
 
   protected readonly users = signal<User[]>([]);
-  protected readonly totalCount = signal<number>(0);
-  protected readonly isLoading = signal<boolean>(false);
+  protected readonly isLoading = signal(true);
 
-  // Track which rows are currently being updated
-  protected readonly updatingIds = signal<Set<string>>(new Set());
+  // Pagination State
+  protected readonly currentPage = signal(1);
+  protected readonly totalPages = signal(1);
+  protected readonly totalCount = signal(0);
+  protected readonly limit = signal(20);
 
-  protected readonly queryParams = signal<QueryParams>({
-    page: 1,
-    limit: 10,
-  });
+  // Filters
+  protected readonly searchQuery = signal('');
+  protected readonly statusFilter = signal('');
+  protected readonly roleFilter = signal('');
 
-  // Calculate total pages for UI
-  protected readonly totalPages = computed(() => {
-    return Math.ceil(this.totalCount() / (this.queryParams().limit || 10)) || 1;
-  });
+  // Debounce tracker
+  private searchTimeout: any;
 
   ngOnInit(): void {
-    this.fetchUsers();
+    this.loadUsers();
   }
 
-  protected fetchUsers(): void {
+  protected loadUsers(): void {
     this.isLoading.set(true);
-    this.userService.getAllUsers(this.queryParams()).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.users.set(response.data);
-          this.totalCount.set(response.pagination?.totalCount || response.data.length);
+
+    const params = {
+      page: this.currentPage(),
+      limit: this.limit(),
+      search: this.searchQuery() || undefined,
+      status: this.statusFilter() || undefined,
+      role: this.roleFilter() || undefined,
+    };
+
+    this.userService.getAllUsers(params).subscribe({
+      next: (res: any) => {
+        const data = res.data || {};
+
+        // Ultra-resilient array extraction
+        const items = data.users || data.items || (Array.isArray(data) ? data : (Array.isArray(res) ? res : []));
+        this.users.set(items);
+
+        // Update pagination signals based on metadata
+        if (data.metadata) {
+          this.currentPage.set(data.metadata.currentPage || 1);
+          this.totalPages.set(data.metadata.totalPages || 1);
+          this.totalCount.set(data.metadata.totalCount || 0);
         }
+
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Error fetching users:', err);
+        console.error('Failed to load users', err);
         this.isLoading.set(false);
       },
     });
   }
 
-  // --- Pagination ---
+  protected getAvatarUrl(avatar: any): string | null {
+    if (!avatar) return null;
+    if (typeof avatar === 'string') return avatar;
+    return avatar.url || null;
+  }
 
-  protected nextPage(): void {
-    if ((this.queryParams().page || 1) < this.totalPages()) {
-      this.queryParams.update((params) => ({ ...params, page: (params.page || 1) + 1 }));
-      this.fetchUsers();
+  // --- Filtering & Pagination ---
+  protected onSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery.set(input.value);
+
+    // Debounce the input by 400ms to prevent race conditions and DB spam
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
     }
+
+    this.searchTimeout = setTimeout(() => {
+      this.currentPage.set(1);
+      this.loadUsers();
+    }, 400);
   }
 
-  protected prevPage(): void {
-    if ((this.queryParams().page || 1) > 1) {
-      this.queryParams.update((params) => ({ ...params, page: (params.page || 1) - 1 }));
-      this.fetchUsers();
-    }
+  protected onFilterChange(type: 'status' | 'role', event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    if (type === 'status') this.statusFilter.set(select.value);
+    if (type === 'role') this.roleFilter.set(select.value);
+
+    this.currentPage.set(1);
+    this.loadUsers();
   }
 
-  // --- Utility for Inline Actions ---
-
-  protected isUpdating(id: string): boolean {
-    return this.updatingIds().has(id);
+  protected changePage(page: number): void {
+    if (page < 1 || page > this.totalPages()) return;
+    this.currentPage.set(page);
+    this.loadUsers();
   }
 
-  private setUpdating(id: string, isUpdating: boolean): void {
-    const currentSet = new Set(this.updatingIds());
-    if (isUpdating) currentSet.add(id);
-    else currentSet.delete(id);
-    this.updatingIds.set(currentSet);
-  }
-
-  // --- CRUD Actions ---
-
-  protected onCreate(): void {
+  // --- Dialog Integrations ---
+  protected openCreateUserDialog(): void {
     const dialogRef = this.dialog.open(UserFormComponent, {
-      data: { user: undefined },
+      width: '1200px',
+      maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
       disableClose: true,
-      maxWidth: '1000px',
-      maxHeight: '90vh',
-      width: '90%',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.fetchUsers();
+      if (result) {
+        this.loadUsers();
+      }
     });
   }
 
-  protected onEdit(user: User): void {
+  protected openEditUserDialog(user: User): void {
     const dialogRef = this.dialog.open(UserFormComponent, {
+      width: '1200px',
+      maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
+      disableClose: true,
       data: { user },
-      disableClose: true,
-      maxWidth: '1000px',
-      maxHeight: '90vh',
-      width: '90%',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.fetchUsers();
+      if (result) {
+        if (typeof result === 'object') {
+          this.users.update((items) =>
+            items.map((u) => (u.id === result.id ? { ...u, ...result } : u)),
+          );
+        } else {
+          this.loadUsers();
+        }
+      }
     });
   }
 
-  protected onDelete(user: User): void {
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: {
-        entityName: 'User',
-        title: 'Delete User?',
-        message: `Are you sure you want to permanently delete "${user.username}"? This action cannot be undone.`,
-        deleteFn: () => this.userService.deleteUser(user.id),
-      } as DeleteDialogData,
-      disableClose: true,
-      maxWidth: '500px',
-      width: '90%',
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.fetchUsers();
-    });
-  }
-
-  // --- Quick Actions ---
-
+  // --- Ban / Suspend User ---
   protected onBanUser(user: User): void {
-    this.setUpdating(user.id, true);
-    // Banning a user sets their status to SUSPENDED
-    this.userService.updateUser(user.id, { status: 'SUSPENDED' }).subscribe({
-      next: (res) => {
-        if (res.success) this.fetchUsers();
-        this.setUpdating(user.id, false);
+    const displayName = user.firstName ? `${user.firstName} ${user.lastName}` : user.companyName || user.email;
+
+    const dialogRef = this.dialog.open(CustomDialogComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
+      disableClose: true,
+      data: {
+        title: 'Suspend Account',
+        message: `Are you sure you want to suspend the account for <strong>${displayName}</strong>? They will be instantly logged out and prevented from accessing the system.`,
+        confirmButtonText: 'Suspend User',
+        cancelButtonText: 'Cancel',
       },
-      error: (err) => {
-        console.error('Failed to ban user', err);
-        this.setUpdating(user.id, false);
-      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.isLoading.set(true);
+        this.userService.updateUser(user.id, { status: 'SUSPENDED' }).subscribe({
+          next: () => {
+            this.users.update((items) => items.map((u) => (u.id === user.id ? { ...u, status: 'SUSPENDED' } : u)));
+            this.isLoading.set(false);
+          },
+          error: (err) => {
+            console.error('Failed to suspend user', err);
+            this.isLoading.set(false);
+          },
+        });
+      }
     });
   }
 
+  // --- Unlock User ---
   protected onUnlockUser(user: User): void {
-    this.setUpdating(user.id, true);
-    // Re-activating a suspended or inactive user
-    this.userService.updateUser(user.id, { status: 'ACTIVE' }).subscribe({
-      next: (res) => {
-        if (res.success) this.fetchUsers();
-        this.setUpdating(user.id, false);
+    const displayName = user.firstName ? `${user.firstName} ${user.lastName}` : user.companyName || user.email;
+
+    const dialogRef = this.dialog.open(CustomDialogComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
+      disableClose: true,
+      data: {
+        title: 'Unlock Account',
+        message: `Are you sure you want to restore access for <strong>${displayName}</strong>? This will remove all restrictions and reset any failed login attempts.`,
+        confirmButtonText: 'Unlock User',
+        cancelButtonText: 'Cancel',
       },
-      error: (err) => {
-        console.error('Failed to unlock user', err);
-        this.setUpdating(user.id, false);
-      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.isLoading.set(true);
+        const request$ = (this.userService as any).unlockUser
+          ? (this.userService as any).unlockUser(user.id)
+          : this.userService.updateUser(user.id, { status: 'ACTIVE' });
+
+        request$.subscribe({
+          next: () => {
+            this.users.update((items) => items.map((u) => (u.id === user.id ? { ...u, status: 'ACTIVE' } : u)));
+            this.isLoading.set(false);
+          },
+          error: (err: any) => {
+            console.error('Failed to unlock user', err);
+            this.isLoading.set(false);
+          },
+        });
+      }
     });
   }
 
-  protected getBadgeClass(status: string): string {
-    switch (status.toUpperCase()) {
-      case 'ACTIVE':
-        return 'badge-active';
-      case 'SUSPENDED':
-        return 'badge-danger';
-      case 'INACTIVE':
-        return 'badge-inactive';
-      default:
-        return 'badge-outline';
-    }
+  // --- Delete User ---
+  protected onDeleteUser(user: User): void {
+    const displayName = user.firstName ? `${user.firstName} ${user.lastName}` : user.companyName || user.email;
+
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '500px',
+      maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
+      disableClose: true,
+      data: {
+        title: 'Delete User',
+        message: `Are you sure you want to permanently delete the account for <strong>${displayName}</strong>? This action cannot be undone.`,
+        confirmButtonText: 'Delete User',
+        cancelButtonText: 'Cancel',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.isLoading.set(true);
+        this.userService.deleteUser(user.id).subscribe({
+          next: () => {
+            this.users.update((items) => items.filter((u) => u.id !== user.id));
+            if (this.users().length === 0 && this.currentPage() > 1) {
+              this.currentPage.set(this.currentPage() - 1);
+            }
+            this.loadUsers();
+          },
+          error: (err) => {
+            console.error('Failed to delete user', err);
+            this.isLoading.set(false);
+          },
+        });
+      }
+    });
   }
 }
