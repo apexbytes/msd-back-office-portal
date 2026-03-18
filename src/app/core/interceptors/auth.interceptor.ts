@@ -62,7 +62,7 @@ export const authInterceptor: HttpInterceptorFn = (
         event.body?.message
       ) {
         snackBar.open(event.body.message, 'X', {
-          duration: 3000000,
+          duration: 3000,
           panelClass: ['success-snackbar'],
           horizontalPosition: 'center',
           verticalPosition: 'bottom',
@@ -71,7 +71,6 @@ export const authInterceptor: HttpInterceptorFn = (
     }),
     catchError((error: HttpErrorResponse) => {
       if (isApiRequest) {
-        // Handle Server Connection Error
         if (error.status === 0 && !isShowingConnectionError) {
           isShowingConnectionError = true;
           dialog
@@ -110,7 +109,7 @@ export const authInterceptor: HttpInterceptorFn = (
         if (error.status !== 401 && !req.url.includes('/refresh')) {
           const errorMessage = error.error?.message || error.error?.error?.message || 'An unexpected error occurred';
           snackBar.open(errorMessage, 'X', {
-            duration: 500000,
+            duration: 5000,
             panelClass: ['error-snackbar'],
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
@@ -151,10 +150,10 @@ function handle401Error(
       catchError((err) => {
         isRefreshing = false;
         authService.logout();
-        snackBar.open('Session expired. Please log in again.', 'Close', {
-          duration: 500000,
+        snackBar.open('Session expired. Please log in again.', 'X', {
+          duration: 5000,
           panelClass: ['error-snackbar'],
-          horizontalPosition: 'center',
+          horizontalPosition: 'right',
           verticalPosition: 'bottom',
         });
         return throwError(() => err);

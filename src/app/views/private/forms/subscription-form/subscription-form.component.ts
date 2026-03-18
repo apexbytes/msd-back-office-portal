@@ -20,7 +20,7 @@ import { Subscription } from '@app/core/models/subscription.model';
 
 @Component({
   selector: 'app-subscription-form',
-  standalone: true,
+
   imports: [ReactiveFormsModule, CommonModule, FullNamePipe],
   templateUrl: './subscription-form.component.html',
   styleUrl: './subscription-form.component.css',

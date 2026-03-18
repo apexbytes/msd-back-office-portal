@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'fullName',
-  standalone: true
+
 })
 export class FullNamePipe implements PipeTransform {
   transform(author: { firstName?: string; lastName?: string } | null | undefined): string {

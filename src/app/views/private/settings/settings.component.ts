@@ -12,7 +12,7 @@ import { BackupCodesDialogComponent } from '@app/views/shared/backup-codes-dialo
 
 @Component({
   selector: 'app-settings',
-  standalone: true,
+
   imports: [CommonModule],
   templateUrl: './settings.component.html',
 })

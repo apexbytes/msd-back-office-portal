@@ -34,16 +34,21 @@
         <!-- Lifespan Days -->
         <div class="field-group">
           <label for="lifespanDays">Lifespan (Days) <span class="required">*</span></label>
-          <input
-            type="number"
-            id="lifespanDays"
-            formControlName="lifespanDays"
-            placeholder="Enter duration in days"
-            [class]="getFieldClass('lifespanDays')"
-          />
+          <div class="custom-select">
+            <select
+              id="lifespanDays"
+              formControlName="lifespanDays"
+              [class]="getFieldClass('lifespanDays')"
+            >
+              <option [value]="7">7 Days</option>
+              <option [value]="14">14 Days</option>
+              <option [value]="30">30 Days</option>
+            </select>
+            <i class="ph ph-caret-down"></i>
+          </div>
           @if (form.get('lifespanDays')?.touched && form.get('lifespanDays')?.errors) {
             <span class="error-message">
-              Lifespan is required and must be at least 1.
+              Lifespan is required.
             </span>
           }
         </div>

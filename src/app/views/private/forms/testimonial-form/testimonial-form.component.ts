@@ -9,7 +9,7 @@ import { FileUploadResult } from '@app/core/models/common.model';
 
 @Component({
   selector: 'app-testimonial-form',
-  standalone: true,
+
   imports: [ReactiveFormsModule],
   templateUrl: './testimonial-form.component.html',
   styleUrl: './testimonial-form.component.css',
@@ -42,6 +42,7 @@ export class TestimonialFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(2)]],
       designation: [''],
       company: [''],
+      status: ['PENDING', [Validators.required]],
       message: ['', [Validators.required, Validators.minLength(10)]],
       image: [null, [Validators.required]],
       rating: [5, [Validators.min(1), Validators.max(5)]],
@@ -55,6 +56,7 @@ export class TestimonialFormComponent implements OnInit {
       name: testimonial.name,
       designation: testimonial.designation || '',
       company: testimonial.company || '',
+      status: testimonial.status || 'PENDING',
       message: testimonial.message,
       image: testimonial.image,
       rating: testimonial.rating || 5,
@@ -128,6 +130,7 @@ export class TestimonialFormComponent implements OnInit {
     const testimonialData: any = {
       name: formValue.name,
       message: formValue.message,
+      status: formValue.status,
       rating: formValue.rating,
       featured: formValue.featured,
       sortOrder: formValue.sortOrder,
@@ -181,6 +184,7 @@ export class TestimonialFormComponent implements OnInit {
       rating: 5,
       featured: false,
       sortOrder: 0,
+      status: 'PENDING',
     });
     this.previewUrl.set(null);
     if (this.isEditMode() && this.data?.testimonial) {
@@ -195,4 +199,5 @@ export class TestimonialFormComponent implements OnInit {
     }
     return '';
   }
+
 }

@@ -6,7 +6,7 @@ import { FullNamePipe } from '@app/core/pipe/fullname.pipe';
 
 @Component({
   selector: 'app-logs',
-  standalone: true,
+
   imports: [CommonModule, FullNamePipe],
   templateUrl: './logs.component.html',
   styleUrl: './logs.component.css',

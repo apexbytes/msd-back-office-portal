@@ -18,7 +18,7 @@ export class SupportService {
   }
 
   getMyTickets(): Observable<ApiResponse<SupportTicket[]>> {
-    return this.http.get<ApiResponse<SupportTicket[]>>(`${this.apiUrl}my-tickets`);
+    return this.http.get<ApiResponse<SupportTicket[]>>(`${this.apiUrl}/my-tickets`);
   }
 
   getAllTickets(params?: PaginationParams & any): Observable<ApiResponse<any>> {
@@ -36,16 +36,16 @@ export class SupportService {
   }
 
   getTicketById(id: string): Observable<ApiResponse<SupportTicket>> {
-    return this.http.get<ApiResponse<SupportTicket>>(`${this.apiUrl}${id}`);
+    return this.http.get<ApiResponse<SupportTicket>>(`${this.apiUrl}/${id}`);
   }
 
   addMessage(ticketId: string, message: string): Observable<ApiResponse<TicketMessage>> {
-    return this.http.post<ApiResponse<TicketMessage>>(`${this.apiUrl}/${ticketId}messages`, {
+    return this.http.post<ApiResponse<TicketMessage>>(`${this.apiUrl}/${ticketId}/messages`, {
       message,
     });
   }
 
   updateTicket(id: string, payload: any): Observable<ApiResponse<SupportTicket>> {
-    return this.http.put<ApiResponse<SupportTicket>>(`${this.apiUrl}${id}`, payload);
+    return this.http.put<ApiResponse<SupportTicket>>(`${this.apiUrl}/${id}`, payload);
   }
 }

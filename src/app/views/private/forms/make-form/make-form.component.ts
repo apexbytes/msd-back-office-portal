@@ -10,7 +10,7 @@ import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-make-form',
-  standalone: true,
+
   imports: [ReactiveFormsModule, NgClass],
   templateUrl: './make-form.component.html',
   styleUrl: './make-form.component.css',

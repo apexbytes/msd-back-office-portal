@@ -10,7 +10,7 @@ import { Subscription } from '@app/core/models/subscription.model';
 
 @Component({
   selector: 'app-subscriptions',
-  standalone: true,
+
   imports: [DatePipe, SlicePipe],
   templateUrl: './subscriptions.component.html',
   styleUrl: './subscriptions.component.css',

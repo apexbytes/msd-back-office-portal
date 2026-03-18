@@ -17,7 +17,7 @@ import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-di
 
 @Component({
   selector: 'app-makes',
-  standalone: true,
+
   imports: [CommonModule],
   templateUrl: './makes.component.html',
   styleUrl: './makes.component.css',
@@ -68,7 +68,6 @@ export class MakesComponent implements OnInit {
         this.allMakes.set(data);
         this.totalCount.set(data.length);
 
-        // Safety check to reset page if limit/data changes push current page out of bounds
         if (this.currentPage() > this.totalPages()) {
           this.currentPage.set(1);
         }

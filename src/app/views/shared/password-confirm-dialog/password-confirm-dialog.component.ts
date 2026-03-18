@@ -11,7 +11,7 @@ export interface PasswordConfirmDialogData {
 
 @Component({
   selector: 'app-password-confirm-dialog',
-  standalone: true,
+
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './password-confirm-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

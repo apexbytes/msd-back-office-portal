@@ -9,7 +9,7 @@ import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-di
 
 @Component({
   selector: 'app-model-dialog',
-  standalone: true,
+
   imports: [CommonModule],
   templateUrl: './model-dialog.component.html',
   styleUrl: './model-dialog.component.css',

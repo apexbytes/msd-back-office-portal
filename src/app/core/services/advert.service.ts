@@ -45,7 +45,9 @@ export class AdvertService {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`);
   }
 
-  togglePublish(id: string): Observable<ApiResponse<Advert>> {
-    return this.http.patch<ApiResponse<Advert>>(`${this.apiUrl}/${id}/toggle-publish`, {});
+  togglePublish(id: string, published: boolean): Observable<ApiResponse<Advert>> {
+    return this.http.patch<ApiResponse<Advert>>(`${this.apiUrl}/${id}/toggle-publish`, {
+      published,
+    });
   }
 }

@@ -14,7 +14,7 @@ export interface ModelFormData {
 
 @Component({
   selector: 'app-model-form',
-  standalone: true,
+
   imports: [ReactiveFormsModule, NgClass],
   templateUrl: './model-form.component.html',
   styleUrl: './model-form.component.css',

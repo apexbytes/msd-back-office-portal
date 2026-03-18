@@ -19,7 +19,7 @@ import { of } from 'rxjs';
 
 @Component({
   selector: 'app-otp',
-  standalone: true,
+
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './otp.component.html',
   styleUrl: './otp.component.css',

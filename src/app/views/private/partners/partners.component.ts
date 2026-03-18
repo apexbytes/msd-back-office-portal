@@ -9,7 +9,7 @@ import { Partner } from '@app/core/models/partner.model';
 
 @Component({
   selector: 'app-partners',
-  standalone: true,
+
   imports: [TitleCasePipe],
   templateUrl: './partners.component.html',
   styleUrl: './partners.component.css',

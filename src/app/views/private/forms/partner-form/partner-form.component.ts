@@ -9,7 +9,7 @@ import { FileUploadResult } from '@app/core/models/common.model';
 
 @Component({
   selector: 'app-partner-form',
-  standalone: true,
+
   imports: [ReactiveFormsModule],
   templateUrl: './partner-form.component.html',
   styleUrl: './partner-form.component.css',

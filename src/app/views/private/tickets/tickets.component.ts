@@ -5,10 +5,11 @@ import { LoadingService } from '@app/core/services/loading.service';
 import { SupportTicket } from '@app/core/models/support.model';
 import { MatDialog } from '@angular/material/dialog';
 import { FullNamePipe } from '@app/core/pipe/fullname.pipe';
+import { TicketDialogComponent } from '@app/views/private/ticket-dialog/ticket-dialog.component';
 
 @Component({
   selector: 'app-tickets',
-  standalone: true,
+
   imports: [CommonModule, FullNamePipe],
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.css',
@@ -41,6 +42,7 @@ export class TicketsComponent implements OnInit {
       next: (res: any) => {
         const data = res.data?.tickets || res.data || [];
         this.tickets.set(data);
+        console.log('Tickets:', data);
 
         const pagination = res.pagination || res.data?.pagination;
         this.totalCount.set(pagination?.totalCount || res.data?.totalCount || data.length);
@@ -139,7 +141,23 @@ export class TicketsComponent implements OnInit {
   }
 
   protected onViewDetails(ticket: SupportTicket): void {
-    // In the future, this can open a Chat/Messaging dialog to view the messages array
-    console.log('View ticket details for:', ticket.ticketUid);
+    const dialogRef = this.dialog.open(TicketDialogComponent, {
+      width: '1200px',
+      maxWidth: '95vw',
+      panelClass: 'full-screen-modal',
+      disableClose: true,
+      data: { ticketId: ticket.id },
+    });
+
+    dialogRef.afterClosed().subscribe((updatedTicket) => {
+      if (updatedTicket && typeof updatedTicket === 'object') {
+        this.tickets.update((items) =>
+          items.map((t) => (t.id === updatedTicket.id ? { ...t, ...updatedTicket } : t)),
+        );
+      }
+      else if (updatedTicket === true) {
+        this.loadTickets();
+      }
+    });
   }
 }

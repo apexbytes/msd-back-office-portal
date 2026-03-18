@@ -12,7 +12,7 @@ import { FullNamePipe } from '../../../core/pipe/fullname.pipe';
 
 @Component({
   selector: 'app-profile',
-  standalone: true,
+
   imports: [CommonModule, ReactiveFormsModule, InitialsPipe, FullNamePipe],
   templateUrl: './profile.component.html',
 })

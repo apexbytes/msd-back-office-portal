@@ -9,7 +9,7 @@ import { Advert } from '@app/core/models/advert.model';
 
 @Component({
   selector: 'app-adverts',
-  standalone: true,
+
   imports: [CommonModule, DatePipe, SlicePipe],
   templateUrl: './adverts.component.html',
   styleUrl: './adverts.component.css',
@@ -128,8 +128,9 @@ export class AdvertsComponent implements OnInit {
   }
 
   protected onTogglePublish(advert: Advert): void {
+    const newPublishState = !advert.published;
     this.loadingService.show();
-    this.advertService.togglePublish(advert.id).subscribe({
+    this.advertService.togglePublish(advert.id, newPublishState).subscribe({
       next: (response) => {
         if (response.success) {
           this.fetchAdverts();
@@ -138,6 +139,7 @@ export class AdvertsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error toggling publish status:', err);
+        this.fetchAdverts();
         this.loadingService.hide();
       },
     });

@@ -11,7 +11,7 @@ import { FileUploadResult } from '@app/core/models/common.model';
 
 @Component({
   selector: 'app-user-form',
-  standalone: true,
+
   imports: [ReactiveFormsModule, CommonModule], // Removed Material Imports
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.css',

@@ -13,7 +13,7 @@ export interface DialogData {
 
 @Component({
   selector: 'app-custom-dialog',
-  standalone: true,
+
   imports: [CommonModule, MatDialogModule, MatButtonModule],
   templateUrl: './custom-dialog.component.html',
   styleUrl: './custom-dialog.component.css',

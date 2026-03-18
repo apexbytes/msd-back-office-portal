@@ -82,8 +82,19 @@
                 <div class="dropdown-container" tabindex="0">
                   <button class="action-icon"><i class="ph ph-dots-three-vertical"></i></button>
                   <div class="dropdown-menu">
-                    <a href="javascript:void(0)" (click)="onEdit(t)"><i class="ph ph-pencil-simple"></i> Edit</a>
-                    <a href="javascript:void(0)" class="danger" (click)="onDelete(t)"><i class="ph ph-trash"></i> Delete</a>
+                    <a (click)="onEdit(t)"><i class="ph ph-pencil-simple"></i> Edit</a>
+
+                    @if (t.status !== 'PUBLISHED') {
+                      <a (click)="onStatusChange(t, 'PUBLISHED')"><i class="ph ph-check-circle"></i> Publish</a>
+                    }
+                    @if (t.status !== 'PENDING' && t.status !== 'DRAFT') {
+                      <a (click)="onStatusChange(t, 'DRAFT')"><i class="ph ph-file-dashed"></i> Mark as Draft</a>
+                    }
+                    @if (t.status !== 'REJECTED') {
+                      <a (click)="onStatusChange(t, 'REJECTED')"><i class="ph ph-x-circle"></i> Reject</a>
+                    }
+
+                    <a class="danger" (click)="onDelete(t)"><i class="ph ph-trash"></i> Delete</a>
                   </div>
                 </div>
               </td>

@@ -8,7 +8,7 @@ import { Role, Permission } from '@app/core/models/user.model';
 
 @Component({
   selector: 'app-roles-form',
-  standalone: true,
+
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './roles-form.component.html',
   styleUrl: './roles-form.component.css',

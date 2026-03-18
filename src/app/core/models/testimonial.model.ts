@@ -8,7 +8,7 @@ export interface Testimonial {
   message: string;
   image: FileUploadResult | null;
   rating?: number;
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED';
+  status: 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'ARCHIVED' | 'DELETED';
   featured?: boolean;
   sortOrder?: number;
   approvedBy?: string;

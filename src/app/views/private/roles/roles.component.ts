@@ -8,7 +8,7 @@ import { DeleteDialogData } from '@app/core/models/delete.interface';
 
 @Component({
   selector: 'app-roles',
-  standalone: true,
+
   imports: [],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.css',

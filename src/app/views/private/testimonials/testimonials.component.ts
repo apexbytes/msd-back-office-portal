@@ -9,7 +9,7 @@ import { Testimonial } from '@app/core/models/testimonial.model';
 
 @Component({
   selector: 'app-testimonials',
-  standalone: true,
+
   imports: [SlicePipe],
   templateUrl: './testimonials.component.html',
   styleUrl: './testimonials.component.css',
@@ -111,6 +111,23 @@ export class TestimonialsComponent implements OnInit {
         });
       }
     });
+  }
+  protected onStatusChange(testimonial: Testimonial, newStatus: string): void {
+    this.loadingService.show();
+    this.testimonialService
+      .adminManageTestimonial(testimonial.id, { status: newStatus } as any)
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.fetchTestimonials();
+          }
+          this.loadingService.hide();
+        },
+        error: (err) => {
+          console.error(`Error updating status for testimonial: ${testimonial.name}`, err);
+          this.loadingService.hide();
+        },
+      });
   }
 
   protected onToggleFeatured(testimonial: Testimonial): void {

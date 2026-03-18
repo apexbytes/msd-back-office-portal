@@ -9,7 +9,7 @@ import { FileUploadResult } from '@app/core/models/common.model';
 
 @Component({
   selector: 'app-advert-form',
-  standalone: true,
+
   imports: [ReactiveFormsModule],
   templateUrl: './advert-form.component.html',
   styleUrl: './advert-form.component.css',
@@ -41,7 +41,7 @@ export class AdvertFormComponent implements OnInit {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required]],
-      lifespanDays: [30, [Validators.required, Validators.min(1)]],
+      lifespanDays: [7, [Validators.required, Validators.min(1)]],
       published: [false],
       websiteUrl: [''],
       contactEmail: ['', [Validators.email]],
@@ -179,7 +179,7 @@ export class AdvertFormComponent implements OnInit {
 
   protected onReset(): void {
     this.form.reset({
-      lifespanDays: 30,
+      lifespanDays: 7,
       published: false,
     });
     this.previewUrl.set(null);

@@ -9,7 +9,7 @@ import { DeleteDialogComponent } from '@app/views/shared/delete-dialog/delete-di
 
 @Component({
   selector: 'app-properties',
-  standalone: true,
+
   imports: [CommonModule],
   templateUrl: './properties.component.html',
   styleUrl: './properties.component.css',

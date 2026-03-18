@@ -4,7 +4,7 @@ import { SpinnerUi } from './views/shared/spinner/spinner.ui';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
+
   imports: [RouterOutlet, SpinnerUi],
   templateUrl: './app.html',
   styleUrl: './app.css'

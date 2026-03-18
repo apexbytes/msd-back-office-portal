@@ -1,0 +1,235 @@
+/* Layout Splits */
+.ticket-chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--a-border-color);
+  background: var(--a-bg-card);
+}
+
+.ticket-sidebar {
+  width: 320px;
+  background: var(--a-bg-app);
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Chat Header / Subject */
+.ticket-subject-banner {
+  padding: 24px;
+  border-bottom: 1px solid var(--a-border-color);
+  background-color: var(--a-bg-card);
+}
+
+.ticket-subject-banner h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--a-text-dark);
+}
+
+.ticket-subject-banner p {
+  color: var(--a-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* Messages Scroll Area */
+.messages-list {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--a-bg-app);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--a-text-light);
+  font-style: italic;
+  margin-top: 40px;
+}
+
+/* Message Bubbles */
+.message-wrapper {
+  display: flex;
+  gap: 16px;
+  max-width: 85%;
+}
+
+.message-avatar img, .message-avatar .user-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.message-content-box {
+  background: var(--a-bg-card);
+  border: 1px solid var(--a-border-color);
+  padding: 16px;
+  border-radius: 0 16px 16px 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.message-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 16px;
+}
+
+.message-sender {
+  font-weight: 700;
+  color: var(--a-text-dark);
+  font-size: 0.9rem;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  color: var(--a-text-light);
+}
+
+.message-text {
+  color: var(--a-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* Agent Message (Align Right / Differentiated) */
+.message-agent {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-agent .message-content-box {
+  border-radius: 16px 0 16px 16px;
+  background: rgba(101, 233, 117, 0.05);
+  border-color: rgba(101, 233, 117, 0.2);
+}
+
+.message-agent .message-sender {
+  color: var(--primary-hover);
+}
+
+/* Reply Container */
+.reply-container {
+  padding: 24px;
+  background: var(--a-bg-card);
+  border-top: 1px solid var(--a-border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
+}
+
+.reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* Sidebar Panels */
+.sidebar-panel {
+  background: var(--a-bg-card);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--a-border-color);
+  position: relative;
+}
+
+.sidebar-panel h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--a-text-light);
+  font-weight: 700;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--a-border-color);
+  padding-bottom: 8px;
+}
+
+.user-block {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.user-initials.large {
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+}
+
+.user-block-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.user-block-info strong {
+  color: var(--a-text-dark);
+  font-size: 1rem;
+}
+
+.user-block-info span {
+  font-size: 0.8rem;
+  color: var(--a-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.assignee-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--a-text-dark);
+}
+
+.sidebar-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px;
+  color: var(--a-text-light);
+}
+
+/* Alert Boxes */
+.alert-box {
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.alert-box.info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.alert-box.warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}

@@ -9,7 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-vehicles',
-  standalone: true,
+
   imports: [CommonModule],
   templateUrl: './vehicles.component.html',
   styleUrl: './vehicles.component.css',

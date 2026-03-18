@@ -9,7 +9,7 @@ export interface BackupCodesDialogData {
 
 @Component({
   selector: 'app-backup-codes-dialog',
-  standalone: true,
+
   imports: [CommonModule, FormsModule],
   templateUrl: './backup-codes-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
