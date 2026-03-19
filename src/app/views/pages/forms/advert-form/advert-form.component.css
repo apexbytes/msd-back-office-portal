@@ -7,7 +7,7 @@ textarea {
 }
 
 /* Universal Form Layout & Grid */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px;}
 .field-group { margin-bottom: 0; }
 .full-width { grid-column: 1 / -1; }
 
@@ -35,40 +35,131 @@ textarea {
 .close_dialog:hover { color: var(--form-error-color, #ef4444); background: rgba(239, 68, 68, 0.1); }
 
 /* Input Icons */
-.input-with-icon { position: relative; display: flex; align-items: center; }
-.input-with-icon i { position: absolute; left: 12px; color: var(--a-text-light); font-size: 1.1rem; }
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.input-with-icon i {
+  position: absolute;
+  left: 12px;
+  color: var(--a-text-light);
+  font-size: 1.1rem;
+}
+.input-with-icon input {
+  width: 100%;
+}
 
 /* Generic File Upload Section */
 .file-upload-section {
   display: flex; align-items: center; gap: 24px; margin-bottom: 16px; padding: 16px;
   background: var(--a-bg-card); border: 1px dashed var(--a-border-color); border-radius: 8px;
 }
-.upload-preview {
-  width: 100px; height: 80px; border-radius: 8px; background: var(--a-bg-app);
-  border: 2px solid var(--a-border-color); display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden; flex-shrink: 0;
+
+.upload-preview.advert-preview {
+  width: 350px;
+  aspect-ratio: 16/9;
+  border-radius: 8px;
+  background: var(--a-bg-app);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
 }
-.upload-preview.circle { width: 80px; border-radius: 50%; }
+.upload-preview.advert-preview i {
+  font-size: 1rem;
+  color: var(--a-text-muted);
+}
 .upload-preview img { width: 100%; height: 100%; object-fit: cover; }
-.upload-preview i { font-size: 2.5rem; color: var(--a-text-light); }
+
 .upload-overlay {
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center;
 }
-.progress-text { color: white; font-weight: 700; font-size: 0.9rem; }
-.upload-actions { display: flex; flex-direction: column; gap: 8px; }
+.upload-actions { display: flex; flex-direction: column; gap: 8px;
+  margin-top: 16px; }
 .disabled { opacity: 0.6; pointer-events: none; }
 
-/* Checkbox Grids (e.g., for Roles) */
-.permissions-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 12px;
+.metadata-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }
-.permission-item {
-  display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--a-text-dark);
-  background: var(--a-bg-card); padding: 8px 12px; border: 1px solid var(--a-border-color);
-  border-radius: 6px; transition: border-color 0.2s; cursor: pointer;
+
+.metadata-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
 }
-.permission-item:hover { border-color: var(--primary); }
+
+.metadata-field {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.metadata-field input {
+  width: 100%;
+}
+
+.metadata-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 16px;
+}
+
+.empty-metadata-state {
+  text-align: center;
+  padding: 24px;
+  background: var(--a-bg-app);
+  border: 1px dashed var(--a-border-color);
+  border-radius: 8px;
+  color: var(--a-text-muted);
+}
+
+.empty-metadata-state i {
+  font-size: 1.5rem;
+  opacity: 0.5;
+  margin-bottom: 4px;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  border-radius: 50px;
+  aspect-ratio: 1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--form-error-color, #ef4444);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.remove-image-btn i {
+  font-size: .7rem;
+  margin: 0;
+  color: #ffffff;
+}
+
+.remove-image-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.05);
+}
 
 /* Responsive */
-@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .metadata-row { flex-direction: column; gap: 8px; }
+  .metadata-btn { width: 100%; }
+}

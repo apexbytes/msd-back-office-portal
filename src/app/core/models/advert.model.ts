@@ -1,15 +1,18 @@
-import { FileUploadResult } from './common.model';
+export type AdvertStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+export type AdvertPlacement = 'HERO' | 'SIDEBAR' | 'FOOTER' | 'IN_FEED' | 'POPUP';
 
 export interface Advert {
   id: string;
   title: string;
-  description: string;
-  media: FileUploadResult | null;
-  published: boolean;
-  lifespanDays: number;
-  expiresAt: string | null;
-  metadata: {
-    websiteUrl?: string;
-    contactEmail?: string;
-  };
+  description?: string;
+  imageUrl?: string;
+  targetUrl?: string;
+  placement: AdvertPlacement;
+  status: AdvertStatus;
+  startDate?: string | Date;
+  endDate?: string | Date;
+  metadata?: Record<string, any>;
+  createdBy?: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }

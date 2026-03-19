@@ -1,10 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse } from '../dtos/responses/base.response';
-import { SupportTicket, TicketMessage } from '../models/support.model';
-import { PaginationParams } from '../dtos/requests/pagination.request';
 import { environment } from '@/environments/environment';
+import { SupportTicket } from '../models/support.model';
+import { ApiResponse } from '@app/core/dtos/responses/base.response';
 
 @Injectable({
   providedIn: 'root',
@@ -13,39 +12,38 @@ export class SupportService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}support`;
 
-  createTicket(payload: any): Observable<ApiResponse<SupportTicket>> {
-    return this.http.post<ApiResponse<SupportTicket>>(this.apiUrl, payload);
-  }
-
+  // For regular users
   getMyTickets(): Observable<ApiResponse<SupportTicket[]>> {
     return this.http.get<ApiResponse<SupportTicket[]>>(`${this.apiUrl}/my-tickets`);
   }
 
-  getAllTickets(params?: PaginationParams & any): Observable<ApiResponse<any>> {
+  // For Admins
+  getAllTickets(params: any = {}): Observable<ApiResponse<SupportTicket[]>> {
     let httpParams = new HttpParams();
-
-    if (params) {
-      Object.keys(params).forEach((key) => {
-        if (params[key] !== undefined && params[key] !== null) {
-          httpParams = httpParams.set(key, params[key]);
-        }
-      });
-    }
-
-    return this.http.get<ApiResponse<any>>(this.apiUrl, { params: httpParams });
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key]);
+      }
+    });
+    return this.http.get<ApiResponse<SupportTicket[]>>(`${this.apiUrl}`, { params: httpParams });
   }
 
   getTicketById(id: string): Observable<ApiResponse<SupportTicket>> {
     return this.http.get<ApiResponse<SupportTicket>>(`${this.apiUrl}/${id}`);
   }
 
-  addMessage(ticketId: string, message: string): Observable<ApiResponse<TicketMessage>> {
-    return this.http.post<ApiResponse<TicketMessage>>(`${this.apiUrl}/${ticketId}/messages`, {
-      message,
-    });
+  // Public/Guest or Auth creation
+  createTicket(data: Partial<SupportTicket>): Observable<ApiResponse<SupportTicket>> {
+    return this.http.post<ApiResponse<SupportTicket>>(`${this.apiUrl}`, data);
   }
 
-  updateTicket(id: string, payload: any): Observable<ApiResponse<SupportTicket>> {
-    return this.http.put<ApiResponse<SupportTicket>>(`${this.apiUrl}/${id}`, payload);
+  // Admin updates
+  updateTicket(id: string, data: Partial<SupportTicket>): Observable<ApiResponse<SupportTicket>> {
+    return this.http.put<ApiResponse<SupportTicket>>(`${this.apiUrl}/${id}`, data);
+  }
+
+  // Adding replies
+  addMessage(id: string, message: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/${id}/messages`, { message });
   }
 }

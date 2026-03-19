@@ -1,3 +1,5 @@
+import { User } from './user.model';
+
 export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'CLOSED' | 'RESOLVED';
 export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type TicketCategory =
@@ -6,49 +8,30 @@ export type TicketCategory =
   | 'BILLING_INQUIRY'
   | 'GENERAL_QUESTION';
 
-export interface SupportTicketUser {
-  id: string;
-  firstName: string;
-  lastName: string;
-  companyName?: string;
-  email?: string;
-}
-
-export interface SupportTicketAssignee {
-  id: string;
-  firstName: string;
-  lastName: string;
-}
-
 export interface TicketMessage {
   id: string;
   ticketId: string;
   userId: string;
   message: string;
-  createdAt: Date;
-  user?: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    companyName?: string;
-    avatar?: string;
-  };
+  createdAt: string | Date;
+  user?: User;
 }
 
 export interface SupportTicket {
   id: string;
-  ticketUid: string;
-  userId: string;
+  userId?: string | null;
+  email?: string;
+  mobileNumber?: string;
   subject: string;
   description: string;
   category: TicketCategory;
   priority: TicketPriority;
   status: TicketStatus;
   assignedTo?: string | null;
-  resolvedAt?: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-  user?: SupportTicketUser;
-  assignee?: SupportTicketAssignee;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+
+  user?: User;
+  assignee?: User;
   messages?: TicketMessage[];
 }

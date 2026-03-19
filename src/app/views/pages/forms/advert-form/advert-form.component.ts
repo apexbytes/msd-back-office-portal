@@ -1,198 +1,188 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { AdvertService } from '@app/core/services/advert.service';
 import { UploadService } from '@app/core/services/upload.service';
-import { LoadingService } from '@app/core/services/loading.service';
 import { Advert } from '@app/core/models/advert.model';
-import { FileUploadResult } from '@app/core/models/common.model';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-advert-form',
-
-  imports: [ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule],
   templateUrl: './advert-form.component.html',
-  styleUrl: './advert-form.component.css',
+  styleUrls: ['./advert-form.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdvertFormComponent implements OnInit {
-  private readonly fb = inject(FormBuilder);
-  private readonly advertService = inject(AdvertService);
-  private readonly uploadService = inject(UploadService);
-  private readonly loadingService = inject(LoadingService);
-  private readonly dialogRef = inject(MatDialogRef<AdvertFormComponent>);
-  protected readonly data = inject<{ advert?: Advert }>(MAT_DIALOG_DATA);
+  private fb = inject(FormBuilder);
+  private advertService = inject(AdvertService);
+  private uploadService = inject(UploadService);
 
-  protected readonly isEditMode = signal(!!this.data?.advert);
-  protected readonly previewUrl = signal<string | null>(null);
-  protected readonly isUploading = signal(false);
-  protected readonly globalLoading = this.loadingService.isLoading;
+  // Dialog Injections instead of Router
+  private dialogRef = inject(MatDialogRef<AdvertFormComponent>);
+  private dialogData = inject(MAT_DIALOG_DATA, { optional: true });
 
-  protected form!: FormGroup;
+  advertForm!: FormGroup;
+  isEditMode = signal(false);
+  advertId: string | null = null;
+  isLoading = signal(false);
+  isUploading = signal(false);
+
+  uploadedImageUrl: string | null = null;
+  uploadedImagePublicId: string | null = null;
+
+  placements = [
+    { value: 'IN_FEED', label: 'In Feed' },
+    { value: 'HERO', label: 'Hero Banner' },
+    { value: 'SIDEBAR', label: 'Sidebar' },
+    { value: 'FOOTER', label: 'Footer' },
+    { value: 'POPUP', label: 'Popup' },
+  ];
 
   ngOnInit(): void {
     this.initForm();
-    if (this.isEditMode() && this.data?.advert) {
-      this.patchForm(this.data.advert);
+
+    this.advertId = this.dialogData?.id || null;
+
+    if (this.advertId) {
+      this.isEditMode.set(true);
+      this.loadAdvert(this.advertId);
     }
   }
 
   private initForm(): void {
-    this.form = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required]],
-      lifespanDays: [7, [Validators.required, Validators.min(1)]],
-      published: [false],
-      websiteUrl: [''],
-      contactEmail: ['', [Validators.email]],
-      media: [null, [Validators.required]],
+    this.advertForm = this.fb.group({
+      title: ['', [Validators.required]],
+      description: [''],
+      targetUrl: ['', [Validators.pattern('https?://.+')]],
+      placement: ['IN_FEED', [Validators.required]],
+      startDate: [''],
+      endDate: [''],
+      metadataItems: this.fb.array([]),
     });
   }
 
-  private patchForm(advert: Advert): void {
-    this.form.patchValue({
-      title: advert.title,
-      description: advert.description,
-      lifespanDays: advert.lifespanDays,
-      published: advert.published,
-      websiteUrl: advert.metadata?.websiteUrl || '',
-      contactEmail: advert.metadata?.contactEmail || '',
-      media: advert.media,
-    });
-
-    if (advert.media?.url) {
-      this.previewUrl.set(advert.media.url);
-    }
+  get metadataItems(): FormArray {
+    return this.advertForm.get('metadataItems') as FormArray;
   }
 
-  protected onFileSelected(event: Event): void {
+  addMetadataField(key: string = '', value: string = ''): void {
+    const group = this.fb.group({
+      key: [key, Validators.required],
+      value: [value, Validators.required],
+    });
+    this.metadataItems.push(group);
+  }
+
+  removeMetadataField(index: number): void {
+    this.metadataItems.removeAt(index);
+  }
+
+  private loadAdvert(id: string): void {
+    this.isLoading.set(true);
+    this.advertService
+      .getAdvertById(id)
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (res: any) => {
+          const ad = res.data || res;
+          if (ad) {
+            this.uploadedImageUrl = ad.imageUrl || null;
+
+            this.advertForm.patchValue({
+              title: ad.title,
+              description: ad.description,
+              targetUrl: ad.targetUrl,
+              placement: ad.placement,
+              startDate: ad.startDate ? new Date(ad.startDate).toISOString().split('T')[0] : '',
+              endDate: ad.endDate ? new Date(ad.endDate).toISOString().split('T')[0] : '',
+            });
+
+            if (ad.metadata) {
+              Object.entries(ad.metadata).forEach(([k, v]) => {
+                if (k === 'public_id' || k === 'publicId') {
+                  this.uploadedImagePublicId = String(v);
+                } else {
+                  this.addMetadataField(k, String(v));
+                }
+              });
+            }
+          }
+        },
+        error: () => {
+          this.closeDialog(false);
+        },
+      });
+  }
+
+  onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.previewUrl.set(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-
       this.isUploading.set(true);
-      this.form.get('media')?.setErrors({ uploading: true });
 
-      this.loadingService.show();
-      this.uploadService.uploadTemp(file).subscribe({
-        next: (response) => {
-          if (response.success && response.data && response.data.length > 0) {
-            const uploadedFile = response.data[0];
-            const mediaResult: FileUploadResult = {
-              public_id: uploadedFile.public_id,
-              url: uploadedFile.url,
-              width: uploadedFile.width || 0,
-              height: uploadedFile.height || 0,
-              storageType: (uploadedFile.storageType as 'CLOUDINARY' | 'LOCAL') || 'CLOUDINARY',
-            };
-            this.form.patchValue({ media: mediaResult });
-            this.form.get('media')?.setErrors(null);
-            this.form.get('media')?.markAsDirty();
-          }
-          this.isUploading.set(false);
-          this.loadingService.hide();
-        },
-        error: (err) => {
-          console.error('Upload failed', err);
-          this.form.get('media')?.setErrors({ uploadFailed: true });
-          this.isUploading.set(false);
-          this.loadingService.hide();
-        },
-      });
+      this.uploadService
+        .uploadTemp(file)
+        .pipe(finalize(() => this.isUploading.set(false)))
+        .subscribe({
+          next: (res: any) => {
+            const data = res.data || res;
+            const uploadedFile = Array.isArray(data) ? data[0] : data;
+
+            if (uploadedFile) {
+              this.uploadedImageUrl = uploadedFile.url || uploadedFile.secure_url;
+              this.uploadedImagePublicId = uploadedFile.public_id || uploadedFile.publicId;
+            }
+          },
+        });
     }
   }
 
-  protected onRemoveImage(): void {
-    this.previewUrl.set(null);
-    this.form.patchValue({ media: null });
-    this.form.get('media')?.markAsDirty();
-    const fileInput = document.getElementById('media') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
-  }
-
-  protected onSubmit(): void {
-    if (this.form.invalid || this.isUploading()) {
-      this.form.markAllAsTouched();
+  onSubmit(): void {
+    if (this.advertForm.invalid) {
+      this.advertForm.markAllAsTouched();
       return;
     }
 
-    const formValue = this.form.value;
-    const advertData: any = {
+    this.isLoading.set(true);
+    const formValue = this.advertForm.value;
+
+    const metadataObj: Record<string, any> = {};
+    formValue.metadataItems.forEach((item: any) => {
+      if (item.key && item.value) {
+        metadataObj[item.key] = item.value;
+      }
+    });
+
+    if (this.uploadedImagePublicId) {
+      metadataObj['public_id'] = this.uploadedImagePublicId;
+    }
+
+    const payload: Partial<Advert> = {
       title: formValue.title,
       description: formValue.description,
-      lifespanDays: formValue.lifespanDays,
-      published: formValue.published,
-      metadata: {},
+      targetUrl: formValue.targetUrl || '',
+      placement: formValue.placement,
+      startDate: formValue.startDate ? new Date(formValue.startDate).toISOString() : undefined,
+      endDate: formValue.endDate ? new Date(formValue.endDate).toISOString() : undefined,
+      imageUrl: this.uploadedImageUrl || '',
+      metadata: metadataObj,
     };
 
-    if (formValue.websiteUrl && formValue.websiteUrl.trim() !== '') {
-      advertData.metadata.websiteUrl = formValue.websiteUrl.trim();
-    }
-    if (formValue.contactEmail && formValue.contactEmail.trim() !== '') {
-      advertData.metadata.contactEmail = formValue.contactEmail.trim();
-    }
+    const request$ = this.isEditMode()
+      ? this.advertService.updateAdvert(this.advertId!, payload)
+      : this.advertService.createAdvert(payload);
 
-    if (this.form.get('media')?.dirty) {
-      if (formValue.media) {
-        advertData.media = formValue.media.public_id;
-      } else {
-        advertData.removeMedia = true;
-      }
-    } else if (!this.isEditMode()) {
-      advertData.media = formValue.media?.public_id || null;
-    }
-
-    this.loadingService.show();
-
-    const request$ =
-      this.isEditMode() && this.data?.advert?.id
-        ? this.advertService.updateAdvert(this.data.advert.id, advertData)
-        : this.advertService.createAdvert(advertData);
-
-    request$.subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.form.reset();
-          const returnedData = response.data?.advert || response.data;
-          this.dialogRef.close(returnedData);
-        }
-        this.loadingService.hide();
-      },
-      error: (err) => {
-        console.error('Error handling advert:', err);
-        this.loadingService.hide();
+    request$.pipe(finalize(() => this.isLoading.set(false))).subscribe({
+      next: () => {
+        this.closeDialog(true);
       },
     });
   }
 
-  protected onCancel(): void {
-    this.dialogRef.close(false);
-  }
-
-  protected onReset(): void {
-    this.form.reset({
-      lifespanDays: 7,
-      published: false,
-    });
-    this.previewUrl.set(null);
-    if (this.isEditMode() && this.data?.advert) {
-      this.patchForm(this.data.advert);
-    }
-  }
-
-  protected getFieldClass(fieldName: string): string {
-    const control = this.form.get(fieldName);
-    if (control && control.touched && control.invalid) {
-      return 'error';
-    }
-    return '';
+  closeDialog(success: boolean = false): void {
+    this.dialogRef.close(success);
   }
 }

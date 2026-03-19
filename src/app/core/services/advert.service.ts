@@ -3,51 +3,54 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@/environments/environment';
 import { Advert } from '../models/advert.model';
-import { ApiResponse } from '../dtos/responses/base.response';
-import { PaginationParams, SortParams } from '../dtos/requests/pagination.request';
-
-export type QueryParams = PaginationParams & SortParams;
+import { ApiResponse } from '@app/core/dtos/responses/base.response';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdvertService {
-  private readonly http = inject(HttpClient);
+  private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}adverts`;
 
-  private buildParams(params?: QueryParams): HttpParams {
+  // Public/Published Adverts
+  getPublishedAdverts(params: any = {}): Observable<ApiResponse<Advert[]>> {
     let httpParams = new HttpParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          httpParams = httpParams.set(key, value.toString());
-        }
-      });
-    }
-    return httpParams;
-  }
-
-  getAdminAdverts(params?: QueryParams): Observable<ApiResponse<Advert[]>> {
-    return this.http.get<ApiResponse<Advert[]>>(`${this.apiUrl}/admin`, {
-      params: this.buildParams(params),
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key]);
+      }
     });
+    return this.http.get<ApiResponse<Advert[]>>(`${this.apiUrl}/published`, { params: httpParams });
   }
 
-  createAdvert(advertData: Partial<Advert>): Observable<ApiResponse<Advert>> {
-    return this.http.post<ApiResponse<Advert>>(this.apiUrl, advertData);
-  }
-
-  updateAdvert(id: string, advertData: Partial<Advert>): Observable<ApiResponse<Advert>> {
-    return this.http.put<ApiResponse<Advert>>(`${this.apiUrl}/${id}`, advertData);
-  }
-
-  deleteAdvert(id: string): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`);
-  }
-
-  togglePublish(id: string, published: boolean): Observable<ApiResponse<Advert>> {
-    return this.http.patch<ApiResponse<Advert>>(`${this.apiUrl}/${id}/toggle-publish`, {
-      published,
+  // Admin: All Adverts
+  getAllAdvertsInSystem(params: any = {}): Observable<ApiResponse<Advert[]>> {
+    let httpParams = new HttpParams();
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key]);
+      }
     });
+    return this.http.get<ApiResponse<Advert[]>>(`${this.apiUrl}`, { params: httpParams });
+  }
+
+  getAdvertById(id: string): Observable<ApiResponse<Advert>> {
+    return this.http.get<ApiResponse<Advert>>(`${this.apiUrl}/${id}`);
+  }
+
+  createAdvert(data: Partial<Advert>): Observable<ApiResponse<Advert>> {
+    return this.http.post<ApiResponse<Advert>>(`${this.apiUrl}`, data);
+  }
+
+  updateAdvert(id: string, data: Partial<Advert>): Observable<ApiResponse<Advert>> {
+    return this.http.put<ApiResponse<Advert>>(`${this.apiUrl}/${id}`, data);
+  }
+
+  togglePublishState(id: string): Observable<ApiResponse<Advert>> {
+    return this.http.put<ApiResponse<Advert>>(`${this.apiUrl}/${id}/toggle`, {});
+  }
+
+  deleteAdvert(id: string): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/${id}`);
   }
 }

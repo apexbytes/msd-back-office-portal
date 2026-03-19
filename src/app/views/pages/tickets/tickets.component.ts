@@ -1,40 +1,51 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
 import { SupportService } from '@app/core/services/support.service';
-import { LoadingService } from '@app/core/services/loading.service';
 import { SupportTicket } from '@app/core/models/support.model';
-import { MatDialog } from '@angular/material/dialog';
+import { ApiResponse } from '@app/core/dtos/responses/base.response';
+import { finalize } from 'rxjs';
+import { TicketDialogComponent } from '@app/views/pages/forms/ticket-dialog/ticket-dialog.component';
+import { InitialsPipe } from '@app/core/pipe/initials.pipe';
 import { FullNamePipe } from '@app/core/pipe/fullname.pipe';
-import { TicketDialogComponent } from '@app/views/pages/ticket-dialog/ticket-dialog.component';
 
 @Component({
   selector: 'app-tickets',
-
-  imports: [CommonModule, FullNamePipe],
+  standalone: true,
+  imports: [CommonModule, MatDialogModule, FormsModule, InitialsPipe, FullNamePipe],
   templateUrl: './tickets.component.html',
-  styleUrl: './tickets.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./tickets.component.css'],
 })
 export class TicketsComponent implements OnInit {
-  private readonly supportService = inject(SupportService);
-  private readonly loadingService = inject(LoadingService);
-  private readonly dialog = inject(MatDialog);
+  private supportService = inject(SupportService);
+  private dialog = inject(MatDialog);
 
-  protected readonly tickets = signal<SupportTicket[]>([]);
-  protected readonly isLoading = signal(true);
-  protected readonly updatingIds = signal<Set<string>>(new Set());
+  // Data signals
+  tickets = signal<SupportTicket[]>([]);
+  isLoading = signal(false);
 
-  // Search and Filter Signals
-  protected readonly searchQuery = signal('');
-  protected readonly statusFilter = signal('');
+  // Filters & Search
+  searchQuery = signal<string>('');
+  statusFilter = signal<string>('');
 
-  // Pagination Signals
-  protected readonly currentPage = signal(1);
-  protected readonly limit = signal(10);
-  protected readonly totalCount = signal(0);
-  protected readonly totalPages = signal(0);
-  protected readonly hasNext = signal(false);
-  protected readonly hasPrev = signal(false);
+  currentPage = signal(1);
+  limit = signal(10);
+  totalTickets = signal(0);
+  totalPages = signal(1);
+  hasPrev = signal(false);
+  hasNext = signal(false);
+
+  showingFrom = computed(() => {
+    if (this.totalTickets() === 0) return 0;
+    return (this.currentPage() - 1) * this.limit() + 1;
+  });
+
+  showingTo = computed(() => {
+    return Math.min(this.currentPage() * this.limit(), this.totalTickets());
+  });
+
+  protected readonly Math = Math;
 
   ngOnInit(): void {
     this.loadTickets();
@@ -44,154 +55,86 @@ export class TicketsComponent implements OnInit {
     this.isLoading.set(true);
 
     const params: any = {
-      page: this.currentPage(),
       limit: this.limit(),
+      page: this.currentPage(),
     };
-
-    if (this.searchQuery()) {
-      params.search = this.searchQuery();
-    }
 
     if (this.statusFilter()) {
       params.status = this.statusFilter();
     }
 
-    this.supportService.getAllTickets(params).subscribe({
-      next: (res: any) => {
-        const data = res.data?.tickets || res.data || [];
-        this.tickets.set(data);
-        console.log('Tickets:', data);
+    if (this.searchQuery()) {
+      params.search = this.searchQuery();
+    }
 
-        const pagination = res.pagination || res.data?.pagination;
-        this.totalCount.set(pagination?.totalCount || res.data?.totalCount || data.length);
-        this.currentPage.set(pagination?.currentPage || 1);
-        this.totalPages.set(pagination?.totalPages || Math.ceil(this.totalCount() / this.limit()));
-        this.hasNext.set(pagination?.hasNext || false);
-        this.hasPrev.set(pagination?.hasPrev || false);
+    this.supportService
+      .getAllTickets(params)
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (res: ApiResponse<SupportTicket[]>) => {
+          if (res.data) {
+            this.tickets.set(res.data);
 
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading tickets', err);
-        this.isLoading.set(false);
-      },
-    });
+            if (res.pagination) {
+              this.totalTickets.set(res.pagination.totalCount || 0);
+              this.totalPages.set(res.pagination.totalPages || 1);
+              this.hasPrev.set(res.pagination.hasPrev || false);
+              this.hasNext.set(res.pagination.hasNext || false);
+            }
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching tickets:', err);
+        },
+      });
   }
 
-  // --- Filter Methods ---
-  protected onSearch(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.searchQuery.set(input.value);
+  onSearch(event: Event): void {
+    const input = (event.target as HTMLInputElement).value;
+    this.searchQuery.set(input);
     this.currentPage.set(1);
     this.loadTickets();
   }
 
-  protected onStatusChange(event: Event): void {
+  onStatusChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.statusFilter.set(select.value);
     this.currentPage.set(1);
     this.loadTickets();
   }
-  // ----------------------
 
-  // --- Pagination Methods ---
-  protected get showingFrom(): number {
-    return this.totalCount() === 0 ? 0 : (this.currentPage() - 1) * this.limit() + 1;
+  onLimitChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.limit.set(Number(select.value));
+    this.currentPage.set(1);
+    this.loadTickets();
   }
 
-  protected get showingTo(): number {
-    return Math.min(this.currentPage() * this.limit(), this.totalCount());
-  }
-
-  protected nextPage(): void {
+  nextPage(): void {
     if (this.hasNext()) {
       this.currentPage.update((p) => p + 1);
       this.loadTickets();
     }
   }
 
-  protected prevPage(): void {
+  prevPage(): void {
     if (this.hasPrev()) {
       this.currentPage.update((p) => p - 1);
       this.loadTickets();
     }
   }
 
-  protected onLimitChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.limit.set(Number(select.value));
-    this.currentPage.set(1);
-    this.loadTickets();
-  }
-  // --------------------------
-
-  private updateTicketState(id: string, payload: any): void {
-    const currentSet = new Set(this.updatingIds());
-    currentSet.add(id);
-    this.updatingIds.set(currentSet);
-
-    this.supportService.updateTicket(id, payload).subscribe({
-      next: (res: any) => {
-        if (res.success && res.data) {
-          const updatedTicket = res.data;
-          this.tickets.update((items) =>
-            items.map((t) => (t.id === id ? { ...t, ...updatedTicket } : t)),
-          );
-        }
-        this.removeUpdatingId(id);
-      },
-      error: (err) => {
-        console.error(`Failed to update ticket ${id}`, err);
-        this.removeUpdatingId(id);
-      },
-    });
-  }
-
-  private removeUpdatingId(id: string): void {
-    const currentSet = new Set(this.updatingIds());
-    currentSet.delete(id);
-    this.updatingIds.set(currentSet);
-  }
-
-  protected isUpdating(id: string): boolean {
-    return this.updatingIds().has(id);
-  }
-
-  // --- Quick Actions ---
-  protected onMarkInProgress(ticket: SupportTicket): void {
-    this.updateTicketState(ticket.id, { status: 'IN_PROGRESS' });
-  }
-
-  protected onResolve(ticket: SupportTicket): void {
-    this.updateTicketState(ticket.id, { status: 'RESOLVED' });
-  }
-
-  protected onClose(ticket: SupportTicket): void {
-    this.updateTicketState(ticket.id, { status: 'CLOSED' });
-  }
-
-  protected onReopen(ticket: SupportTicket): void {
-    this.updateTicketState(ticket.id, { status: 'OPEN' });
-  }
-
-  protected onViewDetails(ticket: SupportTicket): void {
+  openTicketDialog(id: string): void {
     const dialogRef = this.dialog.open(TicketDialogComponent, {
       width: '1200px',
       maxWidth: '95vw',
       panelClass: 'full-screen-modal',
+      data: { id },
       disableClose: true,
-      data: { ticketId: ticket.id },
     });
 
-    dialogRef.afterClosed().subscribe((updatedTicket) => {
-      if (updatedTicket && typeof updatedTicket === 'object') {
-        this.tickets.update((items) =>
-          items.map((t) => (t.id === updatedTicket.id ? { ...t, ...updatedTicket } : t)),
-        );
-      }
-      else if (updatedTicket === true) {
-        this.loadTickets();
-      }
+    dialogRef.afterClosed().subscribe((success: boolean) => {
+      if (success) this.loadTickets();
     });
   }
 }

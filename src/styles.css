@@ -1027,8 +1027,6 @@ body.dark-theme:has(#menu-toggle:checked) .switch-thumb {
   font-size: 12px;
 }
 
-/* --- 9. Properties Page Specifics --- */
-
 /* Property Cell Styling */
 .property-cell,
 .vehicle-cell {
@@ -1069,7 +1067,6 @@ body.dark-theme:has(#menu-toggle:checked) .switch-thumb {
   white-space: nowrap;
 }
 
-/* Table Toggle Button (Featured Column) */
 .table-toggle {
   position: relative;
   display: inline-block;
@@ -1106,7 +1103,6 @@ body.dark-theme:has(#menu-toggle:checked) .switch-thumb {
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Dark mode adjustment for unchecked toggle background */
 body.dark-theme .toggle-slider {
   background-color: #3d3d3d;
 }
@@ -1230,8 +1226,6 @@ body.dark-theme .status-maintenance .table-select {
   color: var(--a-text-main);
 }
 
-/* --- 10. Form Field Enhancements --- */
-
 .field-group {
   position: relative;
   margin-bottom: 24px;
@@ -1260,6 +1254,7 @@ body.dark-theme .status-maintenance .table-select {
 .field-group input[type="number"],
 .field-group input[type="tel"],
 .field-group input[type="url"],
+.field-group input[type="date"],
 .field-group textarea,
 .field-group .custom-select select {
   width: 100%;
