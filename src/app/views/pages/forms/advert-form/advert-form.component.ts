@@ -44,11 +44,12 @@ export class AdvertFormComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
 
-    this.advertId = this.dialogData?.id || null;
+    const advert = this.dialogData?.advert;
 
-    if (this.advertId) {
+    if (advert) {
       this.isEditMode.set(true);
-      this.loadAdvert(this.advertId);
+      this.advertId = advert.id;
+      this.populateForm(advert);
     }
   }
 
@@ -80,41 +81,27 @@ export class AdvertFormComponent implements OnInit {
     this.metadataItems.removeAt(index);
   }
 
-  private loadAdvert(id: string): void {
-    this.isLoading.set(true);
-    this.advertService
-      .getAdvertById(id)
-      .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe({
-        next: (res: any) => {
-          const ad = res.data || res;
-          if (ad) {
-            this.uploadedImageUrl = ad.imageUrl || null;
+  private populateForm(ad: any): void {
+    this.uploadedImageUrl = ad.imageUrl || null;
 
-            this.advertForm.patchValue({
-              title: ad.title,
-              description: ad.description,
-              targetUrl: ad.targetUrl,
-              placement: ad.placement,
-              startDate: ad.startDate ? new Date(ad.startDate).toISOString().split('T')[0] : '',
-              endDate: ad.endDate ? new Date(ad.endDate).toISOString().split('T')[0] : '',
-            });
+    this.advertForm.patchValue({
+      title: ad.title,
+      description: ad.description,
+      targetUrl: ad.targetUrl,
+      placement: ad.placement,
+      startDate: ad.startDate ? new Date(ad.startDate).toISOString().split('T')[0] : '',
+      endDate: ad.endDate ? new Date(ad.endDate).toISOString().split('T')[0] : '',
+    });
 
-            if (ad.metadata) {
-              Object.entries(ad.metadata).forEach(([k, v]) => {
-                if (k === 'public_id' || k === 'publicId') {
-                  this.uploadedImagePublicId = String(v);
-                } else {
-                  this.addMetadataField(k, String(v));
-                }
-              });
-            }
-          }
-        },
-        error: () => {
-          this.closeDialog(false);
-        },
+    if (ad.metadata) {
+      Object.entries(ad.metadata).forEach(([k, v]) => {
+        if (k === 'public_id' || k === 'publicId') {
+          this.uploadedImagePublicId = String(v);
+        } else {
+          this.addMetadataField(k, String(v));
+        }
       });
+    }
   }
 
   onFileSelected(event: Event): void {

@@ -137,9 +137,23 @@
                   @if (isUpdating(advert.id)) {
                     <div class="spinner-small" style="margin-right: 15px"></div>
                   } @else {
-                    <a class="btn-action" (click)="openAdvertDialog(advert.id)" title="Edit">
+                    <label
+                      class="table-toggle"
+                      [class.disabled]="isUpdating(advert.id)"
+                      [title]="advert.status === 'PUBLISHED' ? 'Unpublish' : 'Publish'"
+                      style="margin: 0 10px 0 0;">
+                      <input
+                        type="checkbox"
+                        [checked]="advert.status === 'PUBLISHED'"
+                        [disabled]="isUpdating(advert.id)"
+                        (click)="toggleStatus(advert)">
+                      <span class="toggle-slider"></span>
+                    </label>
+
+                    <a class="btn-action" (click)="openAdvertDialog(advert)" title="Edit">
                       <i class="ph ph-pencil-simple"></i>
                     </a>
+
                     <a
                       class="btn-action text-danger"
                       (click)="deleteAdvert(advert.id)"

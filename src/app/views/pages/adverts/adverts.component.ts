@@ -119,12 +119,12 @@ export class AdvertsComponent implements OnInit {
 
   // --- Actions ---
 
-  openAdvertDialog(id?: string): void {
+  openAdvertDialog(advert?: Advert): void {
     const dialogRef = this.dialog.open(AdvertFormComponent, {
       width: '900px',
       maxWidth: '95vw',
       panelClass: 'full-screen-modal',
-      data: { id },
+      data: { advert },
       disableClose: true,
     });
 
@@ -186,7 +186,6 @@ export class AdvertsComponent implements OnInit {
       }
     });
   }
-
 
   isUpdating(id: string): boolean {
     return this.updatingIds().has(id);
