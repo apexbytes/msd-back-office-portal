@@ -13,7 +13,7 @@ export interface LoginResponse {
   user: User;
   accessToken: string;
   refreshToken: string;
-  requiresMFA?: boolean; // <-- Fixed property name to match backend
+  requiresMFA?: boolean;
 }
 
 @Injectable({
@@ -155,7 +155,6 @@ export class AuthService implements OnDestroy {
     return this.http.post<ApiResponse<any>>(`${environment.apiUrl}auth/reset-password`, data);
   }
 
-  // --- MFA Methods (Management only) ---
 
   checkMfaStatus(): Observable<ApiResponse<{ enabled: boolean }>> {
     return this.http.get<ApiResponse<{ enabled: boolean }>>(`${environment.apiUrl}mfa/status`);

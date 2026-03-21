@@ -5,7 +5,51 @@
       <p class="welcome-text">Welcome back, <span class="user-highlight">{{ (currentUser() | fullName) || 'Admin' }}</span></p>
       <p class="subtitle">Here's what's happening with your platform today</p>
     </div>
-    <div class="header-actions">
+
+    <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
+
+      <div class="notification-container" style="position: relative;">
+        <button class="btn btn-secondary icon-btn" (click)="toggleNotificationMenu($event)" style="position: relative; padding: 0.5rem 0.8rem;">
+          <i class="ph ph-bell" style="font-size: 1.2rem;"></i>
+          @if ((notificationService.unreadCount$ | async)! > 0) {
+            <span class="badge badge-danger" style="position: absolute; top: -5px; right: -5px; font-size: 0.6rem; padding: 2px 5px; border-radius: 50%;">
+              {{ notificationService.unreadCount$ | async }}
+            </span>
+          }
+        </button>
+
+        @if (isNotificationMenuOpen) {
+          <div class="notifications-menu" style="position: absolute; top: 120%; right: 0; background: var(--a-bg-card); width: 300px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid var(--a-border-color); z-index: 100; display: flex; flex-direction: column; text-align: left;">
+
+            <div class="notif-header" style="padding: 1rem; border-bottom: 1px solid var(--a-border-color); display: flex; justify-content: space-between; align-items: center;">
+              <strong style="font-size: 0.9rem;">Notifications</strong>
+              <a style="font-size: 0.8rem; color: var(--primary); cursor: pointer;" (click)="notificationService.markAllAsRead(); $event.stopPropagation()">Mark all read</a>
+            </div>
+
+            <div class="notif-list" style="max-height: 300px; overflow-y: auto;">
+              @for (notif of (notificationService.notifications$ | async); track notif.id) {
+                <div class="notif-item"
+                     [class.unread]="!notif.read"
+                     (click)="handleNotificationClick(notif, $event)"
+                     style="padding: 1rem; border-bottom: 1px solid var(--a-border-color); cursor: pointer; transition: background 0.2s;">
+                  <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                    @if (!notif.read) { <span style="width: 8px; height: 8px; background: var(--primary); border-radius: 50%; display: inline-block;"></span> }
+                    {{ notif.title }}
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--a-text-light); line-height: 1.4;">{{ notif.body }}</div>
+                  <div style="font-size: 0.7rem; color: var(--a-text-muted); margin-top: 6px;">{{ notif.createdAt | date:'shortTime' }}</div>
+                </div>
+              }
+              @if ((notificationService.notifications$ | async)?.length === 0) {
+                <div style="padding: 2rem; text-align: center; color: var(--a-text-light); font-size: 0.85rem;">
+                  <i class="ph ph-bell-slash" style="font-size: 2rem; margin-bottom: 8px; opacity: 0.5;"></i><br>
+                  No new notifications
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
       <button class="btn btn-secondary" (click)="ngOnInit()">
         <i class="ph ph-arrows-clockwise"></i> Refresh
       </button>

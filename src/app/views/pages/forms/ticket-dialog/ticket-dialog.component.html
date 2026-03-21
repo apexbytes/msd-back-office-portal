@@ -3,7 +3,7 @@
   <div class="dialog-header">
     <h4 style="margin: 0; display: flex; align-items: center; gap: 8px;">
       <i class="ph ph-ticket" style="color: var(--primary); font-size: 1.5rem;"></i>
-      Ticket #{{ ticket()?.id?.split('-')?.[0] | uppercase }}
+      {{ ticket()?.ticketUid }}
       <span class="badge bg-secondary ms-2" style="font-size: 0.8rem;">{{ ticket()?.category }}</span>
     </h4>
     <a class="close_dialog" (click)="closeDialog()"><i class="ph ph-x"></i></a>
@@ -90,9 +90,10 @@
                 <span class="badge bg-primary-subtle text-primary mt-1 align-self-start" style="font-size: 0.7rem;">Registered</span>
               } @else {
                 <strong>Guest User</strong>
-                <span><i class="ph ph-envelope"></i> {{ ticket()?.email }}</span>
-                @if (ticket()?.mobileNumber) {
-                  <span><i class="ph ph-phone"></i> {{ ticket()?.mobileNumber }}</span>
+                <span><i class="ph ph-envelope"></i> {{ ticket()?.guestEmail }}</span>
+
+                @if (ticket()?.guestMobile) {
+                  <span><i class="ph ph-phone"></i> {{ ticket()?.guestMobile }}</span>
                 }
                 <span class="badge bg-secondary-subtle text-secondary mt-1 align-self-start" style="font-size: 0.7rem;">Unauthenticated</span>
               }

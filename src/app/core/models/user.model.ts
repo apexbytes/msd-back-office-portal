@@ -8,6 +8,9 @@ export interface User {
   companyName?: string;
   email: string;
   mobileNumber?: string;
+  callNumber?: string;
+  whatsappNumber?: string;
+  useSameNumberForWhatsapp?: boolean;
   avatar: FileUploadResult | null;
   bio?: string;
   roles: Role[];
@@ -26,7 +29,7 @@ export interface User {
     instagram?: string;
   };
   lastActive: string; // ISO Date
-  createdAt: string;  // ISO Date
+  createdAt: string; // ISO Date
 }
 
 export interface Role {

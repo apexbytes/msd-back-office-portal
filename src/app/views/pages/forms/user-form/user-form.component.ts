@@ -38,6 +38,9 @@ export class UserFormComponent implements OnInit {
     email: '',
     companyName: '',
     mobileNumber: '',
+    callNumber: '',
+    whatsappNumber: '',
+    useSameNumberForWhatsapp: false,
     city: '',
     country: '',
     bio: '',
@@ -60,6 +63,7 @@ export class UserFormComponent implements OnInit {
       this.user = {
         ...this.user,
         ...this.data.user,
+        useSameNumberForWhatsapp: this.data.user.useSameNumberForWhatsapp ?? false,
         socialLinks: this.data.user.socialLinks || {
           website: '',
           facebook: '',

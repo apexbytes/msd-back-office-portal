@@ -109,13 +109,11 @@ export class TicketDialogComponent implements OnInit {
   isStaff(user: any): boolean {
     if (!user) return false;
 
-    if (Array.isArray(user.roles)) {
-      return user.roles.some((role: any) => {
-        const roleName = typeof role === 'string' ? role : role.name;
-        return roleName && roleName.toUpperCase() !== 'USER';
-      });
-    }
+    const currentTicket = this.ticket();
+    if (!currentTicket) return false;
 
-    return false;
+    if (!currentTicket.userId) return true;
+
+    return user.id !== currentTicket.userId;
   }
 }

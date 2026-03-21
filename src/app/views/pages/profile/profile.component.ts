@@ -12,7 +12,6 @@ import { FullNamePipe } from '../../../core/pipe/fullname.pipe';
 
 @Component({
   selector: 'app-profile',
-
   imports: [CommonModule, ReactiveFormsModule, InitialsPipe, FullNamePipe],
   templateUrl: './profile.component.html',
 })
@@ -41,6 +40,9 @@ export class ProfileComponent implements OnInit {
       firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       mobileNumber: [''],
+      callNumber: [''],
+      whatsappNumber: [''],
+      useSameNumberForWhatsapp: [false],
       companyName: ['', [Validators.maxLength(100)]],
       bio: ['', [Validators.maxLength(500)]],
       city: ['', [Validators.maxLength(100)]],
@@ -79,6 +81,9 @@ export class ProfileComponent implements OnInit {
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       mobileNumber: user.mobileNumber || '',
+      callNumber: user.callNumber || '',
+      whatsappNumber: user.whatsappNumber || '',
+      useSameNumberForWhatsapp: user.useSameNumberForWhatsapp ?? false,
       companyName: user.companyName || '',
       bio: user.bio || '',
       city: user.city || '',
@@ -97,7 +102,6 @@ export class ProfileComponent implements OnInit {
       this.tempAvatarUrl.set(null);
     }
   }
-
 
   toggleMode(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;

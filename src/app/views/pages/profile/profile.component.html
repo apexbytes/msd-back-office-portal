@@ -27,7 +27,6 @@
       </header>
 
       <form class="profile-layout" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-        <!-- Profile Sidebar -->
         <aside class="profile-sidebar">
           <div class="profile-avatar-section">
             <div class="avatar-upload-container">
@@ -80,7 +79,6 @@
           </div>
         </aside>
 
-        <!-- Profile Content -->
         <main class="profile-content">
           <section class="profile-section">
             <h3 class="section-title">Personal Information</h3>
@@ -112,6 +110,25 @@
                 <input type="text" formControlName="mobileNumber" placeholder="Enter mobile number" [class.readonly-input]="!isEditMode()">
               </div>
               <div class="field-group">
+                <label>Call Number</label>
+                <input type="text" formControlName="callNumber" placeholder="Enter call number" [class.readonly-input]="!isEditMode()">
+              </div>
+
+              <div class="field-group full-width" style="display: flex; align-items: center; gap: 10px; padding: 10px 0;">
+                <input type="checkbox" formControlName="useSameNumberForWhatsapp" id="sameWhatsappMode" style="width: 18px; height: 18px; accent-color: var(--primary);">
+                <label for="sameWhatsappMode" style="margin: 0; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  Use Mobile / Call number for WhatsApp
+                </label>
+              </div>
+
+              @if (!profileForm.get('useSameNumberForWhatsapp')?.value) {
+                <div class="field-group">
+                  <label><i class="ph-whatsapp-logo" style="color: #25D366;"></i> WhatsApp Number</label>
+                  <input type="text" formControlName="whatsappNumber" placeholder="Enter WhatsApp number" [class.readonly-input]="!isEditMode()">
+                </div>
+              }
+
+              <div class="field-group full-width" style="margin-top: 15px;">
                 <label>Company Name</label>
                 <input type="text" formControlName="companyName" placeholder="Enter company name" [class.readonly-input]="!isEditMode()">
               </div>

@@ -14,24 +14,26 @@ export interface TicketMessage {
   userId: string;
   message: string;
   createdAt: string | Date;
-  user?: User;
+  user?: Partial<User>;
 }
 
 export interface SupportTicket {
   id: string;
+  ticketUid: string;
   userId?: string | null;
-  email?: string;
-  mobileNumber?: string;
+  guestEmail?: string | null;
+  guestMobile?: string | null;
   subject: string;
   description: string;
   category: TicketCategory;
   priority: TicketPriority;
   status: TicketStatus;
   assignedTo?: string | null;
+  resolvedAt?: string | Date | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 
-  user?: User;
-  assignee?: User;
+  user?: Partial<User>;
+  assignee?: Partial<User>;
   messages?: TicketMessage[];
 }

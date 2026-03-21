@@ -86,14 +86,42 @@
 
       <h5 class="section-title">Contact & Location</h5>
       <div class="form-grid">
-        <div class="field-group">
+        <div class="field-group full-width">
           <label>Company Name</label>
           <input type="text" name="companyName" [(ngModel)]="user.companyName" placeholder="e.g. Acme Corp">
         </div>
+
         <div class="field-group">
           <label>Mobile Number</label>
-          <input type="text" name="mobileNumber" [(ngModel)]="user.mobileNumber" placeholder="e.g. +1 234 567 890">
+          <div class="input-with-icon">
+            <i class="ph ph-device-mobile"></i>
+            <input type="text" name="mobileNumber" [(ngModel)]="user.mobileNumber" placeholder="e.g. +1 234 567 890" style="padding-left: 36px;">
+          </div>
         </div>
+
+        <div class="field-group">
+          <label>Call Number</label>
+          <div class="input-with-icon">
+            <i class="ph ph-phone-call"></i>
+            <input type="text" name="callNumber" [(ngModel)]="user.callNumber" placeholder="e.g. +1 234 567 890" style="padding-left: 36px;">
+          </div>
+        </div>
+
+        <div class="field-group full-width" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" name="useSameNumberForWhatsapp" [(ngModel)]="user.useSameNumberForWhatsapp" id="sameWhatsapp" style="width: 18px; height: 18px; accent-color: var(--primary);">
+          <label for="sameWhatsapp" style="margin: 0; font-weight: 500; cursor: pointer;">Use Mobile / Call number for WhatsApp</label>
+        </div>
+
+        @if (!user.useSameNumberForWhatsapp) {
+          <div class="field-group full-width">
+            <label>WhatsApp Number</label>
+            <div class="input-with-icon">
+              <i class="ph ph-whatsapp-logo" style="color: #25D366;"></i>
+              <input type="text" name="whatsappNumber" [(ngModel)]="user.whatsappNumber" placeholder="e.g. +1 234 567 890" style="padding-left: 36px;">
+            </div>
+          </div>
+        }
+
         <div class="field-group">
           <label>City</label>
           <input type="text" name="city" [(ngModel)]="user.city" placeholder="e.g. New York">

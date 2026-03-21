@@ -76,7 +76,7 @@
                   </div>
                   <div class="user-details">
                     <span class="user-name">{{ ticket.user ? (ticket.user | fullName) : 'Guest User' }}</span>
-                    <span class="user-email">{{ ticket.user ? ticket.user.email : ticket.email }}</span>
+                    <span class="user-email">{{ ticket.user ? ticket.user.email : ticket.guestEmail }}</span>
                   </div>
                 </div>
               </td>
