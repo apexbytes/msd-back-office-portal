@@ -1,1 +1,44 @@
-<p>not-found.component works!</p>
+<div class="not-found-page">
+  <div class="not-found-container">
+    <div class="not-found-illustration">
+      <span class="error-code">404</span>
+    </div>
+
+    <div class="not-found-content">
+      <h1 class="not-found-title">Page Not Found</h1>
+      <p class="not-found-message">
+        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+      </p>
+
+      <div class="not-found-actions">
+        @if (authService.isAuthenticated()) {
+          <button (click)="goBack()" class="btn btn-primary">
+            <i class="ph-arrow-left"></i>
+            Go Back
+          </button>
+          <button (click)="goToDashboard()" class="btn btn-ghost">
+            <i class="ph-house"></i>
+            Go to Dashboard
+          </button>
+        } @else {
+          <button (click)="goToLogin()" class="btn btn-primary">
+            <i class="ph-sign-in"></i>
+            Log In
+          </button>
+          <button (click)="goToDashboard()" class="btn btn-ghost">
+            <i class="ph-house"></i>
+            Home Page
+          </button>
+        }
+      </div>
+
+      <div class="not-found-footer">
+        <p>If you believe this is an error, please contact our support team at:</p>
+        <a href="mailto:support@musondosi.net" class="support-link">
+          <i class="ph-envelope"></i>
+          support&#64;musondosi.net
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

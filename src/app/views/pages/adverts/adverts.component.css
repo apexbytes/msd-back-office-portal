@@ -28,5 +28,5 @@
   font-size: 1.2rem;
 }
 .btn-action:hover i {
-  color: var(--primary);
+  color: inherit;
 }

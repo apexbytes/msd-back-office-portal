@@ -107,7 +107,6 @@ export class UsersComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     this.searchQuery.set(input.value);
 
-    // Debounce the input by 400ms to prevent race conditions and DB spam
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
@@ -203,7 +202,7 @@ export class UsersComponent implements OnInit {
       disableClose: true,
       data: {
         title: 'Suspend Account',
-        message: `Are you sure you want to suspend the account for <strong>${displayName}</strong>? They will be instantly logged out and prevented from accessing the system.`,
+        message: `Are you sure you want to suspend the account for ${displayName}? They will be instantly logged out and prevented from accessing the system.`,
         confirmButtonText: 'Suspend User',
         cancelButtonText: 'Cancel',
       },
@@ -237,7 +236,7 @@ export class UsersComponent implements OnInit {
       disableClose: true,
       data: {
         title: 'Unlock Account',
-        message: `Are you sure you want to restore access for <strong>${displayName}</strong>? This will remove all restrictions and reset any failed login attempts.`,
+        message: `Are you sure you want to restore access for ${displayName}? This will remove all restrictions and reset any failed login attempts.`,
         confirmButtonText: 'Unlock User',
         cancelButtonText: 'Cancel',
       },
@@ -275,7 +274,7 @@ export class UsersComponent implements OnInit {
       disableClose: true,
       data: {
         title: 'Delete User',
-        message: `Are you sure you want to permanently delete the account for <strong>${displayName}</strong>? This action cannot be undone.`,
+        message: `Are you sure you want to permanently delete the account for ${displayName}? This action cannot be undone.`,
         confirmButtonText: 'Delete User',
         cancelButtonText: 'Cancel',
       },

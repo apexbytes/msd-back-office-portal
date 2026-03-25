@@ -921,6 +921,14 @@ body.dark-theme:has(#menu-toggle:checked) .switch-thumb {
   color: var(--a-text-dark);
 }
 
+.action-icon.edit {
+  color: var(--primary);
+}
+
+.action-icon.danger {
+  color: var(--form-error-color);
+}
+
 /* Dropdown logic uses focus-within so clicking it opens it */
 .dropdown-container {
   position: relative;
@@ -970,7 +978,19 @@ body.dark-theme:has(#menu-toggle:checked) .switch-thumb {
   color: var(--form-error-color);
 }
 
-/* Pagination */
+.btn-action {
+  color: var(--a-text-light);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-action.text-primary {
+  color: var(--primary);
+}
+
+.btn-action.text-danger {
+  color: var(--form-error-color);
+}
 .table-pagination {
   display: flex;
   justify-content: space-between;

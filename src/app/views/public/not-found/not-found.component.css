@@ -1,0 +1,118 @@
+.not-found-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--a-bg-app);
+  padding: var(--space-4);
+  color: var(--a-text-main);
+  text-align: center;
+}
+
+.not-found-container {
+  max-width: 500px;
+  width: 100%;
+  padding: var(--space-10);
+  background-color: var(--a-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-s);
+}
+
+.error-code {
+  font-size: 8rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--a-text-main);
+  opacity: 0.2;
+  display: block;
+  margin-bottom: var(--space-4);
+}
+
+.not-found-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+  color: var(--a-text-dark);
+}
+
+.not-found-message {
+  font-size: 1.1rem;
+  color: var(--a-text-muted);
+  margin-bottom: var(--space-10);
+  line-height: 1.6;
+}
+
+.not-found-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-12);
+}
+
+@media (min-width: 480px) {
+  .not-found-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.not-found-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--a-text-dark);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--a-text-main);
+  border: 1px solid var(--a-border-color) !important;
+}
+
+.btn-ghost:hover {
+  background-color: var(--a-hover-bg);
+}
+
+.not-found-footer {
+  margin-top: var(--space-8);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--a-border-color);
+  font-size: 0.9rem;
+}
+
+.not-found-footer p {
+  color: var(--a-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.support-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--a-text-main);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.support-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
