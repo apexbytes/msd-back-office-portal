@@ -1,0 +1,299 @@
+<div class="company-detail-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Company Details</h1>
+      <p class="page-subtitle">Manage administrative and payment information</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-secondary" (click)="toggleEdit()" [disabled]="isLoading()">
+        {{ isEditMode() ? 'Cancel' : 'Edit Details' }}
+      </button>
+      @if (isEditMode()) {
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="onSubmit()"
+          [disabled]="isSaving() || companyForm.invalid"
+        >
+          @if (isSaving()) {
+            <span class="spinner-sm"></span>
+          }
+          {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading company details...</p>
+    </div>
+  } @else {
+    <form [formGroup]="companyForm" class="detail-form">
+
+      <!-- Contact Information Section -->
+      <div class="card section-card">
+        <div class="card-header">
+          <h2 class="section-title">
+            <i class="icon-contact"></i> Contact Information
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="form-grid-3">
+
+            <div class="form-group">
+              <label for="supportEmail">Support Email</label>
+              @if (isEditMode()) {
+                <input type="email" id="supportEmail" formControlName="supportEmail" class="form-control" placeholder="support@example.com" />
+              } @else {
+                <p class="field-value">{{ companyForm.get('supportEmail')?.value || '—' }}</p>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="businessEmail">Business Email</label>
+              @if (isEditMode()) {
+                <input type="email" id="businessEmail" formControlName="businessEmail" class="form-control" placeholder="info@example.com" />
+              } @else {
+                <p class="field-value">{{ companyForm.get('businessEmail')?.value || '—' }}</p>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="supportPhone">Support Phone</label>
+              @if (isEditMode()) {
+                <input type="text" id="supportPhone" formControlName="supportPhone" class="form-control" placeholder="+263..." />
+              } @else {
+                <p class="field-value">{{ companyForm.get('supportPhone')?.value || '—' }}</p>
+              }
+            </div>
+
+            <div class="form-group col-full">
+              <label for="supportWhatsapp">WhatsApp Link</label>
+              @if (isEditMode()) {
+                <input type="text" id="supportWhatsapp" formControlName="supportWhatsapp" class="form-control" placeholder="https://wa.link/..." />
+              } @else {
+                @if (companyForm.get('supportWhatsapp')?.value) {
+                  <a [href]="companyForm.get('supportWhatsapp')?.value" target="_blank" rel="noopener noreferrer" class="field-link">
+                    {{ companyForm.get('supportWhatsapp')?.value }}
+                  </a>
+                } @else {
+                  <p class="field-value">—</p>
+                }
+              }
+            </div>
+
+            <div class="form-group col-full">
+              <label for="supportSignal">Signal Link</label>
+              @if (isEditMode()) {
+                <input type="text" id="supportSignal" formControlName="supportSignal" class="form-control" placeholder="https://signal.me/#p/..." />
+              } @else {
+                @if (companyForm.get('supportSignal')?.value) {
+                  <a [href]="companyForm.get('supportSignal')?.value" target="_blank" rel="noopener noreferrer" class="field-link">
+                    {{ companyForm.get('supportSignal')?.value }}
+                  </a>
+                } @else {
+                  <p class="field-value">—</p>
+                }
+              }
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Details Row -->
+      <div class="payment-grid">
+
+        <!-- Ecocash Details -->
+        <div class="card section-card" formGroupName="ecocashDetails">
+          <div class="card-header">
+            <h2 class="section-title">
+              <i class="icon-payment"></i> Ecocash Details
+            </h2>
+          </div>
+          <div class="card-body">
+            <div class="form-stack">
+
+              <div class="form-group">
+                <label for="ecoAccountNumber">Account Number</label>
+                @if (isEditMode()) {
+                  <input type="text" id="ecoAccountNumber" formControlName="accountNumber" class="form-control" />
+                } @else {
+                  <p class="field-value">{{ companyForm.get('ecocashDetails.accountNumber')?.value || '—' }}</p>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="ecoAccountName">Account Name</label>
+                @if (isEditMode()) {
+                  <input type="text" id="ecoAccountName" formControlName="accountName" class="form-control" />
+                } @else {
+                  <p class="field-value">{{ companyForm.get('ecocashDetails.accountName')?.value || '—' }}</p>
+                }
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Bank Details -->
+        <div class="card section-card" formGroupName="bankDetails">
+          <div class="card-header">
+            <h2 class="section-title">
+              <i class="icon-bank"></i> Bank Details
+            </h2>
+          </div>
+          <div class="card-body">
+            <div class="form-grid-2">
+
+              <div class="form-group">
+                <label for="bankName">Bank Name</label>
+                @if (isEditMode()) {
+                  <input type="text" id="bankName" formControlName="bankName" class="form-control" />
+                } @else {
+                  <p class="field-value">{{ companyForm.get('bankDetails.bankName')?.value || '—' }}</p>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="branchName">Branch Name</label>
+                @if (isEditMode()) {
+                  <input type="text" id="branchName" formControlName="branchName" class="form-control" />
+                } @else {
+                  <p class="field-value">{{ companyForm.get('bankDetails.branchName')?.value || '—' }}</p>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="bankAccountNumber">Account Number</label>
+                @if (isEditMode()) {
+                  <input type="text" id="bankAccountNumber" formControlName="accountNumber" class="form-control" />
+                } @else {
+                  <p class="field-value">{{ companyForm.get('bankDetails.accountNumber')?.value || '—' }}</p>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="bankAccountName">Account Name</label>
+                @if (isEditMode()) {
+                  <input type="text" id="bankAccountName" formControlName="accountName" class="form-control" />
+                } @else {
+                  <p class="field-value">{{ companyForm.get('bankDetails.accountName')?.value || '—' }}</p>
+                }
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Social Media Links Section -->
+      <div class="card section-card">
+        <div class="card-header">
+          <h2 class="section-title">
+            <i class="icon-social"></i> Social Media Links
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="social-grid">
+
+            <div class="form-group">
+              <label for="facebookLink">
+                <span class="social-badge social-facebook"></span> Facebook
+              </label>
+              @if (isEditMode()) {
+                <input type="url" id="facebookLink" formControlName="facebookLink" class="form-control" placeholder="https://facebook.com/..." />
+              } @else {
+                @if (companyForm.get('facebookLink')?.value) {
+                  <a [href]="companyForm.get('facebookLink')?.value" target="_blank" rel="noopener noreferrer" class="field-link">
+                    {{ companyForm.get('facebookLink')?.value }}
+                  </a>
+                } @else {
+                  <p class="field-value">—</p>
+                }
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="instagramLink">
+                <span class="social-badge social-instagram"></span> Instagram
+              </label>
+              @if (isEditMode()) {
+                <input type="url" id="instagramLink" formControlName="instagramLink" class="form-control" placeholder="https://instagram.com/..." />
+              } @else {
+                @if (companyForm.get('instagramLink')?.value) {
+                  <a [href]="companyForm.get('instagramLink')?.value" target="_blank" rel="noopener noreferrer" class="field-link">
+                    {{ companyForm.get('instagramLink')?.value }}
+                  </a>
+                } @else {
+                  <p class="field-value">—</p>
+                }
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="twitterLink">
+                <span class="social-badge social-twitter"></span> Twitter (X)
+              </label>
+              @if (isEditMode()) {
+                <input type="url" id="twitterLink" formControlName="twitterLink" class="form-control" placeholder="https://twitter.com/..." />
+              } @else {
+                @if (companyForm.get('twitterLink')?.value) {
+                  <a [href]="companyForm.get('twitterLink')?.value" target="_blank" rel="noopener noreferrer" class="field-link">
+                    {{ companyForm.get('twitterLink')?.value }}
+                  </a>
+                } @else {
+                  <p class="field-value">—</p>
+                }
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="tiktokLink">
+                <span class="social-badge social-tiktok"></span> TikTok
+              </label>
+              @if (isEditMode()) {
+                <input type="url" id="tiktokLink" formControlName="tiktokLink" class="form-control" placeholder="https://tiktok.com/@..." />
+              } @else {
+                @if (companyForm.get('tiktokLink')?.value) {
+                  <a [href]="companyForm.get('tiktokLink')?.value" target="_blank" rel="noopener noreferrer" class="field-link">
+                    {{ companyForm.get('tiktokLink')?.value }}
+                  </a>
+                } @else {
+                  <p class="field-value">—</p>
+                }
+              }
+            </div>
+
+            <div class="form-group col-full">
+              <label for="youtubeLink">
+                <span class="social-badge social-youtube"></span> YouTube
+              </label>
+              @if (isEditMode()) {
+                <input type="url" id="youtubeLink" formControlName="youtubeLink" class="form-control" placeholder="https://youtube.com/..." />
+              } @else {
+                @if (companyForm.get('youtubeLink')?.value) {
+                  <a [href]="companyForm.get('youtubeLink')?.value" target="_blank" rel="noopener noreferrer" class="field-link">
+                    {{ companyForm.get('youtubeLink')?.value }}
+                  </a>
+                } @else {
+                  <p class="field-value">—</p>
+                }
+              }
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      @if (details()?.updatedAt) {
+        <div class="last-updated">
+          Last updated: {{ details()?.updatedAt | date:'medium' }}
+        </div>
+      }
+    </form>
+  }
+</div>

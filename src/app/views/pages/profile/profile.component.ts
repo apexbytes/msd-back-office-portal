@@ -2,18 +2,19 @@ import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { UserService } from '../../../core/services/user.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { UploadService } from '../../../core/services/upload.service';
-import { User } from '../../../core/models/user.model';
+import { UserService } from '@app/core/services/user.service';
+import { AuthService } from '@app/core/services/auth.service';
+import { UploadService } from '@app/core/services/upload.service';
+import { User } from '@app/core/models/user.model';
 import { finalize } from 'rxjs/operators';
-import { InitialsPipe } from '../../../core/pipe/initials.pipe';
-import { FullNamePipe } from '../../../core/pipe/fullname.pipe';
+import { InitialsPipe } from '@app/core/pipe/initials.pipe';
+import { FullNamePipe } from '@app/core/pipe/fullname.pipe';
 
 @Component({
   selector: 'app-profile',
   imports: [CommonModule, ReactiveFormsModule, InitialsPipe, FullNamePipe],
   templateUrl: './profile.component.html',
+  styleUrl: './profile.component.css',
 })
 export class ProfileComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -103,11 +104,10 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  toggleMode(event: Event): void {
-    const isChecked = (event.target as HTMLInputElement).checked;
-    this.isEditMode.set(isChecked);
+  toggleMode(value: boolean): void {
+    this.isEditMode.set(value);
 
-    if (isChecked) {
+    if (value) {
       this.profileForm.enable();
     } else {
       this.profileForm.disable();

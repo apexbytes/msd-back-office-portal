@@ -1,0 +1,361 @@
+/* ── Container ───────────────────────────────────────────── */
+.company-detail-container {
+  padding: var(--space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Page Header ─────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--a-text-main);
+  margin-bottom: var(--space-1);
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  color: var(--a-text-muted);
+  font-size: 0.9375rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Cards ───────────────────────────────────────────────── */
+.section-card {
+  margin-bottom: var(--space-6);
+  border: 1px solid var(--a-border-color);
+  background-color: var(--a-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-s);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--a-border-color);
+  background-color: var(--a-bg-app);
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--a-text-main);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.section-title i {
+  color: var(--primary);
+  opacity: 0.9;
+}
+
+.card-body {
+  padding: var(--space-6);
+}
+
+/* ── Layout Grids ────────────────────────────────────────── */
+/* Ecocash + Bank side by side */
+.payment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+/* 3-column: Contact fields */
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+/* 2-column: Bank fields, Social links */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+}
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+}
+
+/* Stacked: Ecocash fields */
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Full-width span within any grid */
+.col-full {
+  grid-column: 1 / -1;
+}
+
+/* Prevent text from blowing out grid cells */
+.form-grid-3 > *,
+.form-grid-2 > *,
+.social-grid > * {
+  min-width: 0;
+}
+
+/* ── Form Groups ─────────────────────────────────────────── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--a-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Form Controls (edit mode) ───────────────────────────── */
+.form-control {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--a-text-main);
+  background-color: var(--form-bg-default);
+  border: 1px solid var(--form-border-default);
+  border-radius: var(--radius-base);
+  transition: var(--form-transition);
+  min-width: 0;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--form-border-focus);
+  box-shadow: 0 0 0 3px var(--form-shadow-focus);
+}
+
+/* ── View Mode: read-only field display ──────────────────── */
+.field-value {
+  font-size: 0.9375rem;
+  color: var(--a-text-main);
+  padding: 0.375rem 0;
+  border-bottom: 1px solid var(--a-divider-color);
+  min-height: 2rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.field-link {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--form-border-focus);
+  padding: 0.375rem 0;
+  border-bottom: 1px solid var(--a-divider-color);
+  min-height: 2rem;
+  line-height: 1.5;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  transition: color var(--transition);
+}
+
+.field-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+/* ── Social Platform Badges ──────────────────────────────── */
+.social-badge {
+  display: inline-block;
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.social-facebook  { background-color: #1877f2; }
+.social-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-radius: 3px; }
+.social-twitter   { background-color: #14171a; border-radius: 50%; }
+.social-tiktok    { background-color: #010101; }
+.social-youtube   { background-color: #ff0000; }
+
+/* ── Icon System (SVG mask) ──────────────────────────────── */
+[class^="icon-"]::before {
+  content: '';
+  display: inline-block;
+  width: 1.125rem;
+  height: 1.125rem;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.icon-contact::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' /%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' /%3E%3C/svg%3E");
+}
+
+.icon-payment::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /%3E%3C/svg%3E");
+}
+
+.icon-bank::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z' /%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z' /%3E%3C/svg%3E");
+}
+
+.icon-social::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z' /%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z' /%3E%3C/svg%3E");
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--a-bg-app);
+  color: var(--a-text-main);
+  border: 1px solid var(--a-border-color);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--a-hover-bg);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Loading State ───────────────────────────────────────── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16);
+  color: var(--a-text-muted);
+  gap: var(--space-4);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--a-divider-color);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spinner-sm {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.last-updated {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--a-text-muted);
+  margin-top: var(--space-2);
+  padding-bottom: var(--space-4);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .payment-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .company-detail-container {
+    padding: var(--space-4);
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .payment-grid,
+  .form-grid-3,
+  .form-grid-2,
+  .social-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-body {
+    padding: var(--space-4);
+  }
+}

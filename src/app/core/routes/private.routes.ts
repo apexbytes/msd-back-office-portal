@@ -103,6 +103,10 @@ export  const PRIVATE_ROUTES = [
         loadComponent: () =>
           import('@app/views/pages/profile/profile.component').then((m) => m.ProfileComponent),
       },
+      {
+        path: 'company-info',
+        loadComponent: () => import('@app/views/pages/company-detail/company-detail.component').then((m) => m.CompanyDetailComponent),
+      }
     ],
   },
 ];
