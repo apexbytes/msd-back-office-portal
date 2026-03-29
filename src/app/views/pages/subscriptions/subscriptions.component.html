@@ -43,7 +43,7 @@
             <span class="checkmark"></span>
           </label>
         </th>
-        <th>USER ID <i class="ph ph-caret-up-down"></i></th>
+        <th>USER <i class="ph ph-caret-up-down"></i></th>
         <th>TYPE <i class="ph ph-caret-up-down"></i></th>
         <th>STATUS <i class="ph ph-caret-up-down"></i></th>
         <th>UPLOAD LIMIT <i class="ph ph-caret-up-down"></i></th>
@@ -67,7 +67,7 @@
                   <span class="checkmark"></span>
                 </label>
               </td>
-              <td title="{{ sub.userId }}">{{ sub.userId | slice:0:8 }}...</td>
+              <td title="{{ sub.userId }}">{{ getDisplayName(sub) }}</td>
               <td>{{ sub.type }}</td>
               <td>
               <span class="status-badge" [class.active]="sub.status === 'ACTIVE'" [class.expired]="sub.status === 'EXPIRED' || sub.status === 'CANCELLED'">

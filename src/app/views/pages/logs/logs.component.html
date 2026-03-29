@@ -40,16 +40,30 @@
       <div class="custom-select">
         <select [value]="actionFilter()" (change)="onActionChange($event)">
           <option value="">All Actions</option>
-          <optgroup label="Generic">
-            <option value="CREATE">CREATE</option>
-            <option value="UPDATE">UPDATE</option>
-            <option value="DELETE">DELETE</option>
-          </optgroup>
           <optgroup label="Authentication">
             <option value="LOGIN">LOGIN</option>
             <option value="LOGOUT">LOGOUT</option>
             <option value="USER_LOGIN_SUCCESS">LOGIN SUCCESS</option>
             <option value="USER_LOGIN_FAILURE">LOGIN FAILURE</option>
+          </optgroup>
+          <optgroup label="Users">
+            <option value="USER_CREATED">USER CREATED</option>
+            <option value="USER_UPDATED">USER UPDATED</option>
+            <option value="USER_SELF_UPDATED">USER SELF UPDATED</option>
+            <option value="USER_SELF_DELETED">USER SELF DELETED</option>
+            <option value="USER_ACCOUNT_UNLOCKED">ACCOUNT UNLOCKED</option>
+          </optgroup>
+          <optgroup label="Subscriptions">
+            <option value="SUBSCRIPTION_GRANTED">SUBSCRIPTION GRANTED</option>
+            <option value="SUBSCRIPTION_CANCELLED">SUBSCRIPTION CANCELLED</option>
+            <option value="SUBSCRIPTION_OVERRIDDEN">SUBSCRIPTION OVERRIDDEN</option>
+          </optgroup>
+          <optgroup label="Adverts">
+            <option value="ADVERT_CREATED">ADVERT CREATED</option>
+            <option value="ADVERT_UPDATED">ADVERT UPDATED</option>
+            <option value="ADVERT_DELETED">ADVERT DELETED</option>
+            <option value="ADVERT_PUBLISHED">ADVERT PUBLISHED</option>
+            <option value="ADVERT_UNPUBLISHED">ADVERT UNPUBLISHED</option>
           </optgroup>
           <optgroup label="Support">
             <option value="SUPPORT_TICKET_UPDATED">TICKET UPDATED</option>

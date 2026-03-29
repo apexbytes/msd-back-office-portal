@@ -651,7 +651,7 @@ body.dark-theme:has(#menu-toggle:checked) .switch-thumb {
 .btn-secondary {
   background-color: transparent;
   border: 1px solid var(--a-border-color);
-  color: var(--a-text-dark);
+  color: var(--a-text-light);
 }
 
 .btn-secondary:hover {

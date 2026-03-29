@@ -14,23 +14,26 @@
       <div class="form-grid">
         <div class="field-group full-width">
           <label for="userId">Client / User <span class="required">*</span></label>
-          <div class="custom-select">
-            <select
-              id="userId"
-              formControlName="userId"
-              [class]="getFieldClass('userId')"
-              [disabled]="isEditMode()"
-            >
-              <option value="" disabled selected>-- Select a Client --</option>
-              @for (user of clientUsers(); track user.id) {
-                <option [value]="user.id">
-                  {{ user.companyName ? user.companyName : (user | fullName) }} ({{ user.email }})
-                </option>
-              }
-            </select>
-          </div>
-          @if (form.get('userId')?.touched && form.get('userId')?.errors?.['required']) {
-            <span class="error-message">Client selection is required.</span>
+          @if (isEditMode()) {
+            <div class="form-control-static">{{ editModeUserLabel }}</div>
+          } @else {
+            <div class="custom-select">
+              <select
+                id="userId"
+                formControlName="userId"
+                [class]="getFieldClass('userId')"
+              >
+                <option value="" disabled selected>-- Select a Client --</option>
+                @for (user of clientUsers(); track user.id) {
+                  <option [value]="user.id">
+                    {{ user.companyName ? user.companyName : (user | fullName) }} ({{ user.email }})
+                  </option>
+                }
+              </select>
+            </div>
+            @if (form.get('userId')?.touched && form.get('userId')?.errors?.['required']) {
+              <span class="error-message">Client selection is required.</span>
+            }
           }
         </div>
       </div>

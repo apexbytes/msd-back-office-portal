@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SubscriptionService } from '@app/core/services/subscription.service';
 import { LoadingService } from '@app/core/services/loading.service';
 import { UserService } from '@app/core/services/user.service';
@@ -32,6 +32,7 @@ export class SubscriptionFormComponent implements OnInit {
   private readonly userService = inject(UserService);
   private readonly loadingService = inject(LoadingService);
   private readonly dialogRef = inject(MatDialogRef<SubscriptionFormComponent>);
+  private readonly dialogData = inject<{ subscription?: Subscription }>(MAT_DIALOG_DATA, { optional: true });
 
   // Inputs for reusability
   subscription = input<Subscription | null>(null);
@@ -52,10 +53,11 @@ export class SubscriptionFormComponent implements OnInit {
     this.initForm();
     this.loadClientUsers();
 
-    const sub = this.subscription();
+    const sub = this.dialogData?.subscription ?? this.subscription();
     if (sub) {
       this.isEditMode.set(true);
       this.patchForm(sub);
+      this.form.get('userId')?.disable();
     }
   }
 
@@ -106,7 +108,7 @@ export class SubscriptionFormComponent implements OnInit {
       return;
     }
 
-    const formValue = this.form.value;
+    const formValue = this.form.getRawValue();
     const targetUserId = formValue.userId;
     const payload: GrantSubscriptionRequest = {
       type: formValue.type,
@@ -151,6 +153,21 @@ export class SubscriptionFormComponent implements OnInit {
     if (sub) {
       this.patchForm(sub);
     }
+  }
+
+  protected get editModeUserLabel(): string {
+    const sub = this.dialogData?.subscription ?? this.subscription();
+    if (sub?.user) {
+      const name = [sub.user.firstName, sub.user.lastName].filter(Boolean).join(' ');
+      return name ? `${name} (${sub.user.email})` : sub.user.email;
+    }
+    const userId = this.form.getRawValue().userId;
+    const user = this.clientUsers().find((u) => u.id === userId);
+    if (user) {
+      const name = user.companyName || [user.firstName, user.lastName].filter(Boolean).join(' ');
+      return name ? `${name} (${user.email})` : user.email;
+    }
+    return userId ?? '';
   }
 
   protected getFieldClass(fieldName: string): string {

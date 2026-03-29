@@ -7,11 +7,14 @@ import { CustomDialogComponent } from '@app/views/shared/custom-dialog/custom-di
 import { DeleteDialogData } from '@app/core/models/delete.interface';
 import { SubscriptionService } from '@app/core/services/subscription.service';
 import { Subscription } from '@app/core/models/subscription.model';
+import { UserService } from '@app/core/services/user.service';
+import { User } from '@app/core/models/user.model';
+import { FullNamePipe } from '@app/core/pipe/fullname.pipe';
 
 @Component({
   selector: 'app-subscriptions',
 
-  imports: [DatePipe, SlicePipe],
+  imports: [DatePipe],
   templateUrl: './subscriptions.component.html',
   styleUrl: './subscriptions.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,8 +22,10 @@ import { Subscription } from '@app/core/models/subscription.model';
 export class SubscriptionsComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly subscriptionService = inject(SubscriptionService);
+  private readonly userService = inject(UserService);
 
   protected readonly subscriptions = signal<Subscription[]>([]);
+  protected readonly usersMap = signal<Map<string, User>>(new Map());
   protected readonly isLoading = signal(false);
 
   // Pagination Signals
@@ -33,6 +38,39 @@ export class SubscriptionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchSubscriptions();
+    this.loadUsersMap();
+  }
+
+  private loadUsersMap(): void {
+    this.userService.getClientUsers({ page: 1, limit: 100 }).subscribe({
+      next: (res: any) => {
+        if (res?.data) {
+          const users: User[] = Array.isArray(res.data)
+            ? res.data
+            : (res.data.users || res.data.items || res.data.data || []);
+          const map = new Map<string, User>();
+          users.forEach((u) => map.set(u.id, u));
+          this.usersMap.set(map);
+        }
+      },
+    });
+  }
+
+  protected getDisplayName(sub: Subscription): string {
+    if (sub.user) {
+      const first = sub.user.firstName?.trim() || '';
+      const last = sub.user.lastName?.trim() || '';
+      if (first || last) return [first, last].filter(Boolean).join(' ');
+      if (sub.user.email) return sub.user.email;
+    }
+    const user = this.usersMap().get(sub.userId);
+    if (user) {
+      const first = user.firstName?.trim() || '';
+      const last = user.lastName?.trim() || '';
+      if (first || last) return [first, last].filter(Boolean).join(' ');
+      return user.username;
+    }
+    return `${sub.userId.slice(0, 8)}...`;
   }
 
   protected fetchSubscriptions(): void {
