@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api/v2/',
-  wsUrl: 'http://localhost:8080',
+  apiUrl: 'https://musondosi-api-20-production.up.railway.app/api/v2/',
+  wsUrl: 'https://musondosi-api-20-production.up.railway.app',
 };
