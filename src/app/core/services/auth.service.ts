@@ -88,6 +88,9 @@ export class AuthService implements OnDestroy {
     }
 
     this.setCookie('accessToken', data.accessToken, 1);
+    if (data.refreshToken) {
+      this.setCookie('refreshToken', data.refreshToken, 7);
+    }
     this.currentUser.set(data.user);
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('currentUser', JSON.stringify(data.user));
