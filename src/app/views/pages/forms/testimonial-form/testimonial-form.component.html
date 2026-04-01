@@ -20,6 +20,11 @@
             <i class="ph ph-upload-simple"></i> Client Avatar
             <input type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" [disabled]="isUploading()">
           </label>
+          @if (previewUrl()) {
+            <button type="button" class="btn btn-secondary btn-sm" (click)="onRemoveImage()" [disabled]="isUploading()" style="color: var(--form-error-color, #ef4444);">
+              <i class="ph ph-trash"></i> Remove
+            </button>
+          }
         </div>
       </div>
 

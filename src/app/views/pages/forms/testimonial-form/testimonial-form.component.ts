@@ -44,7 +44,7 @@ export class TestimonialFormComponent implements OnInit {
       company: [''],
       status: ['PENDING', [Validators.required]],
       message: ['', [Validators.required, Validators.minLength(10)]],
-      image: [null, [Validators.required]],
+      image: [null],
       rating: [5, [Validators.min(1), Validators.max(5)]],
       featured: [false],
       sortOrder: [0, [Validators.min(0)]],
